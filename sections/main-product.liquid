@@ -53,7 +53,12 @@
 
       <!-- Info -->
       <div class="product-info" itemprop="offers" itemscope itemtype="https://schema.org/Offer">
-        {%- if product.vendor != blank -%}
+        {%- comment -%}
+          Every product is the shop's own, so the vendor line just repeats the
+          name in the header. Shares the card setting rather than adding a
+          second switch that means the same thing.
+        {%- endcomment -%}
+        {%- if settings.show_vendor and product.vendor != blank -%}
           <p class="product-info__vendor label">{{ product.vendor }}</p>
         {%- endif -%}
 

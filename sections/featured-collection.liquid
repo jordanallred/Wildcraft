@@ -1,4 +1,11 @@
 {%- assign collection = section.settings.collection -%}
+{%- comment -%}
+  Fall back to every product rather than rendering an empty shelf on the
+  homepage when no collection has been chosen yet.
+{%- endcomment -%}
+{%- if collection == blank -%}
+  {%- assign collection = collections.all -%}
+{%- endif -%}
 {%- assign product_limit = section.settings.product_limit | default: 4 -%}
 
 <section class="featured-collection section-padding">
