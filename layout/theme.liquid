@@ -42,6 +42,22 @@
   {%- assign c_gingham = settings.color_gingham | default: '#A8C4E0' -%}
   {%- assign c_surface = settings.color_surface | default: '#FFFFFF' -%}
 
+  {%- comment -%}
+    Whatever sits ON an accent fill has to be chosen, not assumed. Auburn
+    orange is light enough that white fails at 2.96:1 and ink wins at 5.33:1,
+    but a darker school colour flips that — cardinal or crimson need white,
+    and ink on cardinal would be dark-on-dark. Measure both and take the
+    better one, so changing the accent in the theme editor to another
+    school's colour stays readable without touching the stylesheet.
+  {%- endcomment -%}
+  {%- assign contrast_on_white = c_accent | color_contrast: '#FFFFFF' -%}
+  {%- assign contrast_on_ink   = c_accent | color_contrast: c_ink -%}
+  {%- if contrast_on_ink > contrast_on_white -%}
+    {%- assign c_on_accent = c_ink -%}
+  {%- else -%}
+    {%- assign c_on_accent = '#FFFFFF' -%}
+  {%- endif -%}
+
   <style>
     :root {
       --font-heading: 'Fraunces', Georgia, 'Times New Roman', serif;
@@ -84,6 +100,8 @@
         colour and take navy text; orange that IS text uses this darker cut.
       {%- endcomment -%}
       --color-accent-ink:    {{ c_accent | color_darken: 22 }};
+      /* Chosen by measurement above — see the comment on c_on_accent. */
+      --color-on-accent:     {{ c_on_accent }};
 
       /* Warm accent reads on the navy surfaces; gingham carries the borders.
          These were the same hex under two names before — now each means one thing. */

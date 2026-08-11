@@ -39,6 +39,10 @@
      small text on paper (2.77:1). Fills keep the true orange and take navy
      text; anything orange that IS text uses this darkened cut instead. */
   --color-accent-ink:    #A8500C;
+  /* Whatever sits on an accent fill. theme.liquid picks ink or white by
+     measuring contrast against the authored accent, so swapping in another
+     school's colour stays readable. This fallback matches Auburn orange. */
+  --color-on-accent:     #0C2340;
   --color-primary-light: #FBE4D1;
   --color-secondary:     #0C2340;
   --color-accent-warm:   #F09B54;
@@ -265,7 +269,7 @@ h1,
 
 .btn--primary {
   background: var(--color-primary);
-  color: var(--color-ink);
+  color: var(--color-on-accent);
   border-color: var(--color-primary);
 }
 .btn--primary:hover {
@@ -451,7 +455,7 @@ h1,
   top: 4px;
   right: 4px;
   background: var(--color-primary);
-  color: var(--color-ink);
+  color: var(--color-on-accent);
   font-size: 0.5625rem;
   font-weight: 700;
   width: 15px;
@@ -729,7 +733,7 @@ h1,
   padding: 0.3125rem 0.75rem;
   border-radius: var(--radius-pill);
   background: var(--color-primary);
-  color: var(--color-ink);
+  color: var(--color-on-accent);
 }
 .product-card__badge--secondary {
   background: var(--color-secondary);
@@ -820,7 +824,7 @@ h1,
 .feature-item:hover .feature-item__icon {
   transform: scale(1.1);
   background: var(--color-primary);
-  color: var(--color-ink);
+  color: var(--color-on-accent);
 }
 .feature-item__title {
   font-family: var(--font-heading);
@@ -1198,7 +1202,7 @@ h1,
 .variant-btn.is-selected {
   border-color: var(--color-primary);
   background: var(--color-primary);
-  color: var(--color-ink);
+  color: var(--color-on-accent);
 }
 .variant-btn.is-unavailable {
   opacity: 0.38;
