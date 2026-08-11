@@ -28,6 +28,7 @@
     "shop-features": {
       "type": "shop-features",
       "settings": {
+        "eyebrow": "The Wildcraft Promise",
         "heading": "Why Shop With Us"
       },
       "blocks": {

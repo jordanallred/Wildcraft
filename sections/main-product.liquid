@@ -164,6 +164,19 @@
   </div>
 </article>
 
+<!-- Sticky Add-to-Cart: mobile only, appears when main button scrolls out of view -->
+<div class="product-sticky-bar" id="product-sticky-bar" aria-hidden="true">
+  <div class="product-sticky-bar__inner">
+    <div class="product-sticky-bar__info">
+      <span class="product-sticky-bar__title">{{ product.title | truncate: 40 }}</span>
+      <span class="product-sticky-bar__price">{{ current_variant.price | money }}</span>
+    </div>
+    <button class="btn btn--primary product-sticky-bar__btn" id="sticky-add-to-cart" aria-label="Add to cart">
+      Add to Cart
+    </button>
+  </div>
+</div>
+
 {% schema %}
 {
   "name": "Product Information",

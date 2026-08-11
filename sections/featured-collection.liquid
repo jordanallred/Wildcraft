@@ -29,7 +29,10 @@
         </div>
       {%- endif -%}
     {%- else -%}
-      <p style="text-align:center;color:var(--color-text-muted);">Select a collection in the theme editor to display products here.</p>
+      <div class="featured-collection__empty">
+        <p>No products yet — check back soon.</p>
+        <a href="/collections/all" class="btn btn--outline">Browse All</a>
+      </div>
     {%- endif -%}
   </div>
 </section>

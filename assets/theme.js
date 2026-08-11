@@ -333,6 +333,25 @@
     .catch(() => {});
 
   /* ========================
+     Sticky Add-to-Cart (mobile product page)
+  ======================== */
+  const stickyBar = document.getElementById('product-sticky-bar');
+  const mainAddToCart = document.querySelector('[data-add-to-cart]');
+  if (stickyBar && mainAddToCart) {
+    const stickyBtn = document.getElementById('sticky-add-to-cart');
+
+    const barObserver = new IntersectionObserver(([entry]) => {
+      const show = !entry.isIntersecting;
+      stickyBar.classList.toggle('is-visible', show);
+      stickyBar.setAttribute('aria-hidden', String(!show));
+    }, { rootMargin: '-60px 0px 0px 0px' });
+
+    barObserver.observe(mainAddToCart);
+
+    stickyBtn?.addEventListener('click', () => mainAddToCart.click());
+  }
+
+  /* ========================
      Header scroll state
   ======================== */
   const header = document.querySelector('.site-header');

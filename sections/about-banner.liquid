@@ -1,6 +1,6 @@
 <section class="about-banner section-padding">
   <div class="container">
-    <div class="about-banner__inner{% if section.settings.image_position == 'right' %} about-banner__inner--reversed{% endif %}">
+    <div class="about-banner__inner{% if section.settings.image != blank and section.settings.image_position == 'right' %} about-banner__inner--reversed{% endif %}{% if section.settings.image == blank %} about-banner__inner--text-only{% endif %}">
       {%- if section.settings.image != blank -%}
         <div class="about-banner__image">
           {{ section.settings.image | image_url: width: 900 | image_tag: loading: 'lazy', widths: '500,700,900', sizes: '45vw', alt: section.settings.heading }}

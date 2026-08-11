@@ -1,10 +1,13 @@
 <section class="shop-features section-padding">
   <div class="container">
     {%- if section.settings.heading != blank -%}
-      <div class="section-header">
+      <div class="section-header section-header--center">
+        {%- if section.settings.eyebrow != blank -%}
+          <p class="label">{{ section.settings.eyebrow }}</p>
+        {%- endif -%}
         <h2>{{ section.settings.heading }}</h2>
         {%- if section.settings.subheading != blank -%}
-          <p>{{ section.settings.subheading }}</p>
+          <p class="section-header__text">{{ section.settings.subheading }}</p>
         {%- endif -%}
       </div>
     {%- endif -%}
@@ -40,6 +43,12 @@
 {
   "name": "Shop Features",
   "settings": [
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow Label",
+      "default": "The Wildcraft Promise"
+    },
     {
       "type": "text",
       "id": "heading",
