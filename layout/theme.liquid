@@ -78,6 +78,13 @@
       --color-primary-light: {{ c_accent | color_lighten: 38 }};
       --color-secondary:     {{ c_ink }};
 
+      {%- comment -%}
+        Auburn orange carries white text at only 2.96:1 and sits on paper as
+        small text at 2.77:1 — both under AA. Orange fills keep the true
+        colour and take navy text; orange that IS text uses this darker cut.
+      {%- endcomment -%}
+      --color-accent-ink:    {{ c_accent | color_darken: 22 }};
+
       /* Warm accent reads on the navy surfaces; gingham carries the borders.
          These were the same hex under two names before — now each means one thing. */
       --color-accent-warm:   {{ c_accent | color_lighten: 18 }};
@@ -85,7 +92,8 @@
       --color-border-warm:   {{ c_gingham }};
       --color-gingham-soft:  {{ c_gingham | color_modify: 'alpha', 0.55 }};
 
-      --page-width: {{ settings.page_width | default: 1280 }}px;
+      /* .container reads --max-width, so wire the Layout setting to it. */
+      --max-width: {{ settings.page_width | default: 1280 }}px;
     }
   </style>
 </head>

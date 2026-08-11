@@ -35,6 +35,10 @@
 
   --color-primary:       #E87722;
   --color-primary-hover: #C46214;
+  /* Auburn orange is too light to carry white text (2.96:1) or to sit as
+     small text on paper (2.77:1). Fills keep the true orange and take navy
+     text; anything orange that IS text uses this darkened cut instead. */
+  --color-accent-ink:    #A8500C;
   --color-primary-light: #FBE4D1;
   --color-secondary:     #0C2340;
   --color-accent-warm:   #F09B54;
@@ -220,9 +224,10 @@ h1,
 .section-header--center .section-header__text { margin: 0 auto; }
 
 .section-header h2 {
-  font-size: clamp(1.875rem, 3.5vw, 2.75rem);
-  font-weight: 400; /* Playfair at 400 is already beautiful */
-  margin-top: 0.2rem;
+  font-size: clamp(1.75rem, 3.2vw, 2.5rem);
+  font-weight: 500;
+  margin-top: 0.5rem;
+  text-wrap: balance;
 }
 .section-header__text {
   color: var(--color-text-muted);
@@ -260,7 +265,7 @@ h1,
 
 .btn--primary {
   background: var(--color-primary);
-  color: var(--color-surface);
+  color: var(--color-ink);
   border-color: var(--color-primary);
 }
 .btn--primary:hover {
@@ -302,7 +307,7 @@ h1,
 
 .btn--ghost {
   background: transparent;
-  color: var(--color-primary);
+  color: var(--color-accent-ink);
   border: none;
   padding-left: 0;
   padding-right: 0;
@@ -446,7 +451,7 @@ h1,
   top: 4px;
   right: 4px;
   background: var(--color-primary);
-  color: #fff;
+  color: var(--color-ink);
   font-size: 0.5625rem;
   font-weight: 700;
   width: 15px;
@@ -505,7 +510,7 @@ h1,
   border-bottom: 1px solid var(--color-border);
   color: var(--color-text);
 }
-.mobile-nav__links a:hover { text-decoration: none; color: var(--color-primary); }
+.mobile-nav__links a:hover { text-decoration: none; color: var(--color-accent-ink); }
 
 /* =========================================
    Hero Section
@@ -600,7 +605,7 @@ h1,
 /* A gentle italic pull on the last word — signature Playfair move */
 .hero__title em {
   font-style: italic;
-  color: var(--color-primary);
+  color: var(--color-accent-ink);
 }
 
 .hero__subtitle {
@@ -724,7 +729,7 @@ h1,
   padding: 0.3125rem 0.75rem;
   border-radius: var(--radius-pill);
   background: var(--color-primary);
-  color: #fff;
+  color: var(--color-ink);
 }
 .product-card__badge--secondary {
   background: var(--color-secondary);
@@ -755,7 +760,7 @@ h1,
   color: var(--color-text);
   line-height: 1.35;
 }
-.product-card__title a:hover { text-decoration: none; color: var(--color-primary); }
+.product-card__title a:hover { text-decoration: none; color: var(--color-accent-ink); }
 .product-card__price {
   display: flex;
   align-items: baseline;
@@ -773,7 +778,7 @@ h1,
   color: var(--color-text-muted);
   text-decoration: line-through;
 }
-.product-card__price--on-sale .product-card__price-current { color: var(--color-primary); }
+.product-card__price--on-sale .product-card__price-current { color: var(--color-accent-ink); }
 
 /* =========================================
    Featured Collection Section
@@ -809,13 +814,13 @@ h1,
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--color-primary);
+  color: var(--color-accent-ink);
   transition: transform 0.3s var(--spring), background var(--transition-fast);
 }
 .feature-item:hover .feature-item__icon {
   transform: scale(1.1);
   background: var(--color-primary);
-  color: var(--color-surface);
+  color: var(--color-ink);
 }
 .feature-item__title {
   font-family: var(--font-heading);
@@ -864,7 +869,7 @@ h1,
 }
 
 .about-banner__content { display: flex; flex-direction: column; gap: 1.125rem; }
-.about-banner__title { font-size: clamp(1.625rem, 2.5vw, 2.375rem); font-weight: 400; }
+.about-banner__title { font-size: clamp(1.625rem, 2.5vw, 2.375rem); font-weight: 500; text-wrap: balance; }
 .about-banner__text { color: var(--color-text-muted); line-height: 1.8; font-size: 1.0625rem; }
 
 /* =========================================
@@ -968,8 +973,8 @@ h1,
               transform 0.2s var(--spring);
 }
 .footer-social__link:hover {
-  border-color: var(--color-primary);
-  color: var(--color-primary);
+  border-color: var(--color-accent-ink);
+  color: var(--color-accent-ink);
   transform: translateY(-2px);
   text-decoration: none;
 }
@@ -991,7 +996,7 @@ h1,
   display: block;
   padding: 0.4375rem 0;
 }
-.footer-nav a:hover { color: var(--color-primary); text-decoration: none; }
+.footer-nav a:hover { color: var(--color-accent-ink); text-decoration: none; }
 
 .site-footer__bottom {
   display: flex;
@@ -1123,7 +1128,7 @@ h1,
   text-underline-offset: 2px;
   margin-left: 0.5rem;
 }
-.cart-table__remove:hover { color: var(--color-primary); }
+.cart-table__remove:hover { color: var(--color-accent-ink); }
 
 /* =========================================
    Product Page
@@ -1162,11 +1167,11 @@ h1,
 
 .product-info { display: flex; flex-direction: column; gap: 1.5rem; }
 .product-info__vendor { /* uses .label */ font-size: 0.8125rem; font-family: var(--font-body); letter-spacing: 0.07em; text-transform: uppercase; color: var(--color-text-muted); }
-.product-info__title { font-size: clamp(1.625rem, 2.5vw, 2.375rem); font-weight: 400; }
+.product-info__title { font-size: clamp(1.625rem, 2.5vw, 2.375rem); font-weight: 500; text-wrap: balance; }
 .product-info__price { display: flex; align-items: baseline; gap: 0.75rem; }
 .product-info__price-current { font-size: 1.375rem; font-weight: 600; }
 .product-info__price-compare { text-decoration: line-through; color: var(--color-text-muted); }
-.product-info__price--sale .product-info__price-current { color: var(--color-primary); }
+.product-info__price--sale .product-info__price-current { color: var(--color-accent-ink); }
 
 .product-form__variants { display: flex; flex-direction: column; gap: 1.125rem; }
 .product-form__label {
@@ -1193,7 +1198,7 @@ h1,
 .variant-btn.is-selected {
   border-color: var(--color-primary);
   background: var(--color-primary);
-  color: #fff;
+  color: var(--color-ink);
 }
 .variant-btn.is-unavailable {
   opacity: 0.38;
@@ -1263,14 +1268,14 @@ h1,
   margin-bottom: 2.5rem;
 }
 .breadcrumbs a { color: var(--color-text-muted); }
-.breadcrumbs a:hover { color: var(--color-primary); }
+.breadcrumbs a:hover { color: var(--color-accent-ink); }
 .breadcrumbs__sep { color: var(--color-border); }
 
 /* =========================================
    Collection Page
    ========================================= */
 .collection-page { padding: var(--space-xl) 0 var(--space-2xl); }
-.collection-page__title { font-size: clamp(1.875rem, 3.5vw, 2.75rem); font-weight: 400; }
+.collection-page__title { font-size: clamp(1.875rem, 3.5vw, 2.75rem); font-weight: 500; }
 .collection-page__desc {
   color: var(--color-text-muted);
   margin-top: 0.625rem;
@@ -1304,7 +1309,7 @@ h1,
    Cart Page
    ========================================= */
 .cart-page { padding: var(--space-xl) 0 var(--space-2xl); }
-.cart-page__title { font-size: clamp(1.875rem, 3.5vw, 2.75rem); font-weight: 400; margin-bottom: 2.5rem; }
+.cart-page__title { font-size: clamp(1.875rem, 3.5vw, 2.75rem); font-weight: 500; margin-bottom: 2.5rem; }
 .cart-page__inner {
   display: grid;
   grid-template-columns: 1fr 360px;
@@ -1348,10 +1353,10 @@ h1,
    Page Template
    ========================================= */
 .page-content { padding: var(--space-xl) 0; max-width: 760px; margin: 0 auto; }
-.page-content h1 { font-size: clamp(1.875rem, 3.5vw, 2.75rem); font-weight: 400; margin-bottom: 2rem; }
+.page-content h1 { font-size: clamp(1.875rem, 3.5vw, 2.75rem); font-weight: 500; margin-bottom: 2rem; text-wrap: balance; }
 .page-content p { color: var(--color-text-muted); line-height: 1.8; margin-bottom: 1rem; }
 .page-content h2, .page-content h3 { margin: 2.25rem 0 0.875rem; }
-.page-content a { color: var(--color-primary); }
+.page-content a { color: var(--color-accent-ink); }
 .page-content ul, .page-content ol { padding-left: 1.5rem; list-style: revert; color: var(--color-text-muted); margin-bottom: 1rem; line-height: 1.8; }
 
 /* =========================================
@@ -1366,7 +1371,7 @@ h1,
   line-height: 1;
   font-style: italic;
 }
-.not-found__title { font-size: 1.875rem; font-weight: 400; margin-bottom: 0.875rem; }
+.not-found__title { font-size: 1.875rem; font-weight: 500; margin-bottom: 0.875rem; }
 .not-found__text { color: var(--color-text-muted); margin-bottom: var(--space-lg); font-size: 1.0625rem; }
 
 /* =========================================
@@ -1428,7 +1433,7 @@ h1,
 .faq__question::-webkit-details-marker,
 .product-trust__q::-webkit-details-marker { display: none; }
 .faq__question:hover,
-.product-trust__q:hover { color: var(--color-primary); }
+.product-trust__q:hover { color: var(--color-accent-ink); }
 
 .faq__chevron,
 .product-trust__q svg {
@@ -1449,14 +1454,14 @@ h1,
 .faq__answer p + p,
 .product-trust__a p + p { margin-top: 0.75rem; }
 .faq__answer a,
-.product-trust__a a { color: var(--color-primary); text-decoration: underline; text-underline-offset: 3px; }
+.product-trust__a a { color: var(--color-accent-ink); text-decoration: underline; text-underline-offset: 3px; }
 .faq__footer {
   text-align: center;
   margin-top: var(--space-lg);
   color: var(--color-text-muted);
   font-size: 0.9375rem;
 }
-.faq__footer a { color: var(--color-primary); text-decoration: underline; text-underline-offset: 3px; }
+.faq__footer a { color: var(--color-accent-ink); text-decoration: underline; text-underline-offset: 3px; }
 
 .product-trust {
   border-top: 1px solid var(--color-border);
