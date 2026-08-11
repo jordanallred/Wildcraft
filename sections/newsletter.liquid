@@ -1,0 +1,94 @@
+<section class="newsletter section-padding">
+  <div class="container">
+    <div class="section-header">
+      <p class="label">{{ section.settings.eyebrow }}</p>
+      <h2>{{ section.settings.heading }}</h2>
+      <p>{{ section.settings.subheading }}</p>
+    </div>
+
+    {%- form 'customer', id: 'newsletter-form' -%}
+      <input type="hidden" name="contact[tags]" value="newsletter">
+
+      {%- if form.posted_successfully? -%}
+        <p class="newsletter__success" role="alert">
+          {{ section.settings.success_message | default: "You're on the list — thank you!" }}
+        </p>
+      {%- else -%}
+        <div class="newsletter__form-wrap">
+          <div class="newsletter__form">
+            <input
+              type="email"
+              name="contact[email]"
+              id="newsletter-email"
+              placeholder="{{ section.settings.placeholder | default: 'your@email.com' }}"
+              value="{{ form.email }}"
+              required
+              aria-label="Email address"
+              aria-required="true"
+              autocorrect="off"
+              autocapitalize="off"
+            >
+            <button type="submit" class="btn btn--primary">
+              {{ section.settings.btn_label | default: 'Subscribe' }}
+            </button>
+          </div>
+          {%- if form.errors -%}
+            <p class="newsletter__error" role="alert">
+              {{ form.errors.translated_fields.email | capitalize }}
+              {{ form.errors.messages.email }}
+            </p>
+          {%- endif -%}
+        </div>
+      {%- endif -%}
+    {%- endform -%}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Newsletter",
+  "settings": [
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow Text",
+      "default": "Stay in the Loop"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "New designs, shop updates & a little Southern heart."
+    },
+    {
+      "type": "text",
+      "id": "subheading",
+      "label": "Subheading",
+      "default": "Join the list and be the first to know about new releases, seasonal drops, and behind-the-scenes peeks."
+    },
+    {
+      "type": "text",
+      "id": "placeholder",
+      "label": "Input Placeholder",
+      "default": "your@email.com"
+    },
+    {
+      "type": "text",
+      "id": "btn_label",
+      "label": "Button Label",
+      "default": "Subscribe"
+    },
+    {
+      "type": "text",
+      "id": "success_message",
+      "label": "Success Message",
+      "default": "You're on the list — thank you!"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Newsletter"
+    }
+  ]
+}
+{% endschema %}

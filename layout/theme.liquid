@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="{{ request.locale.iso_code }}">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="{{ settings.color_primary }}">
+
+  <title>
+    {{ page_title }}
+    {%- if current_tags %} &ndash; {{ current_tags | join: ', ' }}{% endif %}
+    {%- if current_page != 1 %} &ndash; Page {{ current_page }}{% endif %}
+    {%- unless page_title contains shop.name %} &ndash; {{ shop.name }}{% endunless %}
+  </title>
+
+  {%- if page_description -%}
+    <meta name="description" content="{{ page_description | escape }}">
+  {%- endif -%}
+
+  <link rel="canonical" href="{{ canonical_url }}">
+
+  {{ content_for_header }}
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;1,400&family=Assistant:wght@400;500;600&family=Dancing+Script:wght@500&display=swap" rel="stylesheet">
+
+  <link rel="icon" type="image/png" href="{{ 'logo.png' | asset_url }}">
+  <link rel="apple-touch-icon" href="{{ 'logo.png' | asset_url }}">
+
+  {{ 'theme.css' | asset_url | stylesheet_tag }}
+
+  <style>
+    :root {
+      --font-heading: 'Playfair Display', Georgia, serif;
+      --font-heading-weight: 400;
+      --font-heading-style: normal;
+      --font-body: 'Assistant', system-ui, sans-serif;
+      --font-body-weight: 400;
+      --font-body-style: normal;
+
+      --color-bg: {{ settings.color_bg }};
+      --color-bg-alt: {{ settings.color_bg_alt }};
+      --color-text: {{ settings.color_text }};
+      --color-text-muted: {{ settings.color_text_muted }};
+      --color-primary: {{ settings.color_primary }};
+      --color-primary-hover: {{ settings.color_primary_hover }};
+      --color-secondary: {{ settings.color_secondary }};
+      --color-border: {{ settings.color_border }};
+      --color-surface: {{ settings.color_surface }};
+    }
+  </style>
+</head>
+
+<body class="template-{{ template.name | handle }}{% if settings.enable_animations %} animations-enabled{% endif %}">
+
+  <a class="skip-link" href="#main-content">Skip to content</a>
+
+  {% section 'announcement-bar' %}
+  {% section 'header' %}
+
+  <main id="main-content" tabindex="-1">
+    {{ content_for_layout }}
+  </main>
+
+  {% section 'footer' %}
+
+  <div id="cart-drawer" class="cart-drawer" aria-hidden="true">
+    <div class="cart-drawer__overlay"></div>
+    <div class="cart-drawer__panel" role="dialog" aria-modal="true" aria-label="Shopping cart">
+      <div class="cart-drawer__header">
+        <h2 class="cart-drawer__title">Your Cart</h2>
+        <button class="cart-drawer__close btn-icon" aria-label="Close cart">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+          </svg>
+        </button>
+      </div>
+      <div class="cart-drawer__body" id="cart-drawer-body">
+        <p class="cart-drawer__empty">Your cart is empty.</p>
+      </div>
+      <div class="cart-drawer__footer" id="cart-drawer-footer" hidden>
+        <div class="cart-drawer__subtotal">
+          <span>Subtotal</span>
+          <span id="cart-drawer-subtotal"></span>
+        </div>
+        <p class="cart-drawer__note">Shipping & taxes calculated at checkout</p>
+        <a href="/checkout" class="btn btn--primary btn--full">Checkout</a>
+        <a href="/cart" class="btn btn--outline btn--full">View full cart</a>
+      </div>
+    </div>
+  </div>
+
+  {{ 'theme.js' | asset_url | script_tag }}
+</body>
+</html>

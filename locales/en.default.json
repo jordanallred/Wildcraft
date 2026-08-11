@@ -1,0 +1,72 @@
+{
+  "general": {
+    "password_page": {
+      "login_form_heading": "Enter using password",
+      "login_form_password_label": "Password",
+      "login_form_password_placeholder": "Your password",
+      "login_form_submit": "Enter",
+      "admin_link_html": "Are you the store owner? <a href=\"/admin\" target=\"_blank\">Log in here</a>"
+    }
+  },
+  "products": {
+    "product": {
+      "add_to_cart": "Add to Cart",
+      "sold_out": "Sold Out",
+      "unavailable": "Unavailable",
+      "on_sale": "Sale",
+      "quantity": "Quantity",
+      "vendor": "Vendor",
+      "sku": "SKU"
+    }
+  },
+  "cart": {
+    "general": {
+      "title": "Your Cart",
+      "empty": "Your cart is empty.",
+      "note": "Order notes",
+      "subtotal": "Subtotal",
+      "shipping_note": "Shipping & taxes calculated at checkout",
+      "checkout": "Checkout",
+      "view_cart": "View Cart",
+      "remove": "Remove",
+      "item_count": {
+        "one": "{{ count }} item",
+        "other": "{{ count }} items"
+      }
+    }
+  },
+  "sections": {
+    "header": {
+      "title": "Shop"
+    },
+    "featured_collection": {
+      "view_all": "Shop All"
+    },
+    "newsletter": {
+      "success": "Thanks for subscribing!"
+    }
+  },
+  "collections": {
+    "general": {
+      "items_with_count": {
+        "one": "{{ count }} product",
+        "other": "{{ count }} products"
+      }
+    }
+  },
+  "search": {
+    "title": "Search",
+    "placeholder": "Search our shop",
+    "submit": "Search",
+    "results_with_count": {
+      "one": "{{ count }} result for \"{{ terms }}\"",
+      "other": "{{ count }} results for \"{{ terms }}\""
+    },
+    "no_results": "No results for \"{{ terms }}\""
+  },
+  "404": {
+    "title": "Page Not Found",
+    "subtext": "The page you were looking for doesn't exist.",
+    "link": "Go back home"
+  }
+}

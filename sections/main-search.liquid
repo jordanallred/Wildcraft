@@ -1,0 +1,55 @@
+<div class="search-page">
+  <div class="container">
+    <form action="{{ routes.search_url }}" method="get" class="search-form" role="search">
+      <input
+        type="search"
+        name="q"
+        value="{{ search.terms | escape }}"
+        placeholder="Search our shop&hellip;"
+        aria-label="Search"
+        autofocus
+      >
+      <input type="hidden" name="type" value="product">
+      <button type="submit" class="btn btn--primary">Search</button>
+    </form>
+
+    {%- if search.performed -%}
+      {%- if search.results_count > 0 -%}
+        <p class="search-page__title">
+          {{ search.results_count }} result{% if search.results_count != 1 %}s{% endif %}
+          for &ldquo;{{ search.terms }}&rdquo;
+        </p>
+        {%- paginate search.results by 24 -%}
+          <div class="product-grid">
+            {%- for result in search.results -%}
+              {%- if result.object_type == 'product' -%}
+                {%- render 'product-card', product: result -%}
+              {%- endif -%}
+            {%- endfor -%}
+          </div>
+          {%- if paginate.pages > 1 -%}
+            <nav style="display:flex;justify-content:center;gap:0.5rem;margin-top:var(--space-xl);">
+              {%- if paginate.previous -%}
+                <a href="{{ paginate.previous.url }}" class="btn btn--outline btn--sm">← Previous</a>
+              {%- endif -%}
+              {%- if paginate.next -%}
+                <a href="{{ paginate.next.url }}" class="btn btn--outline btn--sm">Next →</a>
+              {%- endif -%}
+            </nav>
+          {%- endif -%}
+        {%- endpaginate -%}
+      {%- else -%}
+        <p class="search-page__title">No results for &ldquo;{{ search.terms }}&rdquo;</p>
+        <p style="color:var(--color-text-muted);">Try a different search term or browse our collections.</p>
+        <a href="{{ routes.all_products_collection_url }}" class="btn btn--primary" style="margin-top:var(--space-md);">Shop All Products</a>
+      {%- endif -%}
+    {%- endif -%}
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Search Results",
+  "settings": []
+}
+{% endschema %}

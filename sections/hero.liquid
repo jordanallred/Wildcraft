@@ -1,0 +1,182 @@
+{%- assign has_image = section.settings.image != blank -%}
+{%- assign layout = section.settings.layout -%}
+
+{%- if layout == 'split' -%}
+
+<section class="hero hero--split" style="background:{{ section.settings.bg_color }};">
+  <div class="hero__inner">
+    <div class="hero__text">
+      {%- if section.settings.eyebrow != blank -%}
+        <p class="hero__eyebrow label">{{ section.settings.eyebrow }}</p>
+      {%- endif -%}
+      <h1 class="hero__title">{{ section.settings.heading }}</h1>
+      {%- if section.settings.subheading != blank -%}
+        <p class="hero__subtitle">{{ section.settings.subheading }}</p>
+      {%- endif -%}
+      <div class="hero__actions">
+        {%- if section.settings.btn_primary_label != blank -%}
+          <a href="{{ section.settings.btn_primary_link }}" class="btn btn--primary btn--lg">
+            {{ section.settings.btn_primary_label }}
+          </a>
+        {%- endif -%}
+        {%- if section.settings.btn_secondary_label != blank -%}
+          <a href="{{ section.settings.btn_secondary_link }}" class="btn btn--outline btn--lg">
+            {{ section.settings.btn_secondary_label }}
+          </a>
+        {%- endif -%}
+      </div>
+    </div>
+    {%- if has_image -%}
+      <div class="hero__media">
+        {{ section.settings.image | image_url: width: 1000 | image_tag: loading: 'eager', widths: '600,800,1000', sizes: '50vw', alt: section.settings.heading }}
+      </div>
+    {%- endif -%}
+  </div>
+</section>
+
+{%- else -%}
+
+<section class="hero hero--centered{% if has_image %} hero--with-image{% endif %}">
+  {%- if has_image -%}
+    <div class="hero__image">
+      {{ section.settings.image | image_url: width: 2000 | image_tag: loading: 'eager', widths: '800,1200,1600,2000', sizes: '100vw', alt: section.settings.heading, fetchpriority: 'high' }}
+    </div>
+    {%- if section.settings.overlay_opacity > 0 -%}
+      <div class="hero__overlay" style="opacity:{{ section.settings.overlay_opacity | divided_by: 100.0 }};"></div>
+    {%- endif -%}
+  {%- endif -%}
+
+  <div class="hero__content container">
+    {%- if section.settings.eyebrow != blank -%}
+      <p class="hero__eyebrow label">{{ section.settings.eyebrow }}</p>
+    {%- endif -%}
+    <h1 class="hero__title">{{ section.settings.heading }}</h1>
+    {%- if section.settings.subheading != blank -%}
+      <p class="hero__subtitle">{{ section.settings.subheading }}</p>
+    {%- endif -%}
+    <div class="hero__actions">
+      {%- if section.settings.btn_primary_label != blank -%}
+        <a href="{{ section.settings.btn_primary_link }}" class="btn btn--primary btn--lg">
+          {{ section.settings.btn_primary_label }}
+        </a>
+      {%- endif -%}
+      {%- if section.settings.btn_secondary_label != blank -%}
+        <a href="{{ section.settings.btn_secondary_link }}" class="btn btn--outline btn--lg">
+          {{ section.settings.btn_secondary_label }}
+        </a>
+      {%- endif -%}
+    </div>
+  </div>
+</section>
+
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "Hero Banner",
+  "settings": [
+    {
+      "type": "select",
+      "id": "layout",
+      "label": "Layout",
+      "options": [
+        { "value": "centered", "label": "Centered (full-width)" },
+        { "value": "split", "label": "Split (text + image side by side)" }
+      ],
+      "default": "split"
+    },
+    {
+      "type": "header",
+      "content": "Content"
+    },
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow Text",
+      "default": "Handmade with heart"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Made for the moments that matter."
+    },
+    {
+      "type": "textarea",
+      "id": "subheading",
+      "label": "Subheading",
+      "default": "Digital downloads, stickers, pins & handcrafted goods — each one made with care and a little bit of Southern soul."
+    },
+    {
+      "type": "header",
+      "content": "Primary Button"
+    },
+    {
+      "type": "text",
+      "id": "btn_primary_label",
+      "label": "Primary Button Label",
+      "default": "Shop the Collection"
+    },
+    {
+      "type": "url",
+      "id": "btn_primary_link",
+      "label": "Primary Button Link"
+    },
+    {
+      "type": "header",
+      "content": "Secondary Button"
+    },
+    {
+      "type": "text",
+      "id": "btn_secondary_label",
+      "label": "Secondary Button Label",
+      "default": "Our Story"
+    },
+    {
+      "type": "url",
+      "id": "btn_secondary_link",
+      "label": "Secondary Button Link"
+    },
+    {
+      "type": "header",
+      "content": "Image & Style"
+    },
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Hero Image"
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Background Color (split layout)",
+      "default": "#F2EDE4"
+    },
+    {
+      "type": "select",
+      "id": "text_color",
+      "label": "Text Color (centered layout with image)",
+      "options": [
+        { "value": "dark", "label": "Dark (for light images)" },
+        { "value": "light", "label": "Light (for dark images)" }
+      ],
+      "default": "light"
+    },
+    {
+      "type": "range",
+      "id": "overlay_opacity",
+      "label": "Image Overlay Opacity",
+      "min": 0,
+      "max": 70,
+      "step": 5,
+      "unit": "%",
+      "default": 35
+    }
+  ],
+  "presets": [
+    {
+      "name": "Hero Banner"
+    }
+  ]
+}
+{% endschema %}

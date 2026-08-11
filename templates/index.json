@@ -1,0 +1,95 @@
+{
+  "sections": {
+    "hero": {
+      "type": "hero",
+      "settings": {
+        "layout": "split",
+        "eyebrow": "Handmade with heart",
+        "heading": "Made for the moments that matter.",
+        "subheading": "Digital downloads, stickers, pins & handcrafted goods — each one made with care and a little bit of Southern soul.",
+        "btn_primary_label": "Shop the Collection",
+        "btn_primary_link": "/collections/all",
+        "btn_secondary_label": "Our Story",
+        "btn_secondary_link": "/pages/about"
+      }
+    },
+    "featured-collection": {
+      "type": "featured-collection",
+      "settings": {
+        "eyebrow": "New Arrivals",
+        "heading": "Fresh from the Studio",
+        "subheading": "Stickers, pins, and printables made with care.",
+        "product_limit": 4,
+        "show_view_all": true,
+        "view_all_label": "Shop the Full Collection"
+      }
+    },
+    "shop-features": {
+      "type": "shop-features",
+      "settings": {
+        "heading": "Why Shop With Us"
+      },
+      "blocks": {
+        "feature-1": {
+          "type": "feature",
+          "settings": {
+            "icon": "download",
+            "title": "Instant Downloads",
+            "text": "Digital items delivered to your inbox the moment you check out — no waiting."
+          }
+        },
+        "feature-2": {
+          "type": "feature",
+          "settings": {
+            "icon": "heart",
+            "title": "Handmade with Care",
+            "text": "Physical goods are made by hand, one at a time, with real attention to detail."
+          }
+        },
+        "feature-3": {
+          "type": "feature",
+          "settings": {
+            "icon": "star",
+            "title": "Quality You Can Feel",
+            "text": "From the paper stock to the pin backs — materials that look and last beautifully."
+          }
+        },
+        "feature-4": {
+          "type": "feature",
+          "settings": {
+            "icon": "package",
+            "title": "Thoughtful Packaging",
+            "text": "Orders are packed with care and a personal touch before they leave our hands."
+          }
+        }
+      },
+      "block_order": ["feature-1", "feature-2", "feature-3", "feature-4"]
+    },
+    "about-banner": {
+      "type": "about-banner",
+      "settings": {
+        "image_position": "left",
+        "eyebrow": "Our Story",
+        "heading": "Rooted in craft, raised on Southern charm.",
+        "text": "Every piece in this shop comes from a place of genuine love for making things. Inspired by the deep tradition of craftsmanship and the warmth of Southern life, each design is created to be something you hold onto.",
+        "btn_label": "Read Our Story",
+        "btn_link": "/pages/about"
+      }
+    },
+    "newsletter": {
+      "type": "newsletter",
+      "settings": {
+        "eyebrow": "Stay in the Loop",
+        "heading": "New designs, shop updates & a little Southern heart.",
+        "subheading": "Join the list and be the first to know about new releases, seasonal drops, and behind-the-scenes peeks."
+      }
+    }
+  },
+  "order": [
+    "hero",
+    "featured-collection",
+    "shop-features",
+    "about-banner",
+    "newsletter"
+  ]
+}

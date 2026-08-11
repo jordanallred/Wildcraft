@@ -1,0 +1,113 @@
+<header class="site-header" role="banner">
+  <div class="site-header__inner">
+
+    <button class="mobile-menu-toggle btn-icon" aria-label="Open menu" aria-controls="mobile-nav" aria-expanded="false">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round">
+        <line x1="3" y1="6" x2="21" y2="6"/>
+        <line x1="3" y1="12" x2="21" y2="12"/>
+        <line x1="3" y1="18" x2="21" y2="18"/>
+      </svg>
+    </button>
+
+    <a href="/" class="site-header__logo" aria-label="{{ shop.name }} — home">
+      {%- if section.settings.logo != blank -%}
+        {%- assign logo_width = section.settings.logo_width | default: 180 -%}
+        {{ section.settings.logo | image_url: width: logo_width | image_tag: loading: 'eager', widths: '160,240,320', alt: shop.name, class: 'site-header__logo-img' }}
+      {%- else -%}
+        <img src="{{ 'logo.png' | asset_url }}" alt="{{ shop.name }}" class="site-header__logo-img" width="180" height="180" loading="eager">
+      {%- endif -%}
+    </a>
+
+    <nav class="site-header__nav" aria-label="Main navigation">
+      <ul>
+        {%- for link in section.settings.menu.links -%}
+          <li>
+            <a href="{{ link.url }}"{% if link.active %} aria-current="page"{% endif %}>{{ link.title }}</a>
+          </li>
+        {%- endfor -%}
+      </ul>
+    </nav>
+
+    <div class="site-header__actions">
+      {%- if section.settings.show_search -%}
+        <a href="/search" class="btn-icon" aria-label="Search">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/>
+          </svg>
+        </a>
+      {%- endif -%}
+      {%- if shop.customer_accounts_enabled -%}
+        <a href="/account" class="btn-icon" aria-label="Account">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
+          </svg>
+        </a>
+      {%- endif -%}
+      <button class="btn-icon cart-count" data-cart-trigger aria-label="Open cart">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/>
+        </svg>
+        <span class="cart-count__badge" aria-label="Cart items">0</span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<!-- Mobile Nav — uses .mobile-nav__overlay (not .cart-drawer__overlay) to avoid JS conflict -->
+<nav id="mobile-nav" class="mobile-nav" aria-label="Mobile navigation" aria-hidden="true">
+  <div class="mobile-nav__overlay"></div>
+  <div class="mobile-nav__panel">
+    <div class="mobile-nav__header">
+      <span class="site-header__logo">{{ shop.name }}</span>
+      <button class="mobile-nav__close btn-icon" aria-label="Close menu">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+          <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+        </svg>
+      </button>
+    </div>
+    <div class="mobile-nav__links">
+      {%- for link in section.settings.menu.links -%}
+        <a href="{{ link.url }}">{{ link.title }}</a>
+      {%- endfor -%}
+    </div>
+    {%- if shop.customer_accounts_enabled -%}
+      <a href="/account" class="btn btn--outline btn--sm">My Account</a>
+    {%- endif -%}
+  </div>
+</nav>
+
+{% schema %}
+{
+  "name": "Header",
+  "settings": [
+    {
+      "type": "image_picker",
+      "id": "logo",
+      "label": "Logo Image",
+      "info": "Leave blank to use your shop name as text"
+    },
+    {
+      "type": "range",
+      "id": "logo_width",
+      "label": "Logo Width",
+      "min": 80,
+      "max": 300,
+      "step": 10,
+      "unit": "px",
+      "default": 160
+    },
+    {
+      "type": "link_list",
+      "id": "menu",
+      "label": "Navigation Menu",
+      "default": "main-menu"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_search",
+      "label": "Show Search Icon",
+      "default": true
+    }
+  ]
+}
+{% endschema %}
