@@ -13,42 +13,53 @@
 {%- endif -%}
 
 <article class="product-card">
+  {%- comment -%}
+    The badge sits outside the image link on purpose. That link is
+    aria-hidden to stop screen readers announcing the same product twice,
+    and anything nested inside it inherits the hiding — which is how
+    "Sold Out" and "Sale" used to go unannounced entirely.
+  {%- endcomment -%}
+  {%- if on_sale -%}
+    <span class="product-card__badge">Sale</span>
+  {%- elsif product.available == false -%}
+    <span class="product-card__badge product-card__badge--secondary">Sold out</span>
+  {%- elsif is_new -%}
+    <span class="product-card__badge product-card__badge--new">New</span>
+  {%- endif -%}
+
   <a href="{{ product.url }}" class="product-card__image-wrap" tabindex="-1" aria-hidden="true">
     {%- if product.featured_image -%}
       {{ product.featured_image | image_url: width: 600 | image_tag:
         loading: 'lazy',
         widths: '300,400,600',
-        sizes: '(min-width: 1024px) 25vw, (min-width: 768px) 33vw, 50vw',
+        sizes: '(min-width: 1024px) 300px, (min-width: 768px) 33vw, 50vw',
         alt: product.featured_image.alt | default: product.title
       }}
     {%- else -%}
-      <div class="product-card__no-image" aria-hidden="true">
-        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
+      <div class="product-card__no-image">
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
           <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/>
         </svg>
       </div>
     {%- endif -%}
-
-    {%- if on_sale -%}
-      <span class="product-card__badge">Sale</span>
-    {%- elsif product.available == false -%}
-      <span class="product-card__badge product-card__badge--secondary">Sold Out</span>
-    {%- elsif is_new -%}
-      <span class="product-card__badge product-card__badge--new">New</span>
-    {%- endif -%}
   </a>
 
   <div class="product-card__body">
-    {%- if product.vendor != blank -%}
+    {%- if settings.show_vendor and product.vendor != blank -%}
       <p class="product-card__vendor">{{ product.vendor }}</p>
     {%- endif -%}
     <h3 class="product-card__title">
       <a href="{{ product.url }}">{{ product.title }}</a>
     </h3>
     <div class="product-card__price{% if on_sale %} product-card__price--on-sale{% endif %}">
-      <span class="product-card__price-current">{{ product.price | money }}</span>
+      <span class="product-card__price-current">
+        {{ product.price | money }}
+        {%- if on_sale -%}
+          <span class="visually-hidden">, reduced from {{ product.compare_at_price | money }}</span>
+        {%- endif -%}
+      </span>
       {%- if on_sale -%}
-        <span class="product-card__price-compare">{{ product.compare_at_price | money }}</span>
+        <span class="product-card__price-compare" aria-hidden="true">{{ product.compare_at_price | money }}</span>
       {%- endif -%}
     </div>
   </div>

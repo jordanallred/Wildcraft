@@ -1,3 +1,12 @@
+{%- comment -%}
+  The shop has exactly one navigation menu (main-menu), so every column here
+  falls back to something useful when its link_list is unset. A merchant who
+  never opens the footer settings still gets policies, contact, and search
+  rather than three empty headings.
+{%- endcomment -%}
+
+<div class="gingham-band" aria-hidden="true"></div>
+
 <footer class="site-footer" role="contentinfo">
   <div class="container">
     <div class="site-footer__top">
@@ -5,7 +14,7 @@
       <div class="footer-brand">
         <a href="/" class="footer-brand__logo">
           {%- if section.settings.logo != blank -%}
-            {{ section.settings.logo | image_url: width: 160 | image_tag: loading: 'lazy', alt: shop.name }}
+            {{ section.settings.logo | image_url: width: 320 | image_tag: loading: 'lazy', widths: '160,240,320', alt: shop.name }}
           {%- else -%}
             {{ shop.name }}
           {%- endif -%}
@@ -13,54 +22,97 @@
         {%- if section.settings.tagline != blank -%}
           <p class="footer-brand__tagline">{{ section.settings.tagline }}</p>
         {%- endif -%}
-        <div class="footer-social">
+
+        {%- capture social_links -%}
           {%- if settings.social_instagram != blank -%}
             <a href="{{ settings.social_instagram }}" class="footer-social__link" aria-label="Instagram" rel="noopener noreferrer" target="_blank">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
                 <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/>
-              </svg>
-            </a>
-          {%- endif -%}
-          {%- if settings.social_pinterest != blank -%}
-            <a href="{{ settings.social_pinterest }}" class="footer-social__link" aria-label="Pinterest" rel="noopener noreferrer" target="_blank">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M12 2C6.48 2 2 6.48 2 12c0 4.24 2.65 7.86 6.39 9.29-.09-.78-.17-1.98.04-2.83.18-.76 1.23-5.22 1.23-5.22s-.31-.63-.31-1.56c0-1.47.85-2.57 1.91-2.57.9 0 1.34.68 1.34 1.49 0 .91-.58 2.27-.88 3.54-.25 1.06.53 1.92 1.57 1.92 1.88 0 3.14-2.4 3.14-5.24 0-2.16-1.46-3.77-4.1-3.77-2.99 0-4.84 2.24-4.84 4.74 0 .86.25 1.46.64 1.93.18.21.2.3.14.54-.05.17-.15.59-.19.75-.06.24-.25.33-.45.24-1.25-.51-1.83-1.88-1.83-3.41 0-2.52 2.12-5.53 6.33-5.53 3.38 0 5.63 2.44 5.63 5.07 0 3.46-1.93 6.07-4.77 6.07-.95 0-1.84-.52-2.14-1.1l-.59 2.35c-.21.81-.77 1.82-1.15 2.44.87.27 1.79.42 2.74.42 5.52 0 10-4.48 10-10S17.52 2 12 2z"/>
               </svg>
             </a>
           {%- endif -%}
           {%- if settings.social_tiktok != blank -%}
             <a href="{{ settings.social_tiktok }}" class="footer-social__link" aria-label="TikTok" rel="noopener noreferrer" target="_blank">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false">
                 <path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1V9.01a6.28 6.28 0 00-.79-.05 6.34 6.34 0 00-6.34 6.34 6.34 6.34 0 006.34 6.34 6.34 6.34 0 006.33-6.34V8.88a8.16 8.16 0 004.77 1.52V6.95a4.85 4.85 0 01-1-.26z"/>
+              </svg>
+            </a>
+          {%- endif -%}
+          {%- if settings.social_pinterest != blank -%}
+            <a href="{{ settings.social_pinterest }}" class="footer-social__link" aria-label="Pinterest" rel="noopener noreferrer" target="_blank">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false">
+                <path d="M12 2C6.48 2 2 6.48 2 12c0 4.24 2.65 7.86 6.39 9.29-.09-.78-.17-1.98.04-2.83.18-.76 1.23-5.22 1.23-5.22s-.31-.63-.31-1.56c0-1.47.85-2.57 1.91-2.57.9 0 1.34.68 1.34 1.49 0 .91-.58 2.27-.88 3.54-.25 1.06.53 1.92 1.57 1.92 1.88 0 3.14-2.4 3.14-5.24 0-2.16-1.46-3.77-4.1-3.77-2.99 0-4.84 2.24-4.84 4.74 0 .86.25 1.46.64 1.93.18.21.2.3.14.54-.05.17-.15.59-.19.75-.06.24-.25.33-.45.24-1.25-.51-1.83-1.88-1.83-3.41 0-2.52 2.12-5.53 6.33-5.53 3.38 0 5.63 2.44 5.63 5.07 0 3.46-1.93 6.07-4.77 6.07-.95 0-1.84-.52-2.14-1.1l-.59 2.35c-.21.81-.77 1.82-1.15 2.44.87.27 1.79.42 2.74.42 5.52 0 10-4.48 10-10S17.52 2 12 2z"/>
               </svg>
             </a>
           {%- endif -%}
           {%- if settings.social_facebook != blank -%}
             <a href="{{ settings.social_facebook }}" class="footer-social__link" aria-label="Facebook" rel="noopener noreferrer" target="_blank">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
                 <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/>
               </svg>
             </a>
           {%- endif -%}
-        </div>
+        {%- endcapture -%}
+
+        {%- if social_links != blank -%}
+          <div class="footer-social">{{ social_links }}</div>
+        {%- endif -%}
       </div>
 
-      <!-- Nav columns -->
-      {%- for i in (1..3) -%}
-        {%- assign menu_id = 'menu_' | append: i -%}
-        {%- assign heading_id = 'menu_heading_' | append: i -%}
-        {%- assign menu = section.settings[menu_id] -%}
-        {%- if menu != blank -%}
-          <nav class="footer-nav" aria-label="{{ section.settings[heading_id] }}">
-            <h4>{{ section.settings[heading_id] }}</h4>
-            <ul>
-              {%- for link in menu.links -%}
-                <li><a href="{{ link.url }}">{{ link.title }}</a></li>
-              {%- endfor -%}
-            </ul>
-          </nav>
-        {%- endif -%}
-      {%- endfor -%}
+      <!-- Shop -->
+      <nav class="footer-nav" aria-label="{{ section.settings.menu_heading_1 | default: 'Shop' }}">
+        <h2>{{ section.settings.menu_heading_1 | default: 'Shop' }}</h2>
+        <ul role="list">
+          {%- if section.settings.menu_1 != blank -%}
+            {%- for link in section.settings.menu_1.links -%}
+              <li><a href="{{ link.url }}">{{ link.title }}</a></li>
+            {%- endfor -%}
+          {%- else -%}
+            <li><a href="/collections/all">All buttons</a></li>
+            <li><a href="/search">Search</a></li>
+          {%- endif -%}
+        </ul>
+      </nav>
+
+      <!-- Help -->
+      <nav class="footer-nav" aria-label="{{ section.settings.menu_heading_2 | default: 'Help' }}">
+        <h2>{{ section.settings.menu_heading_2 | default: 'Help' }}</h2>
+        <ul role="list">
+          {%- if section.settings.menu_2 != blank -%}
+            {%- for link in section.settings.menu_2.links -%}
+              <li><a href="{{ link.url }}">{{ link.title }}</a></li>
+            {%- endfor -%}
+          {%- else -%}
+            <li><a href="/pages/contact">Contact</a></li>
+            {%- if shop.shipping_policy.url != blank -%}
+              <li><a href="{{ shop.shipping_policy.url }}">{{ shop.shipping_policy.title }}</a></li>
+            {%- endif -%}
+            {%- if shop.refund_policy.url != blank -%}
+              <li><a href="{{ shop.refund_policy.url }}">{{ shop.refund_policy.title }}</a></li>
+            {%- endif -%}
+          {%- endif -%}
+        </ul>
+      </nav>
+
+      <!-- About -->
+      <nav class="footer-nav" aria-label="{{ section.settings.menu_heading_3 | default: 'About' }}">
+        <h2>{{ section.settings.menu_heading_3 | default: 'About' }}</h2>
+        <ul role="list">
+          {%- if section.settings.menu_3 != blank -%}
+            {%- for link in section.settings.menu_3.links -%}
+              <li><a href="{{ link.url }}">{{ link.title }}</a></li>
+            {%- endfor -%}
+          {%- else -%}
+            <li><a href="/pages/about">Our story</a></li>
+            {%- if shop.privacy_policy.url != blank -%}
+              <li><a href="{{ shop.privacy_policy.url }}">{{ shop.privacy_policy.title }}</a></li>
+            {%- endif -%}
+            {%- if shop.terms_of_service.url != blank -%}
+              <li><a href="{{ shop.terms_of_service.url }}">{{ shop.terms_of_service.title }}</a></li>
+            {%- endif -%}
+          {%- endif -%}
+        </ul>
+      </nav>
     </div>
 
     <div class="site-footer__bottom">
@@ -68,9 +120,14 @@
         &copy; {{ 'now' | date: '%Y' }} {{ shop.name }}.
         {%- if section.settings.copyright_extra != blank %} {{ section.settings.copyright_extra }}{%- endif -%}
       </p>
-      <div class="site-footer__payments" aria-label="Payment methods">
-        <!-- Shopify payment icons rendered automatically -->
-      </div>
+
+      {%- if shop.enabled_payment_types.size > 0 -%}
+        <ul class="footer-payments" role="list" aria-label="Accepted payment methods">
+          {%- for type in shop.enabled_payment_types -%}
+            <li>{{ type | payment_type_svg_tag: class: 'footer-payments__icon' }}</li>
+          {%- endfor -%}
+        </ul>
+      {%- endif -%}
     </div>
   </div>
 </footer>
@@ -82,68 +139,72 @@
     {
       "type": "image_picker",
       "id": "logo",
-      "label": "Footer Logo",
-      "info": "Leave blank to use shop name text"
+      "label": "Footer logo",
+      "info": "Leave blank to use your shop name as text"
     },
     {
       "type": "textarea",
       "id": "tagline",
-      "label": "Brand Tagline",
-      "default": "Handcrafted with love and a little Southern soul."
+      "label": "Tagline",
+      "default": "Hand-drawn game-day buttons, made for Auburn Saturdays."
+    },
+    {
+      "type": "paragraph",
+      "content": "Leave a menu empty and that column fills itself with your policies, contact page, and search."
     },
     {
       "type": "header",
-      "content": "Navigation Column 1"
+      "content": "Column 1"
     },
     {
       "type": "text",
       "id": "menu_heading_1",
-      "label": "Column 1 Heading",
+      "label": "Heading",
       "default": "Shop"
     },
     {
       "type": "link_list",
       "id": "menu_1",
-      "label": "Column 1 Menu"
+      "label": "Menu"
     },
     {
       "type": "header",
-      "content": "Navigation Column 2"
+      "content": "Column 2"
     },
     {
       "type": "text",
       "id": "menu_heading_2",
-      "label": "Column 2 Heading",
+      "label": "Heading",
       "default": "Help"
     },
     {
       "type": "link_list",
       "id": "menu_2",
-      "label": "Column 2 Menu"
+      "label": "Menu"
     },
     {
       "type": "header",
-      "content": "Navigation Column 3"
+      "content": "Column 3"
     },
     {
       "type": "text",
       "id": "menu_heading_3",
-      "label": "Column 3 Heading",
+      "label": "Heading",
       "default": "About"
     },
     {
       "type": "link_list",
       "id": "menu_3",
-      "label": "Column 3 Menu"
+      "label": "Menu"
     },
     {
       "type": "header",
-      "content": "Bottom Bar"
+      "content": "Bottom bar"
     },
     {
       "type": "text",
       "id": "copyright_extra",
-      "label": "Additional Copyright Text",
+      "label": "Extra copyright text",
       "info": "e.g. 'All rights reserved.'"
     }
   ]

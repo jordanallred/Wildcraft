@@ -22,36 +22,72 @@
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;1,400&family=Assistant:wght@400;500;600&family=Dancing+Script:wght@500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@400..700&family=Fraunces:ital,opsz,wght,SOFT,WONK@0,9..144,400..700,0..100,0..1;1,9..144,400..700,0..100,0..1&display=swap" rel="stylesheet">
 
   <link rel="icon" type="image/png" href="{{ 'logo.png' | asset_url }}">
   <link rel="apple-touch-icon" href="{{ 'logo.png' | asset_url }}">
 
   {{ 'theme.css' | asset_url | stylesheet_tag }}
 
+  {%- comment -%}
+    Five authored colors come from the theme editor; every other token is
+    derived from them with Liquid colour filters so the palette can never
+    drift out of step with itself. `default` guards against a setting that
+    has been cleared — an empty custom property resolves to `unset` and
+    would take the colour with it.
+  {%- endcomment -%}
+  {%- assign c_ink     = settings.color_ink     | default: '#0C2340' -%}
+  {%- assign c_accent  = settings.color_accent  | default: '#E87722' -%}
+  {%- assign c_paper   = settings.color_paper   | default: '#FBF7EF' -%}
+  {%- assign c_gingham = settings.color_gingham | default: '#A8C4E0' -%}
+  {%- assign c_surface = settings.color_surface | default: '#FFFFFF' -%}
+
   <style>
     :root {
-      --font-heading: 'Playfair Display', Georgia, serif;
-      --font-heading-weight: 400;
+      --font-heading: 'Fraunces', Georgia, 'Times New Roman', serif;
+      --font-heading-weight: 500;
       --font-heading-style: normal;
-      --font-body: 'Assistant', system-ui, sans-serif;
+      --font-body: 'Assistant', system-ui, -apple-system, sans-serif;
       --font-body-weight: 400;
       --font-body-style: normal;
 
-      --color-bg: {{ settings.color_bg }};
-      --color-bg-alt: {{ settings.color_bg_alt }};
-      --color-text: {{ settings.color_text }};
-      --color-text-muted: {{ settings.color_text_muted }};
-      --color-primary: {{ settings.color_primary }};
-      --color-primary-hover: {{ settings.color_primary_hover }};
-      --color-secondary: {{ settings.color_secondary }};
-      --color-border: {{ settings.color_border }};
-      --color-surface: {{ settings.color_surface }};
+      /* Authored */
+      --color-ink:     {{ c_ink }};
+      --color-accent:  {{ c_accent }};
+      --color-paper:   {{ c_paper }};
+      --color-gingham: {{ c_gingham }};
+      --color-surface: {{ c_surface }};
+
+      /* Derived */
+      --color-bg:            {{ c_paper }};
+      --color-bg-alt:        {{ c_paper | color_darken: 4 }};
+      --color-bg-deep:       {{ c_ink }};
+      --color-surface-warm:  {{ c_paper | color_lighten: 2 }};
+
+      --color-text:          {{ c_ink }};
+      --color-text-muted:    {{ c_ink | color_lighten: 32 }};
+
+      --color-primary:       {{ c_accent }};
+      --color-primary-hover: {{ c_accent | color_darken: 10 }};
+      --color-primary-light: {{ c_accent | color_lighten: 38 }};
+      --color-secondary:     {{ c_ink }};
+
+      /* Warm accent reads on the navy surfaces; gingham carries the borders.
+         These were the same hex under two names before — now each means one thing. */
+      --color-accent-warm:   {{ c_accent | color_lighten: 18 }};
+      --color-border:        {{ c_paper | color_darken: 12 }};
+      --color-border-warm:   {{ c_gingham }};
+      --color-gingham-soft:  {{ c_gingham | color_modify: 'alpha', 0.55 }};
+
+      --page-width: {{ settings.page_width | default: 1280 }}px;
     }
   </style>
 </head>
 
-<body class="template-{{ template.name | handle }}{% if settings.enable_animations %} animations-enabled{% endif %}">
+<body
+  class="template-{{ template.name | handle }} cards--{{ settings.product_image_shape | default: 'pin' }}{% if settings.enable_animations %} animations-enabled{% endif %}"
+  data-money-format="{{ shop.money_format | strip_html | escape }}"
+>
 
   <a class="skip-link" href="#main-content">Skip to content</a>
 
@@ -76,7 +112,10 @@
         </button>
       </div>
       <div class="cart-drawer__body" id="cart-drawer-body">
-        <p class="cart-drawer__empty">Your cart is empty.</p>
+        <div class="cart-drawer__empty">
+          <p>Your cart is empty.</p>
+          <a href="/collections/all" class="btn btn--outline btn--sm">Browse the buttons</a>
+        </div>
       </div>
       <div class="cart-drawer__footer" id="cart-drawer-footer" hidden>
         <div class="cart-drawer__subtotal">

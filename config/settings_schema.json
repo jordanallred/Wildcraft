@@ -1,1 +1,128 @@
-[]
+[
+  {
+    "name": "theme_info",
+    "theme_name": "Sarah-Beth's Creative Co.",
+    "theme_author": "Sarah-Beth's Creative Co.",
+    "theme_version": "2.0.0",
+    "theme_documentation_url": "https://shopify.dev/docs/storefronts/themes",
+    "theme_support_url": "https://help.shopify.com/"
+  },
+  {
+    "name": "Colors",
+    "settings": [
+      {
+        "type": "paragraph",
+        "content": "Five colors drive the whole shop. Everything else — hover states, borders, muted text — is worked out from these automatically."
+      },
+      {
+        "type": "color",
+        "id": "color_ink",
+        "label": "Ink",
+        "default": "#0C2340",
+        "info": "Headings, navigation, and the footer. The deep navy from your artwork."
+      },
+      {
+        "type": "color",
+        "id": "color_accent",
+        "label": "Accent",
+        "default": "#E87722",
+        "info": "Buttons, prices, and badges. The orange from your artwork."
+      },
+      {
+        "type": "color",
+        "id": "color_paper",
+        "label": "Paper",
+        "default": "#FBF7EF",
+        "info": "The page background."
+      },
+      {
+        "type": "color",
+        "id": "color_gingham",
+        "label": "Gingham",
+        "default": "#A8C4E0",
+        "info": "The powder blue used for dividers and small accents."
+      },
+      {
+        "type": "color",
+        "id": "color_surface",
+        "label": "Card",
+        "default": "#FFFFFF",
+        "info": "The background behind product cards."
+      }
+    ]
+  },
+  {
+    "name": "Product cards",
+    "settings": [
+      {
+        "type": "select",
+        "id": "product_image_shape",
+        "label": "Photo shape",
+        "options": [
+          { "value": "pin", "label": "Pin — round" },
+          { "value": "card", "label": "Card — rounded square" }
+        ],
+        "default": "pin",
+        "info": "Pin suits round buttons. Switch to Card if you start selling stickers, prints, or anything that isn't round."
+      },
+      {
+        "type": "checkbox",
+        "id": "show_vendor",
+        "label": "Show your shop name on each card",
+        "default": false,
+        "info": "Off by default — every product is yours, so repeating the name on each card adds noise."
+      }
+    ]
+  },
+  {
+    "name": "Layout",
+    "settings": [
+      {
+        "type": "range",
+        "id": "page_width",
+        "label": "Page width",
+        "min": 1000,
+        "max": 1600,
+        "step": 20,
+        "unit": "px",
+        "default": 1280
+      },
+      {
+        "type": "checkbox",
+        "id": "enable_animations",
+        "label": "Fade content in as it scrolls",
+        "default": true,
+        "info": "Always disabled automatically for visitors who ask their device to reduce motion."
+      }
+    ]
+  },
+  {
+    "name": "Social media",
+    "settings": [
+      {
+        "type": "paragraph",
+        "content": "Leave a field empty to hide that icon. Paste the full address, including https://"
+      },
+      {
+        "type": "url",
+        "id": "social_instagram",
+        "label": "Instagram"
+      },
+      {
+        "type": "url",
+        "id": "social_tiktok",
+        "label": "TikTok"
+      },
+      {
+        "type": "url",
+        "id": "social_pinterest",
+        "label": "Pinterest"
+      },
+      {
+        "type": "url",
+        "id": "social_facebook",
+        "label": "Facebook"
+      }
+    ]
+  }
+]

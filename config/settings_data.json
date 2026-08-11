@@ -9,29 +9,24 @@
  */
 {
   "current": {
-    "color_bg": "#FAF9F5",
-    "color_bg_alt": "#F2EDE4",
+    "color_ink": "#0C2340",
+    "color_accent": "#E87722",
+    "color_paper": "#FBF7EF",
+    "color_gingham": "#A8C4E0",
     "color_surface": "#FFFFFF",
-    "color_text": "#1C1007",
-    "color_text_muted": "#7C6C5A",
-    "color_primary": "#C8935A",
-    "color_primary_hover": "#B07E47",
-    "color_secondary": "#1F3553",
-    "color_border": "#E8E0D5",
-    "font_heading": "playfair_display_n4",
-    "font_body": "assistant_n4",
-    "font_size_base": 16,
+    "product_image_shape": "pin",
+    "show_vendor": false,
     "page_width": 1280,
     "enable_animations": true,
     "social_instagram": "",
-    "social_pinterest": "",
     "social_tiktok": "",
+    "social_pinterest": "",
     "social_facebook": "",
     "sections": {
       "announcement-bar": {
         "type": "announcement-bar",
         "settings": {
-          "text": "Free shipping on orders over $50 ✦ Every piece made with heart",
+          "text": "Free shipping on orders over $50 · Every button drawn by hand",
           "link": ""
         }
       },
@@ -47,7 +42,7 @@
       "footer": {
         "type": "footer",
         "settings": {
-          "tagline": "Handcrafted with love and a little Southern soul.",
+          "tagline": "Hand-drawn game-day buttons, made for Auburn Saturdays.",
           "menu_heading_1": "Shop",
           "menu_1": "",
           "menu_heading_2": "Help",
