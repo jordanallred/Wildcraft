@@ -354,10 +354,87 @@
   });
 
   /* ========================
+     Nav Submenus (snippets/nav-tree.liquid)
+     One handler for both navs — the markup is shared, only the CSS differs.
+     The .is-open class is the single source of truth so aria-expanded never
+     disagrees with what's on screen; that's why hover is done here and not
+     with a CSS :hover rule that the class couldn't override.
+  ======================== */
+  const hoverCapable = window.matchMedia('(hover: hover) and (pointer: fine)');
+  const DESKTOP_ITEM = '.site-header__nav .nav-tree__item.has-submenu';
+
+  function setSubmenu(item, open) {
+    if (!item) return;
+    item.classList.toggle('is-open', open);
+    item.querySelector('.nav-tree__toggle')?.setAttribute('aria-expanded', String(open));
+  }
+
+  /* Desktop panels float over each other, so only one may be open at a time.
+     The mobile drawer is a stack of accordions — collapsing one section
+     because the user opened another just makes them scroll back. Hence the
+     scope argument: mutual exclusion is a desktop-only rule, not a global one. */
+  function closeSubmenus(scope, except) {
+    (scope || document).querySelectorAll('.nav-tree__item.is-open').forEach(item => {
+      if (item !== except) setSubmenu(item, false);
+    });
+  }
+
+  const desktopNav = () => document.querySelector('.site-header__nav');
+
+  document.addEventListener('click', e => {
+    const toggle = e.target.closest('[data-submenu-toggle]');
+    if (toggle) {
+      const item = toggle.closest('.nav-tree__item');
+      const willOpen = !item.classList.contains('is-open');
+      if (item.closest('.site-header__nav')) closeSubmenus(desktopNav(), item);
+      setSubmenu(item, willOpen);
+      return;
+    }
+    /* A click anywhere off the nav closes any open dropdown */
+    if (!e.target.closest('.nav-tree__item')) closeSubmenus(desktopNav());
+  });
+
+  document.addEventListener('mouseover', e => {
+    if (!hoverCapable.matches) return;
+    const item = e.target.closest(DESKTOP_ITEM);
+    if (!item || item.classList.contains('is-open')) return;
+    closeSubmenus(desktopNav(), item);
+    setSubmenu(item, true);
+  });
+
+  document.addEventListener('mouseout', e => {
+    if (!hoverCapable.matches) return;
+    const item = e.target.closest(DESKTOP_ITEM);
+    if (!item || item.contains(e.relatedTarget)) return;
+    setSubmenu(item, false);
+  });
+
+  /* Tabbing out of a dropdown closes it behind you. relatedTarget is where
+     focus is going, so this resolves now — document.activeElement isn't
+     updated yet during focusout, and deferring to a frame would leave the
+     panel stuck open in a tab that isn't painting. A null relatedTarget
+     means focus left the document entirely, which also closes. */
+  document.addEventListener('focusout', e => {
+    const item = e.target.closest(DESKTOP_ITEM);
+    if (!item || !item.classList.contains('is-open')) return;
+    if (!item.contains(e.relatedTarget)) setSubmenu(item, false);
+  });
+
+  /* ========================
      Escape key closes everything
   ======================== */
   document.addEventListener('keydown', e => {
     if (e.key !== 'Escape') return;
+    /* Escape inside an open dropdown closes just that one, and puts focus
+       back on its toggle — bailing to the cart drawer would lose the user's
+       place in the nav. */
+    const openItem = document.activeElement?.closest?.('.nav-tree__item.is-open');
+    if (openItem) {
+      setSubmenu(openItem, false);
+      openItem.querySelector('.nav-tree__toggle')?.focus();
+      return;
+    }
+    closeSubmenus();
     cartDrawer.close();
     closeMobileNav();
   });

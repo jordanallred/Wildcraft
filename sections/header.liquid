@@ -19,13 +19,7 @@
     </a>
 
     <nav class="site-header__nav" aria-label="Main navigation">
-      <ul>
-        {%- for link in section.settings.menu.links -%}
-          <li>
-            <a href="{{ link.url }}"{% if link.active %} aria-current="page"{% endif %}>{{ link.title }}</a>
-          </li>
-        {%- endfor -%}
-      </ul>
+      {%- render 'nav-tree', linklist: section.settings.menu, id_prefix: 'header' -%}
     </nav>
 
     <div class="site-header__actions">
@@ -66,9 +60,7 @@
       </button>
     </div>
     <div class="mobile-nav__links">
-      {%- for link in section.settings.menu.links -%}
-        <a href="{{ link.url }}">{{ link.title }}</a>
-      {%- endfor -%}
+      {%- render 'nav-tree', linklist: section.settings.menu, id_prefix: 'mobile' -%}
     </div>
     {%- if shop.customer_accounts_enabled -%}
       <a href="/account" class="btn btn--outline btn--sm">My Account</a>
