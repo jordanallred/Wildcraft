@@ -1415,6 +1415,9 @@ h1,
   margin-top: var(--space-xl);
   flex-wrap: wrap;
 }
+/* The "…" separator and unreachable page numbers: present for structure,
+   not clickable. Was an inline style on the collection page. */
+.pagination__gap { opacity: 0.4; cursor: default; }
 
 /* =========================================
    Cart Page
@@ -1488,11 +1491,88 @@ h1,
 /* =========================================
    Search Page
    ========================================= */
-.search-page { padding: var(--space-xl) 0; }
-.search-form { display: flex; gap: 0.625rem; max-width: 560px; margin-bottom: 2.5rem; }
-.search-form input { flex: 1; border-radius: var(--radius-pill); }
-.search-form .btn { flex-shrink: 0; }
-.search-page__title { font-size: clamp(1.25rem, 2vw, 1.625rem); font-weight: 400; margin-bottom: 2rem; font-family: var(--font-heading); }
+/* Bottom padding matches the collection page so results don't butt into
+   the footer. */
+.search-page { padding: var(--space-xl) 0 var(--space-2xl); }
+
+/* .product-grid centres its tracks, and a search here returns one or two of
+   six products. A left-aligned header over centred cards reads as a bug at
+   that count, so the whole search zone shares the grid's axis. */
+.search-page__header {
+  max-width: 640px;
+  margin: 0 auto var(--space-lg);
+  text-align: center;
+}
+.search-page__heading {
+  font-size: clamp(1.875rem, 3.5vw, 2.75rem);
+  font-weight: 500;
+  margin-bottom: 1.25rem;
+}
+
+/* Field and button share one pill instead of sitting as two pills in a
+   nowrap row. Mostly cohesion — measured at 390px the old row still gave the
+   input 205px, so it was ugly rather than broken. The capsule buys back 24px
+   of that width by trimming the button (112px -> 88px) at the 480px break. */
+.search-form {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: var(--color-surface);
+  border: 1.5px solid var(--color-border);
+  border-radius: var(--radius-pill);
+  padding: 0.3125rem 0.3125rem 0.3125rem 1.125rem;
+  transition: border-color var(--transition-fast);
+}
+/* Pointer focus gets the quiet orange edge; keyboard focus gets the navy
+   ring the rest of the theme uses. The capsule carries the indicator, so the
+   input's own outline is suppressed to stop it doubling up inside. */
+.search-form:focus-within { border-color: var(--color-primary); }
+/* Scoped to the input, not any descendant: the submit button carries its own
+   .btn:focus-visible ring, and an unscoped :has() would stack a second ring
+   around the whole capsule on top of it. */
+.search-form:has(.search-form__input:focus-visible) {
+  outline: 3px solid var(--color-ink);
+  outline-offset: 3px;
+}
+.search-form__icon {
+  display: flex;
+  flex-shrink: 0;
+  color: var(--color-text-muted);
+}
+.search-form__input {
+  flex: 1;
+  min-width: 0; /* without this the field refuses to shrink below its size attr */
+  border: none;
+  background: none;
+  border-radius: 0;
+  padding: 0.5rem 0;
+}
+.search-form__input:focus,
+.search-form__input:focus-visible { outline: none; border: none; }
+.search-form__input::-webkit-search-cancel-button { cursor: pointer; }
+.search-form__submit { flex-shrink: 0; }
+
+.search-page__count {
+  text-align: center;
+  font-size: 0.875rem;
+  color: var(--color-text-muted);
+  margin-bottom: 1.75rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid var(--color-border);
+}
+.search-page__term { color: var(--color-text); font-weight: 600; }
+
+.search-page__empty {
+  text-align: center;
+  max-width: 520px;
+  margin: 0 auto var(--space-lg);
+}
+.search-page__empty-title {
+  font-family: var(--font-heading);
+  font-size: clamp(1.25rem, 2vw, 1.625rem);
+  margin-bottom: 0.5rem;
+}
+.search-page__empty-note { color: var(--color-text-muted); line-height: 1.7; }
 
 /* =========================================
    Subtle Animations (only if enabled in settings)
@@ -1716,6 +1796,13 @@ h1,
 
   .cart-table__row { grid-template-columns: 72px 1fr; }
   .features-grid { grid-template-columns: 1fr; }
+
+  /* Reclaim width for the field: the leading icon goes, and the submit drops
+     to 1.25rem side padding. Keeps the button labelled rather than falling
+     back to an icon-only control. */
+  .search-form { padding-left: 0.875rem; }
+  .search-form__icon { display: none; }
+  .search-form__submit { padding-left: 1.25rem; padding-right: 1.25rem; }
 }
 
 /* =========================================
