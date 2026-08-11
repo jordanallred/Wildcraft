@@ -3,7 +3,7 @@
 
 {%- if layout == 'split' -%}
 
-<section class="hero hero--split" style="background:{{ section.settings.bg_color }};">
+<section class="hero hero--split{% unless has_image %} hero--text-only{% endunless %}" style="background:{{ section.settings.bg_color }};">
   <div class="hero__inner">
     <div class="hero__text">
       {%- if section.settings.eyebrow != blank -%}

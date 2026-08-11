@@ -331,4 +331,53 @@
     .then(r => r.json())
     .then(cart => updateCartBadge(cart.item_count))
     .catch(() => {});
+
+  /* ========================
+     Header scroll state
+  ======================== */
+  const header = document.querySelector('.site-header');
+  if (header) {
+    const onScroll = () => header.classList.toggle('is-scrolled', window.scrollY > 20);
+    window.addEventListener('scroll', onScroll, { passive: true });
+    onScroll();
+  }
+
+  /* ========================
+     Scroll Reveal
+     Only animates elements that start below the viewport.
+  ======================== */
+  function initReveal() {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+    const selectors = [
+      '.section-header',
+      '.feature-item',
+      '.about-banner__image',
+      '.about-banner__content',
+      '.newsletter .section-header',
+    ].join(',');
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('is-visible');
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.1, rootMargin: '0px 0px -30px 0px' });
+
+    document.querySelectorAll(selectors).forEach(el => {
+      const rect = el.getBoundingClientRect();
+      if (rect.top >= window.innerHeight) {
+        el.classList.add('reveal');
+        observer.observe(el);
+      }
+    });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initReveal);
+  } else {
+    initReveal();
+  }
 })();

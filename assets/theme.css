@@ -210,6 +210,7 @@ h1, h2, h3, h4, h5, h6 {
   border: 2px solid transparent;
   line-height: 1;
   position: relative;
+  min-height: 44px;
 }
 .btn:hover { text-decoration: none; }
 .btn:active { transform: scale(0.97); }
@@ -275,8 +276,8 @@ h1, h2, h3, h4, h5, h6 {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 42px;
-  height: 42px;
+  width: 44px;
+  height: 44px;
   border-radius: var(--radius-pill);
   transition: background var(--transition-fast);
   flex-shrink: 0;
@@ -489,6 +490,20 @@ h1, h2, h3, h4, h5, h6 {
   gap: 1.25rem;
 }
 
+/* Text-only split: no image selected, center text elegantly */
+.hero--text-only .hero__inner {
+  grid-template-columns: 1fr;
+}
+.hero--text-only .hero__text {
+  max-width: 680px;
+  margin: 0 auto;
+  padding: var(--space-2xl) 1.5rem;
+  text-align: center;
+  align-items: center;
+}
+.hero--text-only .hero__subtitle { max-width: 480px; margin: 0 auto; }
+.hero--text-only .hero__actions { justify-content: center; }
+
 /* Shared hero text styles */
 .hero__eyebrow { /* uses .label */ }
 
@@ -546,9 +561,8 @@ h1, h2, h3, h4, h5, h6 {
               border-color 0.2s ease;
 }
 .product-card:hover {
-  /* Slight rotation + lift = "picking it up" */
-  transform: translateY(-5px) rotate(0.5deg);
-  box-shadow: var(--shadow-lg), 0 0 0 1px rgba(192,112,64,0.12);
+  transform: translateY(-6px);
+  box-shadow: var(--shadow-lg), 0 0 0 1.5px rgba(192,112,64,0.2);
   border-color: var(--color-border-warm);
 }
 
@@ -690,7 +704,7 @@ h1, h2, h3, h4, h5, h6 {
   transition: transform 0.3s var(--spring), background var(--transition-fast);
 }
 .feature-item:hover .feature-item__icon {
-  transform: scale(1.1) rotate(-4deg);
+  transform: scale(1.1);
   background: var(--color-primary);
   color: var(--color-surface);
 }
@@ -836,7 +850,7 @@ h1, h2, h3, h4, h5, h6 {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 36px; height: 36px;
+  width: 44px; height: 44px;
   border-radius: var(--radius-pill);
   border: 1.5px solid var(--color-border);
   color: var(--color-text-muted);
@@ -963,7 +977,7 @@ h1, h2, h3, h4, h5, h6 {
 .cart-item__price { font-weight: 600; font-size: 0.9375rem; white-space: nowrap; }
 .cart-item__quantity { display: flex; align-items: center; gap: 0.5rem; margin-top: 0.625rem; }
 .cart-item__qty-btn {
-  width: 26px; height: 26px;
+  width: 36px; height: 36px;
   border: 1.5px solid var(--color-border);
   border-radius: var(--radius-sm);
   display: flex; align-items: center; justify-content: center;
@@ -1289,6 +1303,20 @@ h1, h2, h3, h4, h5, h6 {
     order: 1;
     min-height: 240px;
   }
+  /* Text-only hero on mobile: full-height, centered, no image slot */
+  .hero--text-only {
+    min-height: 72dvh;
+    display: flex;
+    align-items: center;
+  }
+  .hero--text-only .hero__inner { width: 100%; }
+  .hero--text-only .hero__text {
+    order: 1;
+    padding: 3.5rem 1.25rem;
+    text-align: center;
+    align-items: center;
+  }
+  .hero--text-only .hero__actions { justify-content: center; }
 
   .about-banner__inner,
   .about-banner__inner--reversed { grid-template-columns: 1fr; direction: ltr; gap: 2rem; }
@@ -1324,4 +1352,55 @@ h1, h2, h3, h4, h5, h6 {
 
   .cart-table__row { grid-template-columns: 72px 1fr; }
   .features-grid { grid-template-columns: 1fr; }
+}
+
+/* =========================================
+   Scroll Reveal
+   Elements below fold fade up smoothly.
+   Added via JS only for non-visible elements.
+   ========================================= */
+.reveal {
+  opacity: 0;
+  transform: translateY(22px);
+  transition: opacity 0.65s ease, transform 0.65s ease;
+}
+.reveal.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* =========================================
+   Focus Visible — keyboard accessibility
+   ========================================= */
+:focus-visible {
+  outline: 2.5px solid var(--color-primary);
+  outline-offset: 3px;
+  border-radius: var(--radius-sm);
+}
+.btn:focus-visible {
+  outline-offset: 4px;
+  border-radius: var(--radius-pill);
+}
+
+/* =========================================
+   Header scroll state
+   ========================================= */
+.site-header.is-scrolled {
+  box-shadow: 0 2px 16px rgba(26,16,10,0.09);
+}
+
+/* =========================================
+   Respect prefers-reduced-motion
+   ========================================= */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  .reveal {
+    opacity: 1 !important;
+    transform: none !important;
+  }
 }
