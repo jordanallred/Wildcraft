@@ -1,4 +1,14 @@
-{%- form 'cart', cart -%}
+{%- comment -%}
+  The quantity controls post `updates[]` inside the cart form, so the page
+  works with no JavaScript at all: change a number, press Update, done. JS
+  upgrades that to a stepper that saves on click and re-renders this section
+  through the Section Rendering API, which is why the Update button is hidden
+  only once `js` is on <html>. Discounts and shipping thresholds are worked out
+  server-side, so re-rendering is the only way totals stay honest — computing
+  them in the browser would drift the moment a discount code applies.
+{%- endcomment -%}
+
+{%- form 'cart', cart, class: 'cart-form' -%}
   <div class="cart-page">
     <div class="container">
       <h1 class="cart-page__title">Your Cart</h1>
@@ -7,12 +17,13 @@
         <div class="cart-page__inner">
           <div class="cart-table">
             {%- for item in cart.items -%}
-              <div class="cart-table__row">
-                <a href="{{ item.url }}" class="cart-table__image">
+              <div class="cart-table__row" data-line-key="{{ item.key }}">
+                <a href="{{ item.url }}" class="cart-table__image" tabindex="-1" aria-hidden="true">
                   {%- if item.image -%}
-                    {{ item.image | image_url: width: 200 | image_tag: loading: 'lazy', alt: item.title, widths: '100,150,200' }}
+                    {{ item.image | image_url: width: 200 | image_tag: loading: 'lazy', alt: '', widths: '100,150,200' }}
                   {%- endif -%}
                 </a>
+
                 <div class="cart-table__info">
                   <p class="cart-table__title">
                     <a href="{{ item.url }}">{{ item.product.title }}</a>
@@ -20,41 +31,131 @@
                   {%- if item.variant.title != 'Default Title' -%}
                     <p class="cart-table__variant">{{ item.variant.title }}</p>
                   {%- endif -%}
-                  <div class="cart-item__quantity" style="margin-top:0.75rem;">
-                    <a href="{{ item.url_to_remove }}" class="cart-table__remove" aria-label="Remove {{ item.title }}">Remove</a>
+
+                  {%- comment -%}
+                    Line-level discounts are applied by Shopify but were never
+                    shown, so a customer saw a lower price than the one on the
+                    product page with nothing explaining the difference.
+                  {%- endcomment -%}
+                  {%- if item.line_level_discount_allocations.size > 0 -%}
+                    <ul class="cart-table__discounts" role="list">
+                      {%- for allocation in item.line_level_discount_allocations -%}
+                        <li>{{ allocation.discount_application.title }} (−{{ allocation.amount | money }})</li>
+                      {%- endfor -%}
+                    </ul>
+                  {%- endif -%}
+
+                  <div class="cart-table__controls">
+                    <div class="cart-qty">
+                      <button
+                        type="button"
+                        class="cart-qty__btn"
+                        data-cart-qty="decrease"
+                        aria-label="Decrease quantity of {{ item.product.title | escape }}"
+                      >&minus;</button>
+                      <input
+                        class="cart-qty__input"
+                        type="number"
+                        name="updates[]"
+                        value="{{ item.quantity }}"
+                        min="0"
+                        inputmode="numeric"
+                        data-line-key="{{ item.key }}"
+                        aria-label="Quantity for {{ item.product.title | escape }}"
+                      >
+                      <button
+                        type="button"
+                        class="cart-qty__btn"
+                        data-cart-qty="increase"
+                        aria-label="Increase quantity of {{ item.product.title | escape }}"
+                      >+</button>
+                    </div>
+
+                    <a
+                      href="{{ item.url_to_remove }}"
+                      class="cart-table__remove"
+                      data-cart-remove
+                      data-line-key="{{ item.key }}"
+                    >Remove<span class="visually-hidden"> {{ item.product.title }}</span></a>
                   </div>
                 </div>
-                <div class="cart-table__price" style="text-align:right;">
-                  <p style="font-weight:600;">{{ item.final_line_price | money }}</p>
-                  <p style="font-size:0.875rem;color:var(--color-text-muted);">{{ item.quantity }} × {{ item.final_price | money }}</p>
+
+                <div class="cart-table__price">
+                  <p class="cart-table__line-total">{{ item.final_line_price | money }}</p>
+                  {%- if item.quantity > 1 -%}
+                    <p class="cart-table__unit">{{ item.quantity }} &times; {{ item.final_price | money }}</p>
+                  {%- endif -%}
+                  {%- if item.original_line_price > item.final_line_price -%}
+                    <p class="cart-table__was"><s>{{ item.original_line_price | money }}</s></p>
+                  {%- endif -%}
                 </div>
               </div>
             {%- endfor -%}
+
+            {%- comment -%}
+              Only reachable without JS — the steppers save on click otherwise.
+            {%- endcomment -%}
+            <div class="cart-table__update-row">
+              <button type="submit" name="update" class="btn btn--outline btn--sm">Update cart</button>
+            </div>
           </div>
 
           <aside class="cart-summary">
             <p class="cart-summary__title">Order Summary</p>
-            <div class="cart-summary__line">
-              <span>Subtotal ({{ cart.item_count }} items)</span>
-              <span>{{ cart.total_price | money }}</span>
-            </div>
-            {%- if cart.total_discounts > 0 -%}
-              <div class="cart-summary__line" style="color:var(--color-primary);">
-                <span>Discounts</span>
-                <span>−{{ cart.total_discounts | money }}</span>
+
+            {%- if section.settings.free_shipping_threshold > 0 -%}
+              {%- assign threshold = section.settings.free_shipping_threshold | times: 100 -%}
+              {%- assign remaining = threshold | minus: cart.total_price -%}
+              <div class="cart-progress">
+                {%- if remaining > 0 -%}
+                  {%- assign pct = cart.total_price | times: 100 | divided_by: threshold -%}
+                  <p class="cart-progress__note">
+                    {{ remaining | money }} away from free shipping
+                  </p>
+                {%- else -%}
+                  {%- assign pct = 100 -%}
+                  <p class="cart-progress__note cart-progress__note--met">
+                    Your order ships free
+                  </p>
+                {%- endif -%}
+                <div
+                  class="cart-progress__track"
+                  role="progressbar"
+                  aria-valuenow="{{ pct }}"
+                  aria-valuemin="0"
+                  aria-valuemax="100"
+                  aria-label="Progress toward free shipping"
+                >
+                  <div class="cart-progress__bar" style="width: {{ pct }}%;"></div>
+                </div>
               </div>
             {%- endif -%}
+
+            <div class="cart-summary__line">
+              <span>Subtotal ({{ cart.item_count }} item{% unless cart.item_count == 1 %}s{% endunless %})</span>
+              <span>{{ cart.items_subtotal_price | money }}</span>
+            </div>
+
+            {%- for discount in cart.cart_level_discount_applications -%}
+              <div class="cart-summary__line cart-summary__line--discount">
+                <span>{{ discount.title }}</span>
+                <span>&minus;{{ discount.total_allocated_amount | money }}</span>
+              </div>
+            {%- endfor -%}
+
             <div class="cart-summary__total">
               <span>Total</span>
               <span>{{ cart.total_price | money }}</span>
             </div>
             <p class="cart-summary__note">Shipping and taxes calculated at checkout.</p>
+
             {%- if section.settings.cart_note -%}
-              <div>
-                <label for="cart-note" style="font-size:0.875rem;font-weight:500;display:block;margin-bottom:0.375rem;">Order Notes</label>
-                <textarea id="cart-note" name="note" rows="3" placeholder="Any special requests?" style="resize:vertical;">{{ cart.note }}</textarea>
+              <div class="cart-summary__note-field">
+                <label for="cart-note">Order Notes</label>
+                <textarea id="cart-note" name="note" rows="3" placeholder="Any special requests?">{{ cart.note }}</textarea>
               </div>
             {%- endif -%}
+
             <button type="submit" name="checkout" class="btn btn--primary btn--full btn--lg">
               Checkout
             </button>
@@ -64,8 +165,8 @@
           </aside>
         </div>
       {%- else -%}
-        <div style="text-align:center;padding:var(--space-2xl) 0;">
-          <p style="font-size:1.125rem;color:var(--color-text-muted);margin-bottom:var(--space-md);">Your cart is empty — let's fix that.</p>
+        <div class="cart-page__empty">
+          <p>Your cart is empty — let's fix that.</p>
           <a href="{{ routes.all_products_collection_url }}" class="btn btn--primary btn--lg">Shop All Products</a>
         </div>
       {%- endif -%}
@@ -82,6 +183,13 @@
       "id": "cart_note",
       "label": "Show Order Notes Field",
       "default": true
+    },
+    {
+      "type": "number",
+      "id": "free_shipping_threshold",
+      "label": "Free shipping over",
+      "default": 50,
+      "info": "In whole dollars. Shows a progress bar in the cart. Set to 0 to hide it — and keep it in step with your announcement bar and shipping policy."
     }
   ]
 }

@@ -1,4 +1,12 @@
 {%- assign layout = section.settings.layout -%}
+{%- comment -%}
+  The heading is authored with an <em> around the word that takes the accent
+  italic, so it can't be handed to `alt` as-is — the alt text read "Every
+  Saturday deserves a <em>button</em>." It has to be stripped into its own
+  variable first: a filter chained inside an image_tag argument list applies
+  to the tag's output, not to the argument.
+{%- endcomment -%}
+{%- assign hero_alt = section.settings.heading | strip_html -%}
 
 {%- if layout == 'split' -%}
 
@@ -27,7 +35,7 @@
     </div>
     {%- if section.settings.image != blank -%}
       <div class="hero__media">
-        {{ section.settings.image | image_url: width: 1000 | image_tag: loading: 'eager', widths: '600,800,1000', sizes: '50vw', alt: section.settings.heading }}
+        {{ section.settings.image | image_url: width: 1000 | image_tag: loading: 'eager', widths: '600,800,1000', sizes: '50vw', alt: hero_alt }}
       </div>
     {%- endif -%}
   </div>
@@ -42,10 +50,27 @@
 
 {%- else -%}
 
-<section class="hero hero--centered{% if section.settings.image != blank %} hero--with-image{% endif %}">
+{%- comment -%}
+  The Text Color setting was never wired to anything: .hero--centered pinned
+  the title to white and the subtitle to paper-at-82% in the stylesheet, so
+  choosing "Dark (for light images)" in the editor changed nothing and the
+  words stayed white on a pale photo.
+
+  Worse, with no image chosen there is no dark ground at all — the section
+  falls back to --color-bg-alt, which is very nearly the page colour — so a
+  centred hero without a picture rendered a white headline on off-white. The
+  light treatment is now tied to actually having something dark behind it.
+{%- endcomment -%}
+{%- if section.settings.image != blank -%}
+  {%- assign hero_text = section.settings.text_color | default: 'light' -%}
+{%- else -%}
+  {%- assign hero_text = 'dark' -%}
+{%- endif -%}
+
+<section class="hero hero--centered hero--text-{{ hero_text }}{% if section.settings.image != blank %} hero--with-image{% endif %}">
   {%- if section.settings.image != blank -%}
     <div class="hero__image">
-      {{ section.settings.image | image_url: width: 2000 | image_tag: loading: 'eager', widths: '800,1200,1600,2000', sizes: '100vw', alt: section.settings.heading, fetchpriority: 'high' }}
+      {{ section.settings.image | image_url: width: 2000 | image_tag: loading: 'eager', widths: '800,1200,1600,2000', sizes: '100vw', alt: hero_alt, fetchpriority: 'high' }}
     </div>
     {%- if section.settings.overlay_opacity > 0 -%}
       <div class="hero__overlay" style="opacity:{{ section.settings.overlay_opacity | divided_by: 100.0 }};"></div>

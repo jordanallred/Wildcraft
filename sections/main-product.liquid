@@ -1,4 +1,12 @@
-<article class="product-page" itemscope itemtype="https://schema.org/Product" data-section-id="{{ section.id }}">
+{%- comment -%}
+  Structured data is JSON-LD at the foot of this file rather than microdata
+  sprayed across the markup. The microdata was half-built — an Offer with a
+  price and availability but no url, sku, brand, or image — which is exactly
+  the shape Search Console reports as an invalid Product. One complete block
+  beats attributes scattered over three elements, and it can describe every
+  variant instead of only the one that happens to be selected.
+{%- endcomment -%}
+<article class="product-page" data-section-id="{{ section.id }}">
 
   {%- assign current_variant = product.selected_or_first_available_variant -%}
 
@@ -9,7 +17,7 @@
 
   <div class="container">
     <nav class="breadcrumbs" aria-label="Breadcrumb">
-      <a href="/">Home</a>
+      <a href="{{ routes.root_url }}">Home</a>
       <span class="breadcrumbs__sep" aria-hidden="true">/</span>
       {%- if product.collections.first -%}
         <a href="{{ product.collections.first.url }}">{{ product.collections.first.title }}</a>
@@ -28,8 +36,7 @@
               loading: 'eager',
               widths: '600,800,1000',
               sizes: '(min-width: 768px) 50vw, 100vw',
-              alt: product.featured_media.alt | default: product.title,
-              itemprop: 'image'
+              alt: product.featured_media.alt | default: product.title
             }}
           {%- else -%}
             <div class="product-card__no-image" aria-hidden="true">
@@ -40,11 +47,29 @@
           {%- endif -%}
         </div>
 
-        {%- if product.images.size > 1 -%}
-          <div class="product-gallery__thumbs" role="list">
+        {%- comment -%}
+          Gated on media, not images, because the loop below walks media — a
+          product with one photo and one video has images.size == 1 and so
+          rendered no thumbnails at all, leaving the video unreachable.
+
+          Each thumb carries the full-size sources it should swap in. Letting
+          the script reuse the thumbnail's own src, which is what it did,
+          dropped a 200px file into a slot painted at up to 1000px.
+        {%- endcomment -%}
+        {%- if product.media.size > 1 -%}
+          <div class="product-gallery__thumbs">
             {%- for media in product.media limit: 8 -%}
-              <button class="product-gallery__thumb{% if forloop.first %} is-active{% endif %}" role="listitem" aria-label="View image {{ forloop.index }}">
-                {{ media | image_url: width: 200 | image_tag: loading: 'lazy', alt: media.alt | default: product.title, widths: '100,150,200' }}
+              {%- assign media_alt = media.alt | default: product.title -%}
+              <button
+                type="button"
+                class="product-gallery__thumb{% if forloop.first %} is-active{% endif %}"
+                aria-label="Show image {{ forloop.index }} of {{ product.media.size }}"
+                aria-pressed="{% if forloop.first %}true{% else %}false{% endif %}"
+                data-full-src="{{ media | image_url: width: 1000 }}"
+                data-full-srcset="{{ media | image_url: width: 600 }} 600w, {{ media | image_url: width: 800 }} 800w, {{ media | image_url: width: 1000 }} 1000w"
+                data-full-alt="{{ media_alt | escape }}"
+              >
+                {{ media | image_url: width: 200 | image_tag: loading: 'lazy', alt: '', widths: '100,150,200' }}
               </button>
             {%- endfor -%}
           </div>
@@ -52,7 +77,7 @@
       </div>
 
       <!-- Info -->
-      <div class="product-info" itemprop="offers" itemscope itemtype="https://schema.org/Offer">
+      <div class="product-info">
         {%- comment -%}
           Every product is the shop's own, so the vendor line just repeats the
           name in the header. Shares the card setting rather than adding a
@@ -62,17 +87,16 @@
           <p class="product-info__vendor label">{{ product.vendor }}</p>
         {%- endif -%}
 
-        <h1 class="product-info__title" itemprop="name">{{ product.title }}</h1>
+        <h1 class="product-info__title">{{ product.title }}</h1>
 
         <div id="product-price-{{ section.id }}" class="product-info__price{% if current_variant.compare_at_price > current_variant.price %} product-info__price--sale{% endif %}">
-          <span class="product-info__price-current" itemprop="price" content="{{ current_variant.price | divided_by: 100.0 }}">
+          <span class="product-info__price-current">
             {{ current_variant.price | money }}
           </span>
           {%- if current_variant.compare_at_price > current_variant.price -%}
+            <span class="visually-hidden">, reduced from</span>
             <span class="product-info__price-compare">{{ current_variant.compare_at_price | money }}</span>
           {%- endif -%}
-          <meta itemprop="priceCurrency" content="{{ cart.currency.iso_code }}">
-          <meta itemprop="availability" content="{% if current_variant.available %}InStock{% else %}OutOfStock{% endif %}">
         </div>
 
         {%- form 'product', product, data-product-form: '', data-section-id: section.id -%}
@@ -132,6 +156,13 @@
             <p class="product-form__note" id="product-note-{{ section.id }}"{% if current_variant.available %} hidden{% endif %}>
               Sold out for now. New buttons land before every home game.
             </p>
+            {%- comment -%}
+              Where a rejected add lands. Shopify turns one down more often
+              than you'd think — stock going in the few seconds between page
+              load and click, or a quantity above what's left — and until now
+              the only sign was a line in the console.
+            {%- endcomment -%}
+            <p class="product-form__error" data-add-to-cart-error role="alert" hidden></p>
           </div>
         {%- endform -%}
 
@@ -141,7 +172,7 @@
               returns: section.settings.trust_returns -%}
 
         {%- if product.description != blank -%}
-          <div class="product-info__description" itemprop="description">
+          <div class="product-info__description">
             {{ product.description }}
           </div>
         {%- endif -%}
@@ -177,18 +208,68 @@
   </div>
 </article>
 
-<!-- Sticky Add-to-Cart: mobile only, appears when main button scrolls out of view -->
-<div class="product-sticky-bar" id="product-sticky-bar" aria-hidden="true">
+<!-- Sticky Add-to-Cart: mobile only, appears when main button scrolls out of view.
+     Starts inert — it is only pushed off-screen with a transform, so without
+     that its button sat in the tab order the whole way down the page. -->
+<div class="product-sticky-bar" id="product-sticky-bar" aria-hidden="true" inert>
   <div class="product-sticky-bar__inner">
     <div class="product-sticky-bar__info">
       <span class="product-sticky-bar__title">{{ product.title | truncate: 40 }}</span>
       <span class="product-sticky-bar__price">{{ current_variant.price | money }}</span>
     </div>
-    <button class="btn btn--primary product-sticky-bar__btn" id="sticky-add-to-cart" aria-label="Add to cart">
-      Add to Cart
+    <button type="button" class="btn btn--primary product-sticky-bar__btn" id="sticky-add-to-cart"{% unless current_variant.available %} disabled{% endunless %}>
+      {%- if current_variant.available -%}Add to Cart{%- else -%}Sold out{%- endif -%}
     </button>
   </div>
 </div>
+
+{%- comment -%}
+  One Offer per variant, so a search result can show a range rather than
+  whichever variant happened to be selected when the crawler called. The `json`
+  filter does the escaping — a product title with an apostrophe or a quote in
+  it would otherwise break the block, and this shop's titles are exactly the
+  sort that contain both.
+{%- endcomment -%}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org/",
+  "@type": "Product",
+  "name": {{ product.title | json }},
+  "url": {{ shop.url | append: product.url | json }},
+  {%- if product.description != blank %}
+  "description": {{ product.description | strip_html | truncate: 500 | json }},
+  {%- endif %}
+  {%- if product.vendor != blank %}
+  "brand": { "@type": "Brand", "name": {{ product.vendor | json }} },
+  {%- endif %}
+  {%- if product.featured_media %}
+  "image": [
+    {%- for media in product.media limit: 5 -%}
+      {{ media | image_url: width: 1200 | prepend: 'https:' | json }}{% unless forloop.last %},{% endunless %}
+    {%- endfor -%}
+  ],
+  {%- endif %}
+  "offers": [
+    {%- for variant in product.variants -%}
+    {
+      "@type": "Offer",
+      "url": {{ shop.url | append: variant.url | json }},
+      "price": {{ variant.price | divided_by: 100.0 | json }},
+      "priceCurrency": {{ cart.currency.iso_code | json }},
+      "availability": "https://schema.org/{% if variant.available %}InStock{% else %}OutOfStock{% endif %}",
+      {%- if variant.sku != blank %}
+      "sku": {{ variant.sku | json }},
+      {%- endif %}
+      {%- if variant.barcode != blank %}
+      "gtin": {{ variant.barcode | json }},
+      {%- endif %}
+      "name": {{ variant.title | json }},
+      "itemCondition": "https://schema.org/NewCondition"
+    }{% unless forloop.last %},{% endunless %}
+    {%- endfor -%}
+  ]
+}
+</script>
 
 {% schema %}
 {

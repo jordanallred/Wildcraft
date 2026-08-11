@@ -12,7 +12,7 @@
     <div class="site-footer__top">
       <!-- Brand column -->
       <div class="footer-brand">
-        <a href="/" class="footer-brand__logo">
+        <a href="{{ routes.root_url }}" class="footer-brand__logo">
           {%- if section.settings.logo != blank -%}
             {{ section.settings.logo | image_url: width: 320 | image_tag: loading: 'lazy', widths: '160,240,320', alt: shop.name }}
           {%- else -%}
@@ -68,8 +68,8 @@
               <li><a href="{{ link.url }}">{{ link.title }}</a></li>
             {%- endfor -%}
           {%- else -%}
-            <li><a href="/collections/all">All buttons</a></li>
-            <li><a href="/search">Search</a></li>
+            <li><a href="{{ routes.all_products_collection_url }}">All buttons</a></li>
+            <li><a href="{{ routes.search_url }}">Search</a></li>
           {%- endif -%}
         </ul>
       </nav>
@@ -83,7 +83,14 @@
               <li><a href="{{ link.url }}">{{ link.title }}</a></li>
             {%- endfor -%}
           {%- else -%}
-            <li><a href="/pages/contact">Contact</a></li>
+            {%- comment -%}
+              Only link the page if it exists. These fallbacks pointed at
+              /pages/contact and /pages/about unconditionally, so a shop that
+              hadn't created them yet shipped a footer of 404s on every page.
+            {%- endcomment -%}
+            {%- if pages['contact'].handle != blank -%}
+              <li><a href="{{ pages['contact'].url }}">{{ pages['contact'].title }}</a></li>
+            {%- endif -%}
             {%- if shop.shipping_policy.url != blank -%}
               <li><a href="{{ shop.shipping_policy.url }}">{{ shop.shipping_policy.title }}</a></li>
             {%- endif -%}
@@ -103,7 +110,9 @@
               <li><a href="{{ link.url }}">{{ link.title }}</a></li>
             {%- endfor -%}
           {%- else -%}
-            <li><a href="/pages/about">Our story</a></li>
+            {%- if pages['about'].handle != blank -%}
+              <li><a href="{{ pages['about'].url }}">{{ pages['about'].title }}</a></li>
+            {%- endif -%}
             {%- if shop.privacy_policy.url != blank -%}
               <li><a href="{{ shop.privacy_policy.url }}">{{ shop.privacy_policy.title }}</a></li>
             {%- endif -%}

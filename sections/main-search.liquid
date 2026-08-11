@@ -54,19 +54,19 @@
         {%- if paginate.pages > 1 -%}
           <nav class="pagination" aria-label="Pagination">
             {%- if paginate.previous -%}
-              <a href="{{ paginate.previous.url }}" class="btn btn--outline btn--sm">← Previous</a>
+              <a href="{{ paginate.previous.url }}" class="btn btn--outline btn--sm" rel="prev">← Previous</a>
             {%- endif -%}
             {%- for part in paginate.parts -%}
               {%- if part.is_link -%}
-                <a href="{{ part.url }}" class="btn btn--outline btn--sm">{{ part.title }}</a>
+                <a href="{{ part.url }}" class="btn btn--outline btn--sm" aria-label="Page {{ part.title }}">{{ part.title }}</a>
               {%- elsif part.title == paginate.current_page -%}
                 <span class="btn btn--primary btn--sm" aria-current="page">{{ part.title }}</span>
               {%- else -%}
-                <span class="btn btn--outline btn--sm pagination__gap">{{ part.title }}</span>
+                <span class="btn btn--outline btn--sm pagination__gap" aria-hidden="true">{{ part.title }}</span>
               {%- endif -%}
             {%- endfor -%}
             {%- if paginate.next -%}
-              <a href="{{ paginate.next.url }}" class="btn btn--outline btn--sm">Next →</a>
+              <a href="{{ paginate.next.url }}" class="btn btn--outline btn--sm" rel="next">Next →</a>
             {%- endif -%}
           </nav>
         {%- endif -%}

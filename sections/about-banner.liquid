@@ -11,7 +11,11 @@
           <p class="about-banner__eyebrow label">{{ section.settings.eyebrow }}</p>
         {%- endif -%}
         <h2 class="about-banner__title">{{ section.settings.heading }}</h2>
-        <p class="about-banner__text">{{ section.settings.text }}</p>
+        {%- comment -%}
+          newline_to_br: the setting is a textarea, so a merchant who breaks
+          the story into two paragraphs got one run-on block.
+        {%- endcomment -%}
+        <p class="about-banner__text">{{ section.settings.text | newline_to_br }}</p>
         {%- if section.settings.btn_label != blank -%}
           <a href="{{ section.settings.btn_link }}" class="btn btn--primary">
             {{ section.settings.btn_label }}

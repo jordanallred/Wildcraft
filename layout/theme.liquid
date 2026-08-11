@@ -1,9 +1,20 @@
 <!DOCTYPE html>
-<html lang="{{ request.locale.iso_code }}">
+<html lang="{{ request.locale.iso_code }}" class="no-js">
 <head>
   <meta charset="UTF-8">
+  {%- comment -%}
+    Flipped before first paint so progressive-enhancement fallbacks — the
+    cart's "Update cart" button, for one — can be hidden without flashing on
+    screen first. Inline and synchronous on purpose; deferring it defeats it.
+  {%- endcomment -%}
+  <script>document.documentElement.className = document.documentElement.className.replace('no-js', 'js');</script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="theme-color" content="{{ settings.color_primary }}">
+  {%- comment -%}
+    color_primary was never a setting on this theme — the palette is authored
+    as ink/accent/paper/gingham/surface — so this rendered as an empty
+    attribute and mobile browsers fell back to their own chrome colour.
+  {%- endcomment -%}
+  <meta name="theme-color" content="{{ settings.color_ink | default: '#0C2340' }}">
 
   <title>
     {{ page_title }}
@@ -18,16 +29,83 @@
 
   <link rel="canonical" href="{{ canonical_url }}">
 
+  {%- comment -%}
+    Nearly all of this shop's traffic arrives from a link pasted into
+    Instagram, a group chat, or Facebook. Without these, every one of those
+    links unfurls as a bare URL with no picture and no price. Product pages
+    describe the product; everything else describes the shop.
+  {%- endcomment -%}
+  {%- if template.name == 'product' -%}
+    {%- assign og_type  = 'product' -%}
+    {%- assign og_title = product.title -%}
+    {%- assign og_desc  = product.description | strip_html | truncate: 200 -%}
+    {%- assign og_image = product.featured_media | image_url: width: 1200 -%}
+  {%- elsif template.name == 'collection' and collection -%}
+    {%- assign og_type  = 'website' -%}
+    {%- assign og_title = collection.title -%}
+    {%- assign og_desc  = collection.description | strip_html | truncate: 200 -%}
+    {%- assign og_image = collection.featured_image | image_url: width: 1200 -%}
+  {%- elsif template.name == 'article' and article -%}
+    {%- assign og_type  = 'article' -%}
+    {%- assign og_title = article.title -%}
+    {%- assign og_desc  = article.excerpt_or_content | strip_html | truncate: 200 -%}
+    {%- assign og_image = article.image | image_url: width: 1200 -%}
+  {%- else -%}
+    {%- assign og_type  = 'website' -%}
+    {%- assign og_title = page_title | default: shop.name -%}
+    {%- assign og_desc  = page_description | default: shop.description -%}
+    {%- assign og_image = settings.share_image | image_url: width: 1200 -%}
+  {%- endif -%}
+
+  <meta property="og:site_name" content="{{ shop.name | escape }}">
+  <meta property="og:type" content="{{ og_type }}">
+  <meta property="og:title" content="{{ og_title | escape }}">
+  <meta property="og:url" content="{{ canonical_url }}">
+  {%- if og_desc != blank -%}
+    <meta property="og:description" content="{{ og_desc | escape }}">
+  {%- endif -%}
+  {%- if og_image != blank -%}
+    <meta property="og:image" content="https:{{ og_image }}">
+    <meta property="og:image:alt" content="{{ og_title | escape }}">
+    <meta name="twitter:card" content="summary_large_image">
+  {%- else -%}
+    <meta name="twitter:card" content="summary">
+  {%- endif -%}
+  <meta name="twitter:title" content="{{ og_title | escape }}">
+  {%- if og_desc != blank -%}
+    <meta name="twitter:description" content="{{ og_desc | escape }}">
+  {%- endif -%}
+  {%- if template.name == 'product' -%}
+    <meta property="og:price:amount" content="{{ product.selected_or_first_available_variant.price | divided_by: 100.0 }}">
+    <meta property="og:price:currency" content="{{ cart.currency.iso_code }}">
+  {%- endif -%}
+
   {{ content_for_header }}
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@400..700&family=Fraunces:ital,opsz,wght,SOFT,WONK@0,9..144,400..700,0..100,0..1;1,9..144,400..700,0..100,0..1&display=swap" rel="stylesheet">
 
-  <link rel="icon" type="image/png" href="{{ 'logo.png' | asset_url }}">
-  <link rel="apple-touch-icon" href="{{ 'logo.png' | asset_url }}">
+  {%- comment -%}
+    logo.png is 1.2 MB. Serving it raw as the favicon made every page load
+    download a full-resolution logo just to paint a 16px tab icon. The SVG is
+    a few hundred bytes and scales; asset_img_url resizes the PNG for the
+    touch icon, which is the one place a raster is still wanted.
+  {%- endcomment -%}
+  <link rel="icon" type="image/svg+xml" href="{{ 'favicon.svg' | asset_url }}">
+  <link rel="apple-touch-icon" href="{{ 'logo.png' | asset_img_url: '180x180' }}">
 
   {{ 'theme.css' | asset_url | stylesheet_tag }}
+
+  {%- comment -%}
+    Was `{{ 'theme.js' | asset_url | script_tag }}` at the foot of <body>.
+    script_tag emits a plain, parser-blocking <script>, and sitting at the
+    bottom meant the browser only discovered the file after parsing the whole
+    document. In the head with defer it downloads alongside the HTML and still
+    executes after the DOM is built — which is what the bottom placement was
+    buying, so nothing here depends on running earlier.
+  {%- endcomment -%}
+  <script src="{{ 'theme.js' | asset_url }}" defer></script>
 
   {%- comment -%}
     Five authored colors come from the theme editor; every other token is
@@ -110,6 +188,40 @@
       --color-border-warm:   {{ c_gingham }};
       --color-gingham-soft:  {{ c_gingham | color_modify: 'alpha', 0.55 }};
 
+      {%- comment -%}
+        Scrims and shadows were hardcoded rgba espresso and terracotta in
+        theme.css, left over from the identity this shop replaced — so they
+        were the one part of the palette that ignored the theme editor
+        entirely. Tinted with the authored ink and accent, they follow a
+        colour change like everything else.
+      {%- endcomment -%}
+      {%- comment -%}
+        Paper at strength, for the bands that run on ink. Same story as the
+        scrims: these were a warm white from the previous identity, so the
+        announcement bar, the centred hero, and the newsletter all ignored the
+        authored paper colour.
+      {%- endcomment -%}
+      --on-dark-strong: {{ c_paper | color_modify: 'alpha', 0.85 }};
+      --on-dark:        {{ c_paper | color_modify: 'alpha', 0.82 }};
+      --on-dark-muted:  {{ c_paper | color_modify: 'alpha', 0.65 }};
+      --on-dark-line:   {{ c_paper | color_modify: 'alpha', 0.50 }};
+      --on-dark-faint:  {{ c_paper | color_modify: 'alpha', 0.40 }};
+      --on-dark-border: {{ c_paper | color_modify: 'alpha', 0.18 }};
+      --on-dark-hover:  {{ c_paper | color_modify: 'alpha', 0.10 }};
+      --on-dark-fill:   {{ c_paper | color_modify: 'alpha', 0.08 }};
+
+      --color-header-bg:   {{ c_paper  | color_modify: 'alpha', 0.94 }};
+      --color-accent-glow: {{ c_accent | color_modify: 'alpha', 0.22 }};
+
+      --color-scrim:      {{ c_ink | color_modify: 'alpha', 0.45 }};
+      --color-scrim-soft: {{ c_ink | color_modify: 'alpha', 0.38 }};
+      --shadow-sm:     0 1px 4px  {{ c_ink | color_modify: 'alpha', 0.07 }};
+      --shadow-md:     0 4px 20px {{ c_ink | color_modify: 'alpha', 0.10 }};
+      --shadow-lg:     0 12px 48px {{ c_ink | color_modify: 'alpha', 0.14 }};
+      --shadow-warm:   0 8px 32px {{ c_accent | color_modify: 'alpha', 0.18 }};
+      --shadow-header: 0 2px 16px {{ c_ink | color_modify: 'alpha', 0.09 }};
+      --shadow-sticky: 0 -4px 24px {{ c_ink | color_modify: 'alpha', 0.09 }};
+
       /* .container reads --max-width, so wire the Layout setting to it. */
       --max-width: {{ settings.page_width | default: 1280 }}px;
     }
@@ -119,6 +231,16 @@
 <body
   class="template-{{ template.name | handle }} cards--{{ settings.product_image_shape | default: 'pin' }}{% if settings.enable_animations %} animations-enabled{% endif %}"
   data-money-format="{{ shop.money_format | strip_html | escape }}"
+  {%- comment -%}
+    theme.js had /cart.js, /cart/add.js, /cart/change.js and /collections/all
+    written into it directly. Those paths gain a locale or market prefix on a
+    shop that adds one, and a hardcoded copy in a .js asset can't see it — the
+    routes object can, so the paths are handed over here instead.
+  {%- endcomment -%}
+  data-cart-url="{{ routes.cart_url }}"
+  data-cart-add-url="{{ routes.cart_add_url }}"
+  data-cart-change-url="{{ routes.cart_change_url }}"
+  data-all-products-url="{{ routes.all_products_collection_url }}"
 >
 
   <a class="skip-link" href="#main-content">Skip to content</a>
@@ -132,7 +254,12 @@
 
   {% section 'footer' %}
 
-  <div id="cart-drawer" class="cart-drawer" aria-hidden="true">
+  {%- comment -%}
+    Starts inert so its Close/Checkout/View-cart controls aren't in the tab
+    order of every page while the drawer sits off-screen. theme.js lifts it on
+    open and puts it back on close.
+  {%- endcomment -%}
+  <div id="cart-drawer" class="cart-drawer" aria-hidden="true" inert>
     <div class="cart-drawer__overlay"></div>
     <div class="cart-drawer__panel" role="dialog" aria-modal="true" aria-label="Shopping cart">
       <div class="cart-drawer__header">
@@ -146,7 +273,7 @@
       <div class="cart-drawer__body" id="cart-drawer-body">
         <div class="cart-drawer__empty">
           <p>Your cart is empty.</p>
-          <a href="/collections/all" class="btn btn--outline btn--sm">Browse the buttons</a>
+          <a href="{{ routes.all_products_collection_url }}" class="btn btn--outline btn--sm">Browse the buttons</a>
         </div>
       </div>
       <div class="cart-drawer__footer" id="cart-drawer-footer" hidden>
@@ -156,11 +283,10 @@
         </div>
         <p class="cart-drawer__note">Shipping & taxes calculated at checkout</p>
         <a href="/checkout" class="btn btn--primary btn--full">Checkout</a>
-        <a href="/cart" class="btn btn--outline btn--full">View full cart</a>
+        <a href="{{ routes.cart_url }}" class="btn btn--outline btn--full">View full cart</a>
       </div>
     </div>
   </div>
 
-  {{ 'theme.js' | asset_url | script_tag }}
 </body>
 </html>

@@ -10,6 +10,17 @@
      layout/theme.liquid puts shop.money_format on <body>. */
   const MONEY_FORMAT = document.body.dataset.moneyFormat || '${{amount}}';
 
+  /* Cart endpoints come from the routes object via <body>, not from string
+     literals here — they pick up a locale or market prefix if the shop ever
+     adds one, and a path baked into this file never would. */
+  const ROUTES = {
+    cart:       document.body.dataset.cartUrl || '/cart',
+    cartJs:     (document.body.dataset.cartUrl || '/cart') + '.js',
+    add:        (document.body.dataset.cartAddUrl || '/cart/add') + '.js',
+    change:     (document.body.dataset.cartChangeUrl || '/cart/change') + '.js',
+    allProducts: document.body.dataset.allProductsUrl || '/collections/all'
+  };
+
   function formatMoney(cents) {
     const n = (cents || 0) / 100;
     const group = (v, sep) => v.replace(/\B(?=(\d{3})+(?!\d))/g, sep);
@@ -37,10 +48,16 @@
     return String(value == null ? '' : value).replace(/[&<>"']/g, c => ESCAPES[c]);
   }
 
+  /* The badge is aria-hidden — the count lives on the trigger's label — so
+     both have to move together or a screen reader keeps announcing the count
+     the page was served with. */
   function updateCartBadge(count) {
     document.querySelectorAll('.cart-count__badge').forEach(badge => {
       badge.textContent = count;
       badge.classList.toggle('is-visible', count > 0);
+    });
+    document.querySelectorAll('[data-cart-trigger]').forEach(trigger => {
+      trigger.setAttribute('aria-label', `Open cart, ${count} item${count === 1 ? '' : 's'}`);
     });
   }
 
@@ -53,22 +70,43 @@
     footer: document.getElementById('cart-drawer-footer'),
     subtotalEl: document.getElementById('cart-drawer-subtotal'),
 
+    /* The panel is only moved off-screen with a transform, so without `inert`
+       its Close/Checkout/View-cart controls stay in the tab order on every
+       page of the shop — a keyboard user tabs into an invisible dialog. inert
+       removes them from focus and from the accessibility tree together, which
+       also settles the aria-hidden-on-focusable-content contradiction. */
     open() {
       if (!this.el) return;
+      this.returnFocusTo = document.activeElement;
+      this.el.removeAttribute('inert');
       this.el.setAttribute('aria-hidden', 'false');
       document.body.style.overflow = 'hidden';
       this.refresh();
+      /* Focus the close button so the dialog, not the page behind it, is
+         where the next Tab goes. */
+      this.el.querySelector('.cart-drawer__close')?.focus();
     },
 
     close() {
       if (!this.el) return;
       this.el.setAttribute('aria-hidden', 'true');
       document.body.style.overflow = '';
+      /* Blur before going inert: inert on an ancestor of the focused element
+         drops focus to <body>, which loses the user's place in the page. */
+      if (this.el.contains(document.activeElement)) {
+        this.returnFocusTo instanceof HTMLElement ? this.returnFocusTo.focus() : document.activeElement.blur();
+      }
+      this.el.setAttribute('inert', '');
+      this.returnFocusTo = null;
+    },
+
+    get isOpen() {
+      return this.el?.getAttribute('aria-hidden') === 'false';
     },
 
     async refresh() {
       try {
-        const res = await fetch('/cart.js');
+        const res = await fetch(ROUTES.cartJs);
         const cart = await res.json();
         this.render(cart);
       } catch (e) {
@@ -83,7 +121,7 @@
         this.body.innerHTML =
           '<div class="cart-drawer__empty">' +
             '<p>Your cart is empty.</p>' +
-            '<a href="/collections/all" class="btn btn--outline btn--sm">Browse the buttons</a>' +
+            `<a href="${esc(ROUTES.allProducts)}" class="btn btn--outline btn--sm">Browse the buttons</a>` +
           '</div>';
         this.footer.hidden = true;
         updateCartBadge(0);
@@ -96,13 +134,13 @@
             ${item.image ? `<img src="${esc(item.image)}" alt="" loading="lazy">` : ''}
           </div>
           <div class="cart-item__info">
-            <div class="cart-item__title">${esc(item.product_title)}</div>
+            <div class="cart-item__title"><a href="${esc(item.url)}">${esc(item.product_title)}</a></div>
             ${item.variant_title && item.variant_title !== 'Default Title' ? `<div class="cart-item__variant">${esc(item.variant_title)}</div>` : ''}
             <div class="cart-item__quantity">
               <button class="cart-item__qty-btn" data-action="decrease" data-line="${esc(item.key)}" aria-label="Decrease quantity of ${esc(item.product_title)}">−</button>
               <span class="cart-item__qty-value">${item.quantity}</span>
               <button class="cart-item__qty-btn" data-action="increase" data-line="${esc(item.key)}" aria-label="Increase quantity of ${esc(item.product_title)}">+</button>
-              <button class="cart-table__remove" data-action="remove" data-line="${esc(item.key)}">Remove</button>
+              <button class="cart-item__remove" data-action="remove" data-line="${esc(item.key)}" aria-label="Remove ${esc(item.product_title)}">Remove</button>
             </div>
           </div>
           <div class="cart-item__price">${formatMoney(item.final_line_price)}</div>
@@ -115,13 +153,21 @@
     }
   };
 
-  /* Cart item quantity changes */
+  /* Cart item quantity changes, drawer only.
+     This used to match `.cart-table__remove` too, which is the Remove link on
+     the /cart page — an <a> with no data-line. It fired a POST to
+     /cart/change.js with `id: undefined` on every removal, racing the link's
+     own navigation, and then re-rendered the drawer rather than the page the
+     customer was actually looking at. The cart page has its own handler
+     further down; this one stays inside the drawer. */
   document.addEventListener('click', e => {
-    const qtyBtn = e.target.closest('.cart-item__qty-btn, .cart-table__remove');
+    const qtyBtn = e.target.closest('#cart-drawer .cart-item__qty-btn, #cart-drawer .cart-item__remove');
     if (!qtyBtn) return;
 
     const action = qtyBtn.dataset.action;
     const key = qtyBtn.dataset.line;
+    if (!key) return;
+
     const item = qtyBtn.closest('.cart-item');
     const currentQty = parseInt(item?.querySelector('.cart-item__qty-value')?.textContent || '1', 10);
 
@@ -129,13 +175,14 @@
     if (action === 'increase') newQty += 1;
     else if (action === 'decrease') newQty = Math.max(0, newQty - 1);
     else if (action === 'remove') newQty = 0;
+    else return;
 
     updateCartItem(key, newQty);
   });
 
   async function updateCartItem(key, qty) {
     try {
-      const res = await fetch('/cart/change.js', {
+      const res = await fetch(ROUTES.change, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ id: key, quantity: qty })
@@ -145,6 +192,88 @@
     } catch (e) {
       console.error('[Wildcraft] Cart update failed', e);
     }
+  }
+
+  /* ========================
+     Cart Page (/cart)
+     The steppers and Remove links post through the cart form on their own if
+     this never runs. When it does, each change goes to /cart/change.js and the
+     section is re-rendered from the server — totals, discounts, and the free
+     shipping bar are all computed in Liquid, so asking Shopify for fresh HTML
+     is the only way they stay right. Working them out in JS would drift the
+     first time a discount code is in play.
+  ======================== */
+  const cartForm = document.querySelector('.cart-form');
+
+  if (cartForm) {
+    const sectionEl = cartForm.closest('.shopify-section');
+    /* The section's id comes from templates/cart.json, via the wrapper
+       Shopify emits: shopify-section-main → "main". */
+    const sectionId = sectionEl?.id.replace(/^shopify-section-/, '');
+
+    async function renderCartSection() {
+      if (!sectionId || !sectionEl) { window.location.reload(); return; }
+      const res = await fetch(`${window.location.pathname}?sections=${encodeURIComponent(sectionId)}`);
+      const data = await res.json();
+      const html = data[sectionId];
+      if (typeof html !== 'string') { window.location.reload(); return; }
+
+      const fresh = new DOMParser().parseFromString(html, 'text/html')
+        .getElementById(sectionEl.id);
+      if (!fresh) { window.location.reload(); return; }
+      sectionEl.innerHTML = fresh.innerHTML;
+    }
+
+    async function changeCartLine(key, qty, busyEl) {
+      busyEl?.classList.add('is-busy');
+      try {
+        const res = await fetch(ROUTES.change, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ id: key, quantity: qty })
+        });
+        if (!res.ok) throw new Error(`change.js ${res.status}`);
+        const cart = await res.json();
+        updateCartBadge(cart.item_count);
+        await renderCartSection();
+      } catch (err) {
+        /* Let the browser do what it would have done without JS rather than
+           leaving the row stuck mid-update with no explanation. */
+        console.error('[Wildcraft] Cart page update failed', err);
+        window.location.reload();
+      }
+    }
+
+    document.addEventListener('click', e => {
+      const stepper = e.target.closest('[data-cart-qty]');
+      if (stepper) {
+        const row = stepper.closest('.cart-table__row');
+        const input = row?.querySelector('.cart-qty__input');
+        if (!input) return;
+        const current = parseInt(input.value, 10) || 0;
+        const next = stepper.dataset.cartQty === 'increase'
+          ? current + 1
+          : Math.max(0, current - 1);
+        input.value = next;
+        changeCartLine(input.dataset.lineKey, next, row);
+        return;
+      }
+
+      const remove = e.target.closest('[data-cart-remove]');
+      if (remove) {
+        e.preventDefault();
+        changeCartLine(remove.dataset.lineKey, 0, remove.closest('.cart-table__row'));
+      }
+    });
+
+    /* Typing straight into the box, rather than using the steppers. */
+    document.addEventListener('change', e => {
+      const input = e.target.closest('.cart-qty__input');
+      if (!input) return;
+      const qty = Math.max(0, parseInt(input.value, 10) || 0);
+      input.value = qty;
+      changeCartLine(input.dataset.lineKey, qty, input.closest('.cart-table__row'));
+    });
   }
 
   /* Open/close events */
@@ -169,6 +298,9 @@
 
     const submitBtn = form.querySelector('[data-add-to-cart]');
     const originalText = submitBtn?.textContent;
+    const errorEl = form.querySelector('[data-add-to-cart-error]');
+
+    if (errorEl) { errorEl.textContent = ''; errorEl.hidden = true; }
     if (submitBtn) {
       submitBtn.disabled = true;
       submitBtn.textContent = 'Adding…';
@@ -178,19 +310,31 @@
       const variantId = form.querySelector('[name="id"]')?.value;
       const quantity = parseInt(form.querySelector('[name="quantity"]')?.value || '1', 10);
 
-      if (!variantId) throw new Error('No variant selected');
+      if (!variantId) throw new Error('Please choose an option first.');
 
-      const res = await fetch('/cart/add.js', {
+      const res = await fetch(ROUTES.add, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ id: variantId, quantity })
       });
 
-      if (!res.ok) throw new Error('Add to cart failed');
+      /* A rejected add is the common case, not an exotic one: stock runs out
+         between page load and click, or someone asks for more than is left.
+         Shopify explains why in the body — showing that beats the silent
+         console.error this used to do, where the button reset itself and the
+         customer was left guessing whether anything happened. */
+      const data = await res.json().catch(() => null);
+      if (!res.ok) {
+        throw new Error(data?.description || data?.message || 'Sorry — that could not be added to your cart.');
+      }
 
       cartDrawer.open();
     } catch (err) {
       console.error('[Wildcraft] Add to cart error:', err);
+      if (errorEl) {
+        errorEl.textContent = err.message;
+        errorEl.hidden = false;
+      }
     } finally {
       if (submitBtn) {
         submitBtn.disabled = false;
@@ -280,6 +424,22 @@
     const note = document.getElementById(`product-note-${sectionId}`);
     if (note) note.hidden = matched.available;
 
+    /* The sticky bar is a second copy of the price and the buy button, so it
+       has to follow the same variant. It was rendered once in Liquid and never
+       touched again — pick a $14 variant on a page that opens at $9 and the
+       bar kept quoting $9 all the way down the page. */
+    const stickyPrice = document.querySelector('.product-sticky-bar__price');
+    if (stickyPrice) stickyPrice.textContent = formatMoney(matched.price);
+    const stickyBtn = document.getElementById('sticky-add-to-cart');
+    if (stickyBtn) {
+      stickyBtn.disabled = !matched.available;
+      stickyBtn.textContent = matched.available ? 'Add to Cart' : 'Sold out';
+    }
+
+    /* Clear a stale "could not be added" message once the choice changes. */
+    const addError = form.querySelector('[data-add-to-cart-error]');
+    if (addError) { addError.textContent = ''; addError.hidden = true; }
+
     /* Mark unavailable variants in other option groups */
     form.querySelectorAll('.variant-btn').forEach(b => {
       if (b === btn || b.dataset.optionIndex === btn.dataset.optionIndex) return;
@@ -310,16 +470,41 @@
   /* ========================
      Product Gallery Thumbnails
   ======================== */
+  /* The full-size sources are stamped on each thumb by main-product.liquid.
+     Reading the thumbnail's own `src` instead — which is what this did — put a
+     200px-wide file into a slot rendered at up to 1000px, so every product
+     photo after the first one was visibly soft. The srcset has to be replaced
+     along with the src, or the browser keeps serving candidates from the
+     image it is replacing. */
   document.addEventListener('click', e => {
     const thumb = e.target.closest('.product-gallery__thumb');
     if (!thumb) return;
     const gallery = thumb.closest('.product-gallery');
     const main = gallery?.querySelector('.product-gallery__main img');
     if (!main) return;
-    gallery.querySelectorAll('.product-gallery__thumb').forEach(t => t.classList.remove('is-active'));
+
+    gallery.querySelectorAll('.product-gallery__thumb').forEach(t => {
+      t.classList.remove('is-active');
+      t.setAttribute('aria-pressed', 'false');
+    });
     thumb.classList.add('is-active');
-    const src = thumb.querySelector('img')?.src;
-    if (src) { main.src = src; main.alt = thumb.querySelector('img')?.alt || ''; }
+    thumb.setAttribute('aria-pressed', 'true');
+
+    const full = thumb.dataset.fullSrc;
+    if (!full) return;
+    main.srcset = thumb.dataset.fullSrcset || '';
+    main.src = full;
+    main.alt = thumb.dataset.fullAlt || '';
+  });
+
+  /* ========================
+     Auto-submitting selects (collection sort)
+     The form works on its own with the noscript submit button; this just
+     removes the extra click for everyone else.
+  ======================== */
+  document.addEventListener('change', e => {
+    const select = e.target.closest('[data-auto-submit] select');
+    if (select) select.form?.submit();
   });
 
   /* ========================
@@ -335,10 +520,14 @@
     mobileNav.setAttribute('aria-hidden', 'false');
     mobileToggle?.setAttribute('aria-expanded', 'true');
     document.body.style.overflow = 'hidden';
+    mobileNav.querySelector('.mobile-nav__close')?.focus();
   }
 
   function closeMobileNav() {
     if (!mobileNav) return;
+    /* Hand focus back to the hamburger before the panel is hidden, or it
+       lands on <body> and the next Tab starts from the top of the page. */
+    if (mobileNav.contains(document.activeElement)) mobileToggle?.focus();
     mobileNav.classList.remove('is-open');
     mobileNav.setAttribute('aria-hidden', 'true');
     mobileToggle?.setAttribute('aria-expanded', 'false');
@@ -440,7 +629,7 @@
   });
 
   /* Initial cart badge */
-  fetch('/cart.js')
+  fetch(ROUTES.cartJs)
     .then(r => r.json())
     .then(cart => updateCartBadge(cart.item_count))
     .catch(() => {});
@@ -453,10 +642,16 @@
   if (stickyBar && mainAddToCart) {
     const stickyBtn = document.getElementById('sticky-add-to-cart');
 
+    /* inert alongside aria-hidden: the bar is only pushed off-screen with a
+       transform, so its Add to Cart button was reachable by Tab the whole way
+       down the page — and aria-hidden over a focusable control is a
+       contradiction screen readers resolve inconsistently. */
     const barObserver = new IntersectionObserver(([entry]) => {
       const show = !entry.isIntersecting;
       stickyBar.classList.toggle('is-visible', show);
       stickyBar.setAttribute('aria-hidden', String(!show));
+      if (show) stickyBar.removeAttribute('inert');
+      else stickyBar.setAttribute('inert', '');
     }, { rootMargin: '-60px 0px 0px 0px' });
 
     barObserver.observe(mainAddToCart);

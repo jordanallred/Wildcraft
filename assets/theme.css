@@ -50,6 +50,29 @@
   --color-border-warm:   #A8C4E0;
   --color-gingham-soft:  rgba(168,196,224,0.55);
 
+  /* Paper at various strengths, for the bands that run on ink: the
+     announcement bar, the centred hero, the newsletter. These were written as
+     rgba(255,253,248,…) — a warm white from the previous identity that is not
+     this theme's paper — so nothing on a dark ground tracked the palette.
+     Named for the job rather than the number, and re-derived in theme.liquid
+     from the authored paper. Plain rgba, not color-mix: a browser that can't
+     parse color-mix drops the declaration, and these are the colours holding
+     text apart from a dark background — the one place a silent fallback to
+     inherited navy-on-navy would be unreadable. */
+  --on-dark-strong: rgba(251,247,239,0.85);
+  --on-dark:        rgba(251,247,239,0.82);
+  --on-dark-muted:  rgba(251,247,239,0.65);
+  --on-dark-line:   rgba(251,247,239,0.50);
+  --on-dark-faint:  rgba(251,247,239,0.40);
+  --on-dark-border: rgba(251,247,239,0.18);
+  --on-dark-hover:  rgba(251,247,239,0.10);
+  --on-dark-fill:   rgba(251,247,239,0.08);
+
+  /* The sticky header sits just shy of opaque so the page shows through. */
+  --color-header-bg: rgba(251,247,239,0.94);
+  /* The glow behind the newsletter — an echo of the accent, not a terracotta. */
+  --color-accent-glow: rgba(232,119,34,0.22);
+
   /* Typography
      Fraunces is variable: SOFT rounds the terminals and WONK swaps in the
      canted alternates. Both are dialled up at display sizes only, where the
@@ -79,11 +102,23 @@
   --radius-xl:   28px;
   --radius-pill: 999px;
 
-  /* Shadows — warm-tinted */
-  --shadow-sm:  0 1px 4px rgba(26,16,10,0.07);
-  --shadow-md:  0 4px 20px rgba(26,16,10,0.10);
-  --shadow-lg:  0 12px 48px rgba(26,16,10,0.14);
-  --shadow-warm: 0 8px 32px rgba(192,112,64,0.15);
+  /* Scrims and shadows.
+     These were rgba(26,16,10,…) — an espresso brown — and rgba(192,112,64,…),
+     a terracotta. Both are from the identity this shop replaced, so every
+     shadow on a navy-and-orange site was quietly casting brown, and the
+     overlays behind the cart drawer and the mobile menu were tinted a colour
+     that appears nowhere else. Tinting the shadow with the ink is what made
+     the one hand-converted rule at .btn--primary look right when the rest
+     didn't. theme.liquid re-derives all of these from the authored colours;
+     the literals here are the Auburn fallbacks. */
+  --color-scrim:      rgba(12,35,64,0.45);
+  --color-scrim-soft: rgba(12,35,64,0.38);
+  --shadow-sm:  0 1px 4px rgba(12,35,64,0.07);
+  --shadow-md:  0 4px 20px rgba(12,35,64,0.10);
+  --shadow-lg:  0 12px 48px rgba(12,35,64,0.14);
+  --shadow-warm: 0 8px 32px rgba(232,119,34,0.18);
+  --shadow-header: 0 2px 16px rgba(12,35,64,0.09);
+  --shadow-sticky: 0 -4px 24px rgba(12,35,64,0.09);
 
   --transition-fast: 0.18s ease;
   --transition:      0.26s ease;
@@ -302,11 +337,11 @@ h1,
 .btn--outline-warm {
   background: transparent;
   color: var(--color-surface);
-  border-color: rgba(255,253,248,0.5);
+  border-color: var(--on-dark-line);
 }
 .btn--outline-warm:hover {
   border-color: var(--color-surface);
-  background: rgba(255,253,248,0.1);
+  background: var(--on-dark-hover);
 }
 
 .btn--ghost {
@@ -378,7 +413,7 @@ h1,
    ========================================= */
 .announcement-bar {
   background: var(--color-bg-deep);
-  color: rgba(255,253,248,0.85);
+  color: var(--on-dark-strong);
   text-align: center;
   padding: 0.5625rem var(--space-md);
   font-size: 0.8125rem;
@@ -393,7 +428,7 @@ h1,
   position: sticky;
   top: 0;
   z-index: 100;
-  background: rgba(252,249,244,0.94);
+  background: var(--color-header-bg);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   border-bottom: 1px solid var(--color-border);
@@ -546,20 +581,27 @@ h1,
 
 .mobile-menu-toggle { display: none; }
 
+/* visibility, not display. Toggling display:none → block in the same frame as
+   the class gives the panel no start state to transition from, so the drawer
+   popped into place instead of sliding and the overlay never faded. Hiding by
+   visibility keeps the transition and still takes the panel's links out of the
+   tab order — which display:none was, at least, doing correctly. The delay
+   holds the panel on screen for the length of the slide-out. */
 .mobile-nav {
-  display: none;
   position: fixed;
   inset: 0;
   z-index: 200;
+  visibility: hidden;
+  transition: visibility 0s linear 0.32s;
 }
 .mobile-nav__overlay {
   position: absolute;
   inset: 0;
-  background: rgba(26,16,10,0.45);
+  background: var(--color-scrim);
   opacity: 0;
   transition: opacity 0.3s ease;
 }
-.mobile-nav.is-open { display: block; }
+.mobile-nav.is-open { visibility: visible; transition: visibility 0s; }
 .mobile-nav.is-open .mobile-nav__overlay { opacity: 1; }
 .mobile-nav__panel {
   position: absolute;
@@ -671,7 +713,7 @@ h1,
 .hero__image img { width: 100%; height: 100%; object-fit: cover; }
 .hero__overlay {
   position: absolute; inset: 0; z-index: 1;
-  background: rgba(26,16,10,0.38);
+  background: var(--color-scrim-soft);
 }
 .hero--centered .hero__content {
   position: relative;
@@ -726,9 +768,12 @@ h1,
   max-width: 480px;
   font-weight: 300;
 }
-.hero--centered .hero__subtitle { color: rgba(255,253,248,0.82); }
-.hero--centered .hero__title { color: var(--color-surface); }
-.hero--centered .label { color: var(--color-accent-warm); }
+/* Keyed to the Text Color setting, not to the layout. These were
+   .hero--centered, which meant the light treatment applied whether or not
+   there was a dark image behind it to justify it. */
+.hero--text-light .hero__subtitle { color: var(--on-dark); }
+.hero--text-light .hero__title { color: var(--color-surface); }
+.hero--text-light .label { color: var(--color-accent-warm); }
 
 .hero__actions {
   display: flex;
@@ -969,12 +1014,13 @@ h1,
   width: 100%; height: 100%;
   object-fit: cover;
 }
-/* Warm decorative frame offset */
+/* Inset frame. Was a hardcoded tan — the gingham is the theme's own hairline
+   colour and already has a softened token. */
 .about-banner__image::after {
   content: '';
   position: absolute;
   inset: 10px;
-  border: 1.5px solid rgba(212,165,116,0.35);
+  border: 1.5px solid var(--color-gingham-soft);
   border-radius: calc(var(--radius-xl) - 6px);
   pointer-events: none;
 }
@@ -985,14 +1031,15 @@ h1,
 
 /* =========================================
    Newsletter
-   Deep espresso background — dramatic rhythm point 4
+   Deep ink background — dramatic rhythm point 4
    ========================================= */
 .newsletter {
   background: var(--color-bg-deep);
   position: relative;
   overflow: hidden;
 }
-/* Subtle warm radial glow from center */
+/* Subtle warm radial glow from center. The colour was a terracotta with no
+   relation to the accent it was meant to be echoing. */
 .newsletter::before {
   content: '';
   position: absolute;
@@ -1001,11 +1048,11 @@ h1,
   transform: translateX(-50%);
   width: 800px;
   height: 400px;
-  background: radial-gradient(ellipse, rgba(192,112,64,0.18) 0%, transparent 70%);
+  background: radial-gradient(ellipse, var(--color-accent-glow) 0%, transparent 70%);
   pointer-events: none;
 }
 .newsletter .section-header h2 { color: var(--color-surface); }
-.newsletter .section-header .section-header__text { color: rgba(255,253,248,0.65); }
+.newsletter .section-header .section-header__text { color: var(--on-dark-muted); }
 .newsletter .label { color: var(--color-accent-warm); }
 
 .newsletter__form {
@@ -1015,13 +1062,13 @@ h1,
   margin: 0 auto;
 }
 .newsletter__form input {
-  background: rgba(255,253,248,0.08);
-  border-color: rgba(255,253,248,0.18);
+  background: var(--on-dark-fill);
+  border-color: var(--on-dark-border);
   border-radius: var(--radius-pill);
   color: var(--color-surface);
   flex: 1;
 }
-.newsletter__form input::placeholder { color: rgba(255,253,248,0.4); }
+.newsletter__form input::placeholder { color: var(--on-dark-faint); }
 .newsletter__form input:focus { border-color: var(--color-accent-warm); }
 .newsletter__success {
   text-align: center;
@@ -1143,7 +1190,7 @@ h1,
 .cart-drawer[aria-hidden="false"] { pointer-events: auto; }
 .cart-drawer__overlay {
   position: absolute; inset: 0;
-  background: rgba(26,16,10,0.42);
+  background: var(--color-scrim);
   opacity: 0;
   transition: opacity 0.3s ease;
 }
@@ -1232,14 +1279,27 @@ h1,
 }
 .cart-item__qty-btn:hover { background: var(--color-bg-alt); border-color: var(--color-text-muted); }
 .cart-item__qty-value { font-size: 0.875rem; min-width: 18px; text-align: center; }
-.cart-table__remove {
+/* Two Remove controls, one look: an <a> on the cart page (so it works with no
+   JS) and a <button> in the drawer. They were both called cart-table__remove,
+   which is why the drawer's button was being picked up by the cart page's
+   click handler — the names now say which is which. */
+.cart-table__remove,
+.cart-item__remove {
   font-size: 0.75rem;
   color: var(--color-text-muted);
   text-decoration: underline;
   text-underline-offset: 2px;
-  margin-left: 0.5rem;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  font-family: inherit;
 }
-.cart-table__remove:hover { color: var(--color-accent-ink); }
+.cart-item__remove { margin-left: 0.5rem; }
+.cart-table__remove:hover,
+.cart-item__remove:hover { color: var(--color-accent-ink); }
+.cart-item__title a { color: inherit; text-decoration: none; }
+.cart-item__title a:hover { text-decoration: underline; text-underline-offset: 2px; }
 
 /* =========================================
    Product Page
@@ -1405,7 +1465,24 @@ h1,
   border-bottom: 1px solid var(--color-border);
 }
 .collection-toolbar__count { font-size: 0.875rem; color: var(--color-text-muted); }
-.collection-toolbar__sort { max-width: 210px; }
+/* Now a real <form> wrapping a visible label and the select, rather than the
+   class sitting on both a wrapper and the select inside it. */
+.collection-toolbar__sort {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+}
+.collection-toolbar__sort label {
+  font-size: 0.875rem;
+  color: var(--color-text-muted);
+  white-space: nowrap;
+}
+.collection-toolbar__sort select { max-width: 210px; }
+.collection-page__empty {
+  text-align: center;
+  color: var(--color-text-muted);
+  padding: var(--space-xl) 0;
+}
 
 /* Pagination */
 .pagination {
@@ -1458,10 +1535,113 @@ h1,
   flex-direction: column;
   gap: 0.875rem;
 }
+.cart-table__discounts {
+  font-size: 0.8125rem;
+  color: var(--color-accent-ink);
+  margin-top: 0.25rem;
+}
+.cart-table__controls {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-top: 0.75rem;
+}
+.cart-table__price { text-align: right; }
+.cart-table__line-total { font-weight: 600; }
+.cart-table__unit,
+.cart-table__was { font-size: 0.875rem; color: var(--color-text-muted); }
+
+/* The stepper matches the one on the product page rather than inventing a
+   second quantity control — same target size, same border, same rhythm. */
+.cart-qty {
+  display: inline-flex;
+  align-items: center;
+  border: 1.5px solid var(--color-border);
+  border-radius: var(--radius-pill);
+  overflow: hidden;
+}
+.cart-qty__btn {
+  width: 44px;
+  height: 44px;
+  display: grid;
+  place-items: center;
+  font-size: 1.125rem;
+  line-height: 1;
+  color: var(--color-text);
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: background var(--transition-fast);
+}
+.cart-qty__btn:hover { background: var(--color-bg-alt); }
+.cart-qty__input {
+  width: 3ch;
+  height: 44px;
+  text-align: center;
+  border: none;
+  background: none;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--color-text);
+  padding: 0;
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+.cart-qty__input::-webkit-outer-spin-button,
+.cart-qty__input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+.cart-qty__input:focus-visible { outline-offset: -3px; }
+
+/* The row dims while its change is in flight, so a slow connection doesn't
+   look like a dead button. */
+.cart-table__row.is-busy { opacity: 0.5; pointer-events: none; }
+
+/* Only reachable without JS — the steppers save on click otherwise. */
+.cart-table__update-row { padding-top: 1.25rem; }
+.js .cart-table__update-row { display: none; }
+
+.cart-page__empty { text-align: center; padding: var(--space-2xl) 0; }
+.cart-page__empty p {
+  font-size: 1.125rem;
+  color: var(--color-text-muted);
+  margin-bottom: var(--space-md);
+}
+
+/* Free shipping progress */
+.cart-progress {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding-bottom: 0.875rem;
+  border-bottom: 1px solid var(--color-border);
+}
+.cart-progress__note { font-size: 0.875rem; color: var(--color-text-muted); }
+.cart-progress__note--met { color: var(--color-accent-ink); font-weight: 600; }
+.cart-progress__track {
+  height: 6px;
+  border-radius: var(--radius-pill);
+  background: var(--color-border);
+  overflow: hidden;
+}
+.cart-progress__bar {
+  height: 100%;
+  background: var(--color-primary);
+  border-radius: var(--radius-pill);
+  transition: width 0.4s ease;
+}
+
 .cart-summary__title { font-family: var(--font-heading); font-size: 1.125rem; font-weight: 400; padding-bottom: 1rem; border-bottom: 1px solid var(--color-border); }
 .cart-summary__line { display: flex; justify-content: space-between; font-size: 0.9375rem; color: var(--color-text-muted); }
+.cart-summary__line--discount { color: var(--color-accent-ink); }
 .cart-summary__total { display: flex; justify-content: space-between; font-size: 1.0625rem; font-weight: 700; padding-top: 0.875rem; border-top: 1px solid var(--color-border); }
 .cart-summary__note { font-size: 0.8125rem; color: var(--color-text-muted); }
+.cart-summary__note-field label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  display: block;
+  margin-bottom: 0.375rem;
+}
+.cart-summary__note-field textarea { resize: vertical; }
 
 /* =========================================
    Page Template
@@ -1487,6 +1667,13 @@ h1,
 }
 .not-found__title { font-size: 1.875rem; font-weight: 500; margin-bottom: 0.875rem; }
 .not-found__text { color: var(--color-text-muted); margin-bottom: var(--space-lg); font-size: 1.0625rem; }
+/* Was an inline style attribute on the section. */
+.not-found__actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
 
 /* =========================================
    Search Page
@@ -1670,6 +1857,22 @@ h1,
   text-align: center;
 }
 .product-form__note[hidden] { display: none; }
+
+/* A rejected add — out of stock between load and click, or more than is left.
+   Reads as a warning without borrowing the accent, which on this page already
+   means "price" and "buy". */
+.product-form__error {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--color-accent-ink);
+  background: var(--color-bg-alt);
+  border: 1.5px solid var(--color-border-warm);
+  border-radius: var(--radius-md);
+  padding: 0.75rem 1rem;
+  margin-top: 0.75rem;
+  text-align: center;
+}
+.product-form__error[hidden] { display: none; }
 
 /* =========================================
    Related products
@@ -1865,7 +2068,7 @@ h1,
   z-index: 90;
   transform: translateY(100%);
   transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 -4px 24px rgba(26,16,10,0.09);
+  box-shadow: var(--shadow-sticky);
 }
 .product-sticky-bar.is-visible {
   transform: translateY(0);
@@ -1938,10 +2141,12 @@ h1,
   border-radius: var(--radius-pill);
 }
 
-/* The navy ring would disappear on the dark bands, so flip it to paper. */
+/* The navy ring would disappear on the dark bands, so flip it to paper.
+   Keyed to the light-text hero rather than the centred one — a centred hero
+   with dark text sits on the pale ground and needs the navy ring back. */
 .announcement-bar :focus-visible,
 .newsletter :focus-visible,
-.hero--centered :focus-visible {
+.hero--text-light :focus-visible {
   outline-color: var(--color-paper);
 }
 
@@ -1949,7 +2154,7 @@ h1,
    Header scroll state
    ========================================= */
 .site-header.is-scrolled {
-  box-shadow: 0 2px 16px rgba(26,16,10,0.09);
+  box-shadow: var(--shadow-header);
 }
 
 /* =========================================

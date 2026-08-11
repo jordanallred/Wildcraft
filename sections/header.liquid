@@ -9,7 +9,7 @@
       </svg>
     </button>
 
-    <a href="/" class="site-header__logo" aria-label="{{ shop.name }} — home">
+    <a href="{{ routes.root_url }}" class="site-header__logo" aria-label="{{ shop.name }} — home">
       {%- if section.settings.logo != blank -%}
         {%- assign logo_width = section.settings.logo_width | default: 180 -%}
         {{ section.settings.logo | image_url: width: logo_width | image_tag: loading: 'eager', widths: '160,240,320', alt: shop.name, class: 'site-header__logo-img' }}
@@ -24,24 +24,35 @@
 
     <div class="site-header__actions">
       {%- if section.settings.show_search -%}
-        <a href="/search" class="btn-icon" aria-label="Search">
+        <a href="{{ routes.search_url }}" class="btn-icon" aria-label="Search">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
             <circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/>
           </svg>
         </a>
       {%- endif -%}
       {%- if shop.customer_accounts_enabled -%}
-        <a href="/account" class="btn-icon" aria-label="Account">
+        <a href="{{ routes.account_url }}" class="btn-icon" aria-label="Account">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
             <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
           </svg>
         </a>
       {%- endif -%}
-      <button class="btn-icon cart-count" data-cart-trigger aria-label="Open cart">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+      {%- comment -%}
+        Rendered from the cart, not left at zero for JS to correct. Printing 0
+        and waiting on /cart.js meant a returning customer with items watched
+        an empty badge pop to "3" a moment after paint. The count is on the
+        button's label because the badge itself is decorative once the label
+        says the number.
+      {%- endcomment -%}
+      <button
+        class="btn-icon cart-count"
+        data-cart-trigger
+        aria-label="Open cart, {{ cart.item_count }} item{% unless cart.item_count == 1 %}s{% endunless %}"
+      >
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
           <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/>
         </svg>
-        <span class="cart-count__badge" aria-label="Cart items">0</span>
+        <span class="cart-count__badge{% if cart.item_count > 0 %} is-visible{% endif %}" aria-hidden="true">{{ cart.item_count }}</span>
       </button>
     </div>
   </div>
@@ -63,7 +74,7 @@
       {%- render 'nav-tree', linklist: section.settings.menu, id_prefix: 'mobile' -%}
     </div>
     {%- if shop.customer_accounts_enabled -%}
-      <a href="/account" class="btn btn--outline btn--sm">My Account</a>
+      <a href="{{ routes.account_url }}" class="btn btn--outline btn--sm">My Account</a>
     {%- endif -%}
   </div>
 </nav>

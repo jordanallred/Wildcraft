@@ -100,6 +100,12 @@
     "name": "Social media",
     "settings": [
       {
+        "type": "image_picker",
+        "id": "share_image",
+        "label": "Link preview image",
+        "info": "The picture shown when someone pastes a link to your shop into Instagram, Facebook, or a group chat. Product and collection links use their own photo instead. Best at 1200 × 630."
+      },
+      {
         "type": "paragraph",
         "content": "Leave a field empty to hide that icon. Paste the full address, including https://"
       },

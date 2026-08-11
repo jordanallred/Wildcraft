@@ -1,5 +1,10 @@
+{%- comment -%}
+  No role. This was role="complementary", which is a landmark for tangential
+  content like a sidebar — it put an unnamed landmark at the top of every page
+  that screen reader users had to step past to reach the header.
+{%- endcomment -%}
 {%- if section.settings.text != blank -%}
-<div class="announcement-bar" role="complementary">
+<div class="announcement-bar">
   {%- if section.settings.link != blank -%}
     <a href="{{ section.settings.link }}">{{ section.settings.text }}</a>
   {%- else -%}
