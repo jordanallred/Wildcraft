@@ -1727,14 +1727,24 @@ h1,
 /* =========================================
    Focus Visible — keyboard accessibility
    ========================================= */
+/* Navy, not accent. An orange ring on the orange primary button is
+   effectively invisible, and orange on paper is only 2.77:1. Navy reads at
+   14.78:1 on paper and 5.33:1 against the button itself. */
 :focus-visible {
-  outline: 2.5px solid var(--color-primary);
+  outline: 3px solid var(--color-ink);
   outline-offset: 3px;
   border-radius: var(--radius-sm);
 }
 .btn:focus-visible {
   outline-offset: 4px;
   border-radius: var(--radius-pill);
+}
+
+/* The navy ring would disappear on the dark bands, so flip it to paper. */
+.announcement-bar :focus-visible,
+.newsletter :focus-visible,
+.hero--centered :focus-visible {
+  outline-color: var(--color-paper);
 }
 
 /* =========================================
