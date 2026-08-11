@@ -1,3 +1,12 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
 {
   "current": {
     "color_bg": "#FAF9F5",
@@ -17,7 +26,39 @@
     "social_instagram": "",
     "social_pinterest": "",
     "social_tiktok": "",
-    "social_facebook": ""
+    "social_facebook": "",
+    "sections": {
+      "announcement-bar": {
+        "type": "announcement-bar",
+        "settings": {
+          "text": "Free shipping on orders over $50 ✦ Every piece made with heart",
+          "link": ""
+        }
+      },
+      "header": {
+        "type": "header",
+        "settings": {
+          "logo": "shopify://shop_images/Sarah_Beth_1.png",
+          "logo_width": 160,
+          "menu": "main-menu",
+          "show_search": true
+        }
+      },
+      "footer": {
+        "type": "footer",
+        "settings": {
+          "tagline": "Handcrafted with love and a little Southern soul.",
+          "menu_heading_1": "Shop",
+          "menu_1": "",
+          "menu_heading_2": "Help",
+          "menu_2": "",
+          "menu_heading_3": "About",
+          "menu_3": "",
+          "copyright_extra": ""
+        }
+      }
+    },
+    "content_for_index": []
   },
   "presets": {}
 }
