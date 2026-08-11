@@ -5,8 +5,36 @@
   /* ========================
      Utilities
   ======================== */
+
+  /* Follow the shop's own currency format rather than assuming dollars.
+     layout/theme.liquid puts shop.money_format on <body>. */
+  const MONEY_FORMAT = document.body.dataset.moneyFormat || '${{amount}}';
+
   function formatMoney(cents) {
-    return '$' + (cents / 100).toFixed(2);
+    const n = (cents || 0) / 100;
+    const group = (v, sep) => v.replace(/\B(?=(\d{3})+(?!\d))/g, sep);
+
+    return MONEY_FORMAT.replace(/\{\{\s*(\w+)\s*\}\}/g, (_, name) => {
+      switch (name) {
+        case 'amount_no_decimals':
+          return group(Math.round(n).toString(), ',');
+        case 'amount_with_comma_separator': {
+          const [whole, frac] = n.toFixed(2).split('.');
+          return group(whole, '.') + ',' + frac;
+        }
+        case 'amount_no_decimals_with_comma_separator':
+          return group(Math.round(n).toString(), '.');
+        default:
+          return group(n.toFixed(2), ',');
+      }
+    });
+  }
+
+  /* Product titles are merchant-controlled, but they still land in innerHTML
+     below, so escape rather than trust. */
+  const ESCAPES = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' };
+  function esc(value) {
+    return String(value == null ? '' : value).replace(/[&<>"']/g, c => ESCAPES[c]);
   }
 
   function updateCartBadge(count) {
@@ -52,25 +80,29 @@
       if (!this.body || !this.footer) return;
 
       if (cart.item_count === 0) {
-        this.body.innerHTML = '<p class="cart-drawer__empty">Your cart is empty.</p>';
+        this.body.innerHTML =
+          '<div class="cart-drawer__empty">' +
+            '<p>Your cart is empty.</p>' +
+            '<a href="/collections/all" class="btn btn--outline btn--sm">Browse the buttons</a>' +
+          '</div>';
         this.footer.hidden = true;
         updateCartBadge(0);
         return;
       }
 
       this.body.innerHTML = cart.items.map(item => `
-        <div class="cart-item" data-line="${item.key}">
+        <div class="cart-item" data-line="${esc(item.key)}">
           <div class="cart-item__image">
-            ${item.image ? `<img src="${item.image}" alt="${item.product_title}" loading="lazy">` : ''}
+            ${item.image ? `<img src="${esc(item.image)}" alt="" loading="lazy">` : ''}
           </div>
           <div class="cart-item__info">
-            <div class="cart-item__title">${item.product_title}</div>
-            ${item.variant_title && item.variant_title !== 'Default Title' ? `<div class="cart-item__variant">${item.variant_title}</div>` : ''}
+            <div class="cart-item__title">${esc(item.product_title)}</div>
+            ${item.variant_title && item.variant_title !== 'Default Title' ? `<div class="cart-item__variant">${esc(item.variant_title)}</div>` : ''}
             <div class="cart-item__quantity">
-              <button class="cart-item__qty-btn" data-action="decrease" data-line="${item.key}" aria-label="Decrease quantity">−</button>
+              <button class="cart-item__qty-btn" data-action="decrease" data-line="${esc(item.key)}" aria-label="Decrease quantity of ${esc(item.product_title)}">−</button>
               <span class="cart-item__qty-value">${item.quantity}</span>
-              <button class="cart-item__qty-btn" data-action="increase" data-line="${item.key}" aria-label="Increase quantity">+</button>
-              <button class="cart-table__remove" data-action="remove" data-line="${item.key}">Remove</button>
+              <button class="cart-item__qty-btn" data-action="increase" data-line="${esc(item.key)}" aria-label="Increase quantity of ${esc(item.product_title)}">+</button>
+              <button class="cart-table__remove" data-action="remove" data-line="${esc(item.key)}">Remove</button>
             </div>
           </div>
           <div class="cart-item__price">${formatMoney(item.final_line_price)}</div>
@@ -240,9 +272,13 @@
     if (submitBtn) {
       submitBtn.disabled = !matched.available;
       submitBtn.textContent = matched.available
-        ? `Add to Cart — ${formatMoney(matched.price)}`
-        : 'Sold Out';
+        ? `Add to cart — ${formatMoney(matched.price)}`
+        : 'Sold out';
     }
+
+    /* Keep the sold-out note in step with the button */
+    const note = document.getElementById(`product-note-${sectionId}`);
+    if (note) note.hidden = matched.available;
 
     /* Mark unavailable variants in other option groups */
     form.querySelectorAll('.variant-btn').forEach(b => {
@@ -374,8 +410,13 @@
       '.about-banner__image',
       '.about-banner__content',
       '.newsletter .section-header',
+      '.social-grid__item',
     ].join(',');
 
+    /* threshold 0 with a positive rootMargin, so an element starts revealing
+       just before it enters. At threshold 0.1 a tall section had to be a
+       tenth visible before un-hiding, which left the About banner blank
+       through a fast scroll. */
     const observer = new IntersectionObserver((entries) => {
       entries.forEach(entry => {
         if (entry.isIntersecting) {
@@ -383,7 +424,7 @@
           observer.unobserve(entry.target);
         }
       });
-    }, { threshold: 0.1, rootMargin: '0px 0px -30px 0px' });
+    }, { threshold: 0, rootMargin: '0px 0px 80px 0px' });
 
     document.querySelectorAll(selectors).forEach(el => {
       const rect = el.getBoundingClientRect();

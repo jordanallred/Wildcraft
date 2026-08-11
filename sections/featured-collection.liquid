@@ -3,11 +3,13 @@
 
 <section class="featured-collection section-padding">
   <div class="container">
-    <div class="section-header">
-      <p class="label">{{ section.settings.eyebrow }}</p>
+    <div class="section-header section-header--center">
+      {%- if section.settings.eyebrow != blank -%}
+        <p class="label">{{ section.settings.eyebrow }}</p>
+      {%- endif -%}
       <h2>{{ section.settings.heading }}</h2>
       {%- if section.settings.subheading != blank -%}
-        <p>{{ section.settings.subheading }}</p>
+        <p class="section-header__text">{{ section.settings.subheading }}</p>
       {%- endif -%}
     </div>
 
@@ -30,8 +32,8 @@
       {%- endif -%}
     {%- else -%}
       <div class="featured-collection__empty">
-        <p>No products yet — check back soon.</p>
-        <a href="/collections/all" class="btn btn--outline">Browse All</a>
+        <p>Nothing in this collection yet. New buttons land before every home game.</p>
+        <a href="/collections/all" class="btn btn--outline">Browse everything</a>
       </div>
     {%- endif -%}
   </div>
@@ -45,19 +47,19 @@
       "type": "text",
       "id": "eyebrow",
       "label": "Eyebrow Label",
-      "default": "New Arrivals"
+      "default": "The collection"
     },
     {
       "type": "text",
       "id": "heading",
-      "label": "Section Heading",
-      "default": "Fresh from the Studio"
+      "label": "Section heading",
+      "default": "This season's buttons"
     },
     {
       "type": "text",
       "id": "subheading",
       "label": "Subheading",
-      "default": "Stickers, pins, and printables made with care."
+      "default": "Five dollars each, drawn by hand."
     },
     {
       "type": "collection",
@@ -83,7 +85,7 @@
       "type": "text",
       "id": "view_all_label",
       "label": "\"View All\" Button Text",
-      "default": "Shop the Full Collection"
+      "default": "See all buttons"
     }
   ],
   "presets": [

@@ -13,14 +13,14 @@
       "type": "hero",
       "settings": {
         "layout": "split",
-        "eyebrow": "Handmade with heart",
-        "heading": "Made for the moments that matter.",
-        "subheading": "Digital downloads, stickers, pins & handcrafted goods — each one made with care and a little bit of Southern soul.",
-        "btn_primary_label": "Shop the Collection",
+        "eyebrow": "Hand-drawn, one at a time",
+        "heading": "Every Saturday deserves a <em>button</em>.",
+        "subheading": "Hand-drawn pin-back buttons for game day, bid day, and every tailgate in between.",
+        "btn_primary_label": "Shop the buttons",
         "btn_primary_link": "/collections/all",
-        "btn_secondary_label": "Our Story",
+        "btn_secondary_label": "Our story",
         "btn_secondary_link": "/pages/about",
-        "bg_color": "#f2ede4",
+        "bg_color": "#F0EDE6",
         "text_color": "light",
         "overlay_opacity": 35
       }
@@ -28,13 +28,13 @@
     "featured-collection": {
       "type": "featured-collection",
       "settings": {
-        "eyebrow": "Featured",
-        "heading": "Fresh from the Studio",
-        "subheading": "Stickers, pins, and printables made with care.",
+        "eyebrow": "The collection",
+        "heading": "This season's buttons",
+        "subheading": "Five dollars each, drawn by hand.",
         "collection": "frontpage",
-        "product_limit": 4,
+        "product_limit": 8,
         "show_view_all": true,
-        "view_all_label": "Shop the Full Collection"
+        "view_all_label": "See all buttons"
       }
     },
     "shop-features": {
@@ -43,33 +43,33 @@
         "feature-1": {
           "type": "feature",
           "settings": {
-            "icon": "download",
-            "title": "Instant Downloads",
-            "text": "Digital items delivered to your inbox the moment you check out — no waiting."
+            "icon": "heart",
+            "title": "Drawn by hand",
+            "text": "Every design starts as an original drawing. No clip art, no templates."
           }
         },
         "feature-2": {
           "type": "feature",
           "settings": {
-            "icon": "heart",
-            "title": "Handmade with Care",
-            "text": "Physical goods are made by hand, one at a time, with real attention to detail."
+            "icon": "pin",
+            "title": "Made to be worn",
+            "text": "Sturdy pin backs and a scratch-resistant finish, so they live on your bag and not in a drawer."
           }
         },
         "feature-3": {
           "type": "feature",
           "settings": {
-            "icon": "star",
-            "title": "Quality You Can Feel",
-            "text": "From the paper stock to the pin backs — materials that look and last beautifully."
+            "icon": "gift",
+            "title": "Chapter orders welcome",
+            "text": "Planning bid day or big-little gifts? Get in touch about bulk pricing."
           }
         },
         "feature-4": {
           "type": "feature",
           "settings": {
-            "icon": "package",
-            "title": "Thoughtful Packaging",
-            "text": "Orders are packed with care and a personal touch before they leave our hands."
+            "icon": "truck",
+            "title": "Packed by hand",
+            "text": "Every order is padded and packed by hand before it leaves the studio."
           }
         }
       },
@@ -80,8 +80,8 @@
         "feature-4"
       ],
       "settings": {
-        "eyebrow": "The Wildcraft Promise",
-        "heading": "Why Shop With Us",
+        "eyebrow": "The promise",
+        "heading": "Small shop, real hands",
         "subheading": ""
       }
     },
@@ -89,22 +89,33 @@
       "type": "about-banner",
       "settings": {
         "image_position": "left",
-        "eyebrow": "Our Story",
-        "heading": "Rooted in craft, raised on Southern charm.",
-        "text": "Every piece in this shop comes from a place of genuine love for making things. Inspired by the deep tradition of craftsmanship and the warmth of Southern life, each design is created to be something you hold onto.",
-        "btn_label": "Read Our Story",
+        "eyebrow": "Our story",
+        "heading": "It started with one button and one football game.",
+        "text": "It began with a single design drawn for one Saturday, and a friend who wanted one too. Every button in the shop still starts the same way: a pen, a blank circle, and something worth wearing on your bag.",
+        "btn_label": "Read our story",
         "btn_link": "/pages/about"
+      }
+    },
+    "social-follow": {
+      "type": "social-follow",
+      "blocks": {},
+      "block_order": [],
+      "settings": {
+        "eyebrow": "Out in the wild",
+        "heading": "Tag us on your game-day fit",
+        "subheading": "We repost our favourites every week.",
+        "btn_label": "Follow along"
       }
     },
     "newsletter": {
       "type": "newsletter",
       "settings": {
-        "eyebrow": "Stay in the Loop",
-        "heading": "New designs, shop updates & a little Southern heart.",
-        "subheading": "Join the list and be the first to know about new releases, seasonal drops, and behind-the-scenes peeks.",
+        "eyebrow": "Stay in the loop",
+        "heading": "New designs drop before every home game.",
+        "subheading": "First look at new buttons, restocks, and game-day bundles.",
         "placeholder": "your@email.com",
-        "btn_label": "Subscribe",
-        "success_message": "You're on the list — thank you!"
+        "btn_label": "Join the list",
+        "success_message": "You're on the list. See you Saturday."
       }
     }
   },
@@ -113,6 +124,7 @@
     "featured-collection",
     "shop-features",
     "about-banner",
+    "social-follow",
     "newsletter"
   ]
 }

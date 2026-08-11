@@ -22,14 +22,15 @@
   --color-gingham:      #A8C4E0;
   --color-surface:      #FFFFFF;
 
-  /* Derived */
+  /* Derived — blended toward paper, never lightened. Lightening a saturated
+     navy in HSL yields a vivid blue rather than a slate. */
   --color-bg:           #FBF7EF;
-  --color-bg-alt:       #F3EEE3;
+  --color-bg-alt:       #F0EDE6;
   --color-bg-deep:      #0C2340;
-  --color-surface-warm: #FCF9F2;
+  --color-surface-warm: #F5F2EC;
 
   --color-text:         #0C2340;
-  --color-text-muted:   #5A6B80;
+  --color-text-muted:   #606D7D;
   --color-text-light:   rgba(255,255,255,0.9);
 
   --color-primary:       #E87722;
@@ -37,7 +38,7 @@
   --color-primary-light: #FBE4D1;
   --color-secondary:     #0C2340;
   --color-accent-warm:   #F09B54;
-  --color-border:        #E8DFCF;
+  --color-border:        #DEDDDA;
   --color-border-warm:   #A8C4E0;
   --color-gingham-soft:  rgba(168,196,224,0.55);
 
@@ -590,10 +591,11 @@ h1,
 .hero__eyebrow { /* uses .label */ }
 
 .hero__title {
-  font-size: clamp(2.375rem, 5.5vw, 4.25rem);
-  font-weight: 400;
-  line-height: 1.1;
-  letter-spacing: -0.01em;
+  font-size: clamp(2.125rem, 4.8vw, 3.5rem);
+  font-weight: 500;
+  line-height: 1.08;
+  letter-spacing: -0.015em;
+  text-wrap: balance;
 }
 /* A gentle italic pull on the last word — signature Playfair move */
 .hero__title em {
@@ -1399,6 +1401,114 @@ h1,
 .animations-enabled .feature-item:nth-child(2) { animation-delay: 0.16s; }
 .animations-enabled .feature-item:nth-child(3) { animation-delay: 0.24s; }
 .animations-enabled .feature-item:nth-child(4) { animation-delay: 0.32s; }
+
+/* =========================================
+   Disclosure panels — FAQ and product trust
+   Native <details>. The chevron rotates off [open]; no script involved.
+   ========================================= */
+.faq__list {
+  max-width: 760px;
+  margin: 0 auto;
+  border-top: 1px solid var(--color-border);
+}
+.faq__item { border-bottom: 1px solid var(--color-border); }
+.faq__question,
+.product-trust__q {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  cursor: pointer;
+  list-style: none;
+  font-family: var(--font-heading);
+  color: var(--color-text);
+  transition: color var(--transition-fast);
+}
+.faq__question { font-size: 1.0625rem; padding: 1.25rem 0; min-height: 56px; }
+.faq__question::-webkit-details-marker,
+.product-trust__q::-webkit-details-marker { display: none; }
+.faq__question:hover,
+.product-trust__q:hover { color: var(--color-primary); }
+
+.faq__chevron,
+.product-trust__q svg {
+  flex-shrink: 0;
+  color: var(--color-text-muted);
+  transition: transform var(--transition);
+}
+.faq__item[open] .faq__chevron,
+.product-trust__item[open] .product-trust__q svg { transform: rotate(180deg); }
+
+.faq__answer,
+.product-trust__a {
+  color: var(--color-text-muted);
+  line-height: 1.8;
+  padding-bottom: 1.25rem;
+  max-width: 62ch;
+}
+.faq__answer p + p,
+.product-trust__a p + p { margin-top: 0.75rem; }
+.faq__answer a,
+.product-trust__a a { color: var(--color-primary); text-decoration: underline; text-underline-offset: 3px; }
+.faq__footer {
+  text-align: center;
+  margin-top: var(--space-lg);
+  color: var(--color-text-muted);
+  font-size: 0.9375rem;
+}
+.faq__footer a { color: var(--color-primary); text-decoration: underline; text-underline-offset: 3px; }
+
+.product-trust {
+  border-top: 1px solid var(--color-border);
+  margin-top: 0.25rem;
+}
+.product-trust__item { border-bottom: 1px solid var(--color-border); }
+.product-trust__q { font-size: 0.9375rem; padding: 1rem 0; min-height: 52px; }
+.product-trust__a { font-size: 0.9375rem; }
+
+/* The note that replaces a live price when a variant is gone */
+.product-form__note {
+  font-size: 0.875rem;
+  color: var(--color-text-muted);
+  margin-top: 0.75rem;
+  text-align: center;
+}
+.product-form__note[hidden] { display: none; }
+
+/* =========================================
+   Related products
+   ========================================= */
+.product-related {
+  border-top: 1px solid var(--color-border);
+  margin-top: var(--space-xl);
+  padding-top: var(--space-xl);
+}
+
+/* =========================================
+   Instagram
+   ========================================= */
+.social-follow { background: var(--color-bg-alt); }
+.social-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 0.75rem;
+  max-width: 900px;
+  margin: 0 auto;
+}
+.social-grid__item {
+  aspect-ratio: 1;
+  overflow: hidden;
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+}
+.social-grid__item img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  transition: transform 0.45s ease;
+}
+.social-grid__item a { display: block; height: 100%; }
+.social-grid__item a:hover img { transform: scale(1.05); }
+.social-follow__cta { text-align: center; margin-top: var(--space-lg); }
 
 /* =========================================
    Responsive

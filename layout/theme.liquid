@@ -58,14 +58,20 @@
       --color-gingham: {{ c_gingham }};
       --color-surface: {{ c_surface }};
 
+      {%- comment -%}
+        Blend toward paper rather than lightening. color_lighten raises HSL
+        lightness while holding saturation, so a saturated navy lightens into
+        a vivid blue (#0C2340 at +32 gives #266EC9) instead of the soft slate
+        you actually want. Mixing carries the ink toward the page instead.
+      {%- endcomment -%}
       /* Derived */
       --color-bg:            {{ c_paper }};
-      --color-bg-alt:        {{ c_paper | color_darken: 4 }};
+      --color-bg-alt:        {{ c_ink | color_mix: c_paper, 5 }};
       --color-bg-deep:       {{ c_ink }};
-      --color-surface-warm:  {{ c_paper | color_lighten: 2 }};
+      --color-surface-warm:  {{ c_ink | color_mix: c_paper, 3 }};
 
       --color-text:          {{ c_ink }};
-      --color-text-muted:    {{ c_ink | color_lighten: 32 }};
+      --color-text-muted:    {{ c_ink | color_mix: c_paper, 65 }};
 
       --color-primary:       {{ c_accent }};
       --color-primary-hover: {{ c_accent | color_darken: 10 }};
@@ -75,7 +81,7 @@
       /* Warm accent reads on the navy surfaces; gingham carries the borders.
          These were the same hex under two names before — now each means one thing. */
       --color-accent-warm:   {{ c_accent | color_lighten: 18 }};
-      --color-border:        {{ c_paper | color_darken: 12 }};
+      --color-border:        {{ c_ink | color_mix: c_paper, 12 }};
       --color-border-warm:   {{ c_gingham }};
       --color-gingham-soft:  {{ c_gingham | color_modify: 'alpha', 0.55 }};
 

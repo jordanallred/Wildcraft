@@ -119,13 +119,21 @@
               id="product-submit-{{ section.id }}"
             >
               {%- if current_variant.available -%}
-                Add to Cart — {{ current_variant.price | money }}
+                Add to cart — {{ current_variant.price | money }}
               {%- else -%}
-                Sold Out
+                Sold out
               {%- endif -%}
             </button>
+            <p class="product-form__note" id="product-note-{{ section.id }}"{% if current_variant.available %} hidden{% endif %}>
+              Sold out for now. New buttons land before every home game.
+            </p>
           </div>
         {%- endform -%}
+
+        {%- render 'product-trust',
+              details: section.settings.trust_details,
+              shipping: section.settings.trust_shipping,
+              returns: section.settings.trust_returns -%}
 
         {%- if product.description != blank -%}
           <div class="product-info__description" itemprop="description">
@@ -147,9 +155,9 @@
         {%- unless p.id == product.id -%}{%- assign has_other = true -%}{%- break -%}{%- endunless -%}
       {%- endfor -%}
       {%- if has_other -%}
-        <div style="border-top:1px solid var(--color-border);margin-top:var(--space-xl);padding-top:var(--space-xl);">
-          <div class="section-header">
-            <h2>You Might Also Love</h2>
+        <div class="product-related">
+          <div class="section-header section-header--center">
+            <h2>More from the shop</h2>
           </div>
           <div class="product-grid">
             {%- for p in related_collection.products limit: 5 -%}
@@ -184,14 +192,40 @@
     {
       "type": "checkbox",
       "id": "show_quantity",
-      "label": "Show Quantity Selector",
+      "label": "Show quantity selector",
       "default": true
     },
     {
       "type": "checkbox",
       "id": "show_related",
-      "label": "Show Related Products",
+      "label": "Show more products from the shop",
       "default": true
+    },
+    {
+      "type": "header",
+      "content": "Under the buy button"
+    },
+    {
+      "type": "paragraph",
+      "content": "These three panels appear on every product. Leave one empty to hide it."
+    },
+    {
+      "type": "richtext",
+      "id": "trust_details",
+      "label": "What you're getting",
+      "default": "<p>A pin-back button, drawn by hand and printed on a scratch-resistant finish. Add the size and pin style here.</p>"
+    },
+    {
+      "type": "richtext",
+      "id": "trust_shipping",
+      "label": "Shipping",
+      "default": "<p>Add how long you take to pack an order and roughly how long delivery runs. Free shipping applies over $50.</p>"
+    },
+    {
+      "type": "richtext",
+      "id": "trust_returns",
+      "label": "Returns",
+      "default": "<p>Say what happens if something arrives damaged, and how long customers have to tell you.</p>"
     }
   ]
 }

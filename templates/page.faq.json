@@ -1,0 +1,56 @@
+{
+  "sections": {
+    "main": {
+      "type": "main-page",
+      "settings": {}
+    },
+    "faq": {
+      "type": "faq",
+      "blocks": {
+        "q1": {
+          "type": "question",
+          "settings": {
+            "question": "How big are the buttons?",
+            "answer": "<p>Add the diameter and the pin-back style here so people know exactly what they're getting.</p>"
+          }
+        },
+        "q2": {
+          "type": "question",
+          "settings": {
+            "question": "How long does shipping take?",
+            "answer": "<p>Tell customers how long you take to pack an order and roughly how long delivery runs. Free shipping applies to orders over $50.</p>"
+          }
+        },
+        "q3": {
+          "type": "question",
+          "settings": {
+            "question": "Can I order for my whole chapter?",
+            "answer": "<p>Yes. Explain your bulk pricing and how much lead time you need for a large order.</p>"
+          }
+        },
+        "q4": {
+          "type": "question",
+          "settings": {
+            "question": "What if something arrives damaged?",
+            "answer": "<p>Say what you'll do and how long customers have to get in touch.</p>"
+          }
+        },
+        "q5": {
+          "type": "question",
+          "settings": {
+            "question": "Do you take custom designs?",
+            "answer": "<p>Say whether you take commissions, what you charge, and how far ahead to ask.</p>"
+          }
+        }
+      },
+      "block_order": ["q1", "q2", "q3", "q4", "q5"],
+      "settings": {
+        "eyebrow": "Good to know",
+        "heading": "Questions, answered",
+        "subheading": "",
+        "footer_text": "<p>Still stuck? <a href=\"/pages/contact\">Send us a note</a> and we'll get back to you.</p>"
+      }
+    }
+  },
+  "order": ["main", "faq"]
+}
