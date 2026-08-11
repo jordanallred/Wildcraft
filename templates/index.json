@@ -20,7 +20,7 @@
         "btn_primary_link": "/collections/all",
         "btn_secondary_label": "Our story",
         "btn_secondary_link": "/pages/about",
-        "bg_color": "#F0EDE6",
+        "bg_color": "#f0ede6",
         "text_color": "light",
         "overlay_opacity": 35
       }
@@ -29,9 +29,9 @@
       "type": "featured-collection",
       "settings": {
         "eyebrow": "The collection",
-        "heading": "This season's buttons",
-        "subheading": "Five dollars each, drawn by hand.",
-        "collection": "all",
+        "heading": "This season's best",
+        "subheading": "Imagined for you, drawn by hand.",
+        "collection": "frontpage",
         "product_limit": 8,
         "show_view_all": true,
         "view_all_label": "See all buttons"
@@ -98,8 +98,6 @@
     },
     "social-follow": {
       "type": "social-follow",
-      "blocks": {},
-      "block_order": [],
       "settings": {
         "eyebrow": "Out in the wild",
         "heading": "Tag us on your game-day fit",
