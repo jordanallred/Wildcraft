@@ -1,9 +1,8 @@
-{%- assign has_image = section.settings.image != blank -%}
 {%- assign layout = section.settings.layout -%}
 
 {%- if layout == 'split' -%}
 
-<section class="hero hero--split{% unless has_image %} hero--text-only{% endunless %}" style="background:{{ section.settings.bg_color }};">
+<section class="hero hero--split{% if section.settings.image == blank %} hero--text-only{% endif %}" style="background:{{ section.settings.bg_color }};">
   <div class="hero__inner">
     <div class="hero__text">
       {%- if section.settings.eyebrow != blank -%}
@@ -26,7 +25,7 @@
         {%- endif -%}
       </div>
     </div>
-    {%- if has_image -%}
+    {%- if section.settings.image != blank -%}
       <div class="hero__media">
         {{ section.settings.image | image_url: width: 1000 | image_tag: loading: 'eager', widths: '600,800,1000', sizes: '50vw', alt: section.settings.heading }}
       </div>
@@ -36,8 +35,8 @@
 
 {%- else -%}
 
-<section class="hero hero--centered{% if has_image %} hero--with-image{% endif %}">
-  {%- if has_image -%}
+<section class="hero hero--centered{% if section.settings.image != blank %} hero--with-image{% endif %}">
+  {%- if section.settings.image != blank -%}
     <div class="hero__image">
       {{ section.settings.image | image_url: width: 2000 | image_tag: loading: 'eager', widths: '800,1200,1600,2000', sizes: '100vw', alt: section.settings.heading, fetchpriority: 'high' }}
     </div>
