@@ -1,7 +1,15 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
 {
   "sections": {
     "hero": {
-
       "type": "hero",
       "settings": {
         "layout": "split",
@@ -11,15 +19,19 @@
         "btn_primary_label": "Shop the Collection",
         "btn_primary_link": "/collections/all",
         "btn_secondary_label": "Our Story",
-        "btn_secondary_link": "/pages/about"
+        "btn_secondary_link": "/pages/about",
+        "bg_color": "#f2ede4",
+        "text_color": "light",
+        "overlay_opacity": 35
       }
     },
     "featured-collection": {
       "type": "featured-collection",
       "settings": {
-        "eyebrow": "New Arrivals",
+        "eyebrow": "Featured",
         "heading": "Fresh from the Studio",
         "subheading": "Stickers, pins, and printables made with care.",
+        "collection": "frontpage",
         "product_limit": 4,
         "show_view_all": true,
         "view_all_label": "Shop the Full Collection"
@@ -27,10 +39,6 @@
     },
     "shop-features": {
       "type": "shop-features",
-      "settings": {
-        "eyebrow": "The Wildcraft Promise",
-        "heading": "Why Shop With Us"
-      },
       "blocks": {
         "feature-1": {
           "type": "feature",
@@ -65,7 +73,17 @@
           }
         }
       },
-      "block_order": ["feature-1", "feature-2", "feature-3", "feature-4"]
+      "block_order": [
+        "feature-1",
+        "feature-2",
+        "feature-3",
+        "feature-4"
+      ],
+      "settings": {
+        "eyebrow": "The Wildcraft Promise",
+        "heading": "Why Shop With Us",
+        "subheading": ""
+      }
     },
     "about-banner": {
       "type": "about-banner",
@@ -83,7 +101,10 @@
       "settings": {
         "eyebrow": "Stay in the Loop",
         "heading": "New designs, shop updates & a little Southern heart.",
-        "subheading": "Join the list and be the first to know about new releases, seasonal drops, and behind-the-scenes peeks."
+        "subheading": "Join the list and be the first to know about new releases, seasonal drops, and behind-the-scenes peeks.",
+        "placeholder": "your@email.com",
+        "btn_label": "Subscribe",
+        "success_message": "You're on the list — thank you!"
       }
     }
   },
