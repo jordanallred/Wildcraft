@@ -1,0 +1,135 @@
+{%- comment -%}
+  The blog listing. The store already has a blog (handle `news`) with no
+  articles in it and, until now, no template — so /blogs/news fell back to
+  whatever Shopify serves for a theme that hasn't got one.
+
+  Cards reuse the product grid's shape rather than inventing a second card
+  system: same border, same radius, same hover lift. An article without a
+  featured image gets a gingham panel instead of a grey box, so a post written
+  before its photo exists still looks deliberate.
+{%- endcomment -%}
+
+<div class="blog-page">
+  <div class="container">
+
+    <div class="section-header section-header--center">
+      {%- if section.settings.eyebrow != blank -%}
+        <p class="label">{{ section.settings.eyebrow }}</p>
+      {%- endif -%}
+      <h1>{{ blog.title }}</h1>
+      {%- if section.settings.subheading != blank -%}
+        <p class="section-header__text">{{ section.settings.subheading }}</p>
+      {%- endif -%}
+    </div>
+
+    {%- if blog.articles_count > 0 -%}
+      {%- paginate blog.articles by section.settings.posts_per_page -%}
+        <div class="article-grid">
+          {%- for article in blog.articles -%}
+            <article class="article-card">
+              <a href="{{ article.url }}" class="article-card__media" tabindex="-1" aria-hidden="true">
+                {%- if article.image -%}
+                  {{ article.image | image_url: width: 800 | image_tag:
+                     loading: 'lazy',
+                     widths: '400,600,800',
+                     sizes: '(min-width: 768px) 33vw, 100vw',
+                     alt: '' }}
+                {%- else -%}
+                  <span class="article-card__no-image"></span>
+                {%- endif -%}
+              </a>
+
+              <div class="article-card__body">
+                <p class="article-card__meta">
+                  <time datetime="{{ article.published_at | date: '%Y-%m-%d' }}">
+                    {{ article.published_at | date: '%B %-d, %Y' }}
+                  </time>
+                  {%- if article.tags.size > 0 -%}
+                    <span class="article-card__sep" aria-hidden="true">·</span>
+                    {{ article.tags.first }}
+                  {%- endif -%}
+                </p>
+
+                <h2 class="article-card__title">
+                  <a href="{{ article.url }}">{{ article.title }}</a>
+                </h2>
+
+                {%- if article.excerpt_or_content != blank -%}
+                  <p class="article-card__excerpt">
+                    {{ article.excerpt_or_content | strip_html | truncate: 140 }}
+                  </p>
+                {%- endif -%}
+              </div>
+            </article>
+          {%- endfor -%}
+        </div>
+
+        {%- if paginate.pages > 1 -%}
+          <nav class="pagination" aria-label="Pagination">
+            {%- if paginate.previous -%}
+              <a href="{{ paginate.previous.url }}" class="btn btn--outline btn--sm" rel="prev">&larr; Newer</a>
+            {%- endif -%}
+            {%- for part in paginate.parts -%}
+              {%- if part.is_link -%}
+                <a href="{{ part.url }}" class="btn btn--outline btn--sm" aria-label="Page {{ part.title }}">{{ part.title }}</a>
+              {%- elsif part.title == paginate.current_page -%}
+                <span class="btn btn--primary btn--sm" aria-current="page">{{ part.title }}</span>
+              {%- else -%}
+                <span class="btn btn--outline btn--sm pagination__gap" aria-hidden="true">{{ part.title }}</span>
+              {%- endif -%}
+            {%- endfor -%}
+            {%- if paginate.next -%}
+              <a href="{{ paginate.next.url }}" class="btn btn--outline btn--sm" rel="next">Older &rarr;</a>
+            {%- endif -%}
+          </nav>
+        {%- endif -%}
+      {%- endpaginate -%}
+
+    {%- else -%}
+      {%- comment -%}
+        The blog is empty today, so this is the state that will actually
+        render. It says what the blog is for rather than "no posts yet".
+      {%- endcomment -%}
+      <div class="blog-page__empty">
+        <p>{{ section.settings.empty_text }}</p>
+        <a href="{{ routes.all_products_collection_url }}" class="btn btn--outline">Browse the buttons</a>
+      </div>
+    {%- endif -%}
+
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Blog Posts",
+  "settings": [
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow label",
+      "default": "From the studio"
+    },
+    {
+      "type": "text",
+      "id": "subheading",
+      "label": "Subheading",
+      "default": "Notes from the drawing board — new designs, game-day plans, and what's coming next."
+    },
+    {
+      "type": "range",
+      "id": "posts_per_page",
+      "label": "Posts per page",
+      "min": 3,
+      "max": 24,
+      "step": 3,
+      "default": 9
+    },
+    {
+      "type": "textarea",
+      "id": "empty_text",
+      "label": "Text shown when there are no posts yet",
+      "default": "Nothing written here yet. When there is, this is where new designs and game-day plans will land."
+    }
+  ]
+}
+{% endschema %}

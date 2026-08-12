@@ -1,0 +1,79 @@
+{%- comment -%}
+  /collections — the index of every collection. The theme linked nowhere near
+  it, but the URL exists whether or not a template does, and Shopify's fallback
+  doesn't match anything else here.
+
+  Tiles borrow the product card's frame and the pin shape, so a shop with one
+  collection today and six next season looks like the same site either way.
+{%- endcomment -%}
+
+<div class="collection-list-page">
+  <div class="container">
+
+    <div class="section-header section-header--center">
+      {%- if section.settings.eyebrow != blank -%}
+        <p class="label">{{ section.settings.eyebrow }}</p>
+      {%- endif -%}
+      <h1>{{ section.settings.heading | default: 'Collections' }}</h1>
+      {%- if section.settings.subheading != blank -%}
+        <p class="section-header__text">{{ section.settings.subheading }}</p>
+      {%- endif -%}
+    </div>
+
+    {%- assign visible_collections = collections | where: 'products_count' -%}
+
+    {%- if visible_collections.size > 0 -%}
+      <ul class="collection-list" role="list">
+        {%- for collection in visible_collections -%}
+          <li class="collection-list__item">
+            <a href="{{ collection.url }}" class="collection-list__link">
+              <span class="collection-list__media">
+                {%- if collection.featured_image -%}
+                  {{ collection.featured_image | image_url: width: 600 | image_tag:
+                     loading: 'lazy',
+                     widths: '300,450,600',
+                     sizes: '(min-width: 768px) 25vw, 50vw',
+                     alt: '' }}
+                {%- else -%}
+                  <span class="collection-list__no-image" aria-hidden="true"></span>
+                {%- endif -%}
+              </span>
+              <span class="collection-list__title">{{ collection.title }}</span>
+              <span class="collection-list__count">
+                {{ collection.products_count }} button{% unless collection.products_count == 1 %}s{% endunless %}
+              </span>
+            </a>
+          </li>
+        {%- endfor -%}
+      </ul>
+    {%- else -%}
+      <p class="collection-page__empty">No collections yet.</p>
+    {%- endif -%}
+
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Collections List",
+  "settings": [
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow label",
+      "default": "Browse"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Collections"
+    },
+    {
+      "type": "text",
+      "id": "subheading",
+      "label": "Subheading"
+    }
+  ]
+}
+{% endschema %}

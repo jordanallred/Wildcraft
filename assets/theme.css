@@ -1644,6 +1644,207 @@ h1,
 .cart-summary__note-field textarea { resize: vertical; }
 
 /* =========================================
+   Blog listing + article
+   The blog existed on the store with no template at all, so /blogs/news fell
+   through to a Shopify default that shared nothing with the rest of the site.
+   Cards deliberately reuse the product card's frame, radius, and hover lift
+   rather than introducing a second card language.
+   ========================================= */
+.blog-page { padding: var(--space-xl) 0 var(--space-2xl); }
+.article-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: var(--space-md);
+  margin-top: var(--space-lg);
+}
+.article-card {
+  background: var(--color-surface);
+  border: 1.5px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  transition: transform var(--transition), box-shadow var(--transition);
+}
+.article-card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-md);
+}
+.article-card__media {
+  display: block;
+  aspect-ratio: 3 / 2;
+  overflow: hidden;
+  background: var(--color-bg-alt);
+}
+.article-card__media img { width: 100%; height: 100%; object-fit: cover; }
+/* Gingham rather than a grey placeholder — a post drafted before its photo
+   exists should still look like it belongs to this shop. */
+.article-card__no-image {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background:
+    repeating-linear-gradient(90deg, var(--color-gingham-soft) 0 10px, transparent 10px 20px),
+    repeating-linear-gradient(0deg,  var(--color-gingham-soft) 0 10px, transparent 10px 20px),
+    var(--color-bg-alt);
+}
+.article-card__body {
+  padding: 1.125rem 1.25rem 1.375rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+.article-card__meta,
+.article-page__meta {
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-weight: 600;
+  color: var(--color-text-muted);
+}
+.article-card__sep { margin: 0 0.4rem; }
+.article-card__title { font-size: 1.125rem; font-weight: 500; line-height: 1.3; text-wrap: balance; }
+.article-card__title a { color: inherit; }
+.article-card__title a:hover { color: var(--color-accent-ink); }
+.article-card__excerpt { font-size: 0.9375rem; color: var(--color-text-muted); line-height: 1.65; }
+
+.blog-page__empty {
+  text-align: center;
+  color: var(--color-text-muted);
+  padding: var(--space-xl) 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-md);
+}
+
+.article-page { padding: var(--space-xl) 0 var(--space-2xl); }
+.article-page__header { max-width: 720px; margin: 0 auto var(--space-md); text-align: center; }
+.article-page__title {
+  font-size: clamp(1.875rem, 4vw, 2.875rem);
+  font-weight: 500;
+  line-height: 1.12;
+  text-wrap: balance;
+  margin-top: 0.5rem;
+}
+.article-page__hero {
+  max-width: 900px;
+  margin: 0 auto var(--space-lg);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+.article-page__hero img { width: 100%; height: auto; display: block; }
+/* Long-form wants a measure, not the full container. */
+.article-page__body { max-width: 68ch; margin: 0 auto; }
+.article-page__tags {
+  max-width: 68ch;
+  margin: var(--space-lg) auto 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+.article-page__tags a {
+  display: inline-block;
+  font-size: 0.8125rem;
+  padding: 0.25rem 0.75rem;
+  border: 1.5px solid var(--color-border-warm);
+  border-radius: var(--radius-pill);
+  color: var(--color-text-muted);
+}
+.article-page__tags a:hover { color: var(--color-accent-ink); border-color: var(--color-primary); }
+.article-page__foot { max-width: 68ch; margin: var(--space-lg) auto 0; }
+
+/* Rich text from the admin editor — article bodies and page content. The
+   class was already on the page template's markup but had no rules of its
+   own; .page-content was styling its children directly, which meant the same
+   markup rendered unstyled anywhere else. */
+.rte { color: var(--color-text-muted); line-height: 1.8; }
+.rte > * + * { margin-top: 1rem; }
+.rte h2, .rte h3, .rte h4 {
+  color: var(--color-text);
+  margin-top: 2.25rem;
+  margin-bottom: 0.875rem;
+  text-wrap: balance;
+}
+.rte h2 { font-size: 1.5rem; font-weight: 500; }
+.rte h3 { font-size: 1.25rem; font-weight: 500; }
+.rte a { color: var(--color-accent-ink); text-decoration: underline; text-underline-offset: 2px; }
+.rte ul, .rte ol { padding-left: 1.5rem; list-style: revert; }
+.rte li + li { margin-top: 0.375rem; }
+.rte img { max-width: 100%; height: auto; border-radius: var(--radius-md); }
+.rte blockquote {
+  border-left: 3px solid var(--color-border-warm);
+  padding-left: 1.25rem;
+  font-family: var(--font-heading);
+  font-size: 1.125rem;
+  font-style: italic;
+  color: var(--color-text);
+}
+.rte table { width: 100%; border-collapse: collapse; }
+.rte th, .rte td { text-align: left; padding: 0.5rem 0.75rem; border-bottom: 1px solid var(--color-border); }
+/* A wide table shouldn't push the whole page sideways. */
+.rte { overflow-x: auto; }
+
+.article-comments { max-width: 68ch; margin: var(--space-2xl) auto 0; border-top: 1px solid var(--color-border); padding-top: var(--space-lg); }
+.article-comments h2 { font-size: 1.25rem; font-weight: 500; margin-bottom: var(--space-md); }
+.article-comments__list { display: flex; flex-direction: column; gap: var(--space-md); margin-bottom: var(--space-lg); }
+.article-comments__item { border-left: 3px solid var(--color-border-warm); padding-left: 1rem; }
+.article-comments__author { font-weight: 600; }
+.article-comments__date { font-size: 0.8125rem; color: var(--color-text-muted); margin-bottom: 0.5rem; }
+.article-comments__form { display: flex; flex-direction: column; gap: 0.875rem; }
+.article-comments__row { display: flex; flex-direction: column; gap: 0.375rem; }
+.article-comments__row label { font-size: 0.875rem; font-weight: 500; }
+.article-comments__row textarea { resize: vertical; }
+.article-comments__error { color: var(--color-accent-ink); font-weight: 600; }
+.article-comments__success { color: var(--color-accent-ink); font-weight: 600; }
+
+/* =========================================
+   Collections index (/collections)
+   ========================================= */
+.collection-list-page { padding: var(--space-xl) 0 var(--space-2xl); }
+.collection-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: var(--space-md);
+  margin-top: var(--space-lg);
+}
+.collection-list__link {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.625rem;
+  text-align: center;
+  color: inherit;
+}
+.collection-list__media {
+  display: block;
+  width: 100%;
+  aspect-ratio: 1;
+  /* The pin shape, same as the product cards in `cards--pin`. */
+  border-radius: 50%;
+  overflow: hidden;
+  border: 1.5px solid var(--color-border);
+  background: var(--color-bg-alt);
+  transition: transform var(--transition), border-color var(--transition);
+}
+.collection-list__link:hover .collection-list__media {
+  transform: translateY(-3px);
+  border-color: var(--color-primary);
+}
+.collection-list__media img { width: 100%; height: 100%; object-fit: cover; }
+.collection-list__no-image {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background:
+    repeating-linear-gradient(90deg, var(--color-gingham-soft) 0 10px, transparent 10px 20px),
+    repeating-linear-gradient(0deg,  var(--color-gingham-soft) 0 10px, transparent 10px 20px),
+    var(--color-bg-alt);
+}
+.collection-list__title { font-family: var(--font-heading); font-size: 1.0625rem; font-weight: 500; }
+.collection-list__count { font-size: 0.8125rem; color: var(--color-text-muted); }
+
+/* =========================================
    Page Template
    ========================================= */
 .page-content { padding: var(--space-xl) 0; max-width: 760px; margin: 0 auto; }

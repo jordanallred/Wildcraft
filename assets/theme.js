@@ -104,6 +104,31 @@
       return this.el?.getAttribute('aria-hidden') === 'false';
     },
 
+    /* A dialog has to cycle. inert keeps the panel out of the tab order while
+       it's closed, but once open, Tab from the last control walked straight
+       out into the page behind — which is still open behind an overlay the
+       user can't see past. Focus wraps at both ends instead. */
+    trapFocus(e) {
+      if (e.key !== 'Tab' || !this.isOpen || !this.el) return;
+
+      const focusable = [...this.el.querySelectorAll(
+        'a[href], button:not([disabled]), input:not([disabled]), textarea:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])'
+      )].filter(el => el.offsetParent !== null || el === document.activeElement);
+
+      if (focusable.length === 0) return;
+
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+
+      if (e.shiftKey && document.activeElement === first) {
+        e.preventDefault();
+        last.focus();
+      } else if (!e.shiftKey && document.activeElement === last) {
+        e.preventDefault();
+        first.focus();
+      }
+    },
+
     async refresh() {
       try {
         const res = await fetch(ROUTES.cartJs);
@@ -440,9 +465,16 @@
     const addError = form.querySelector('[data-add-to-cart-error]');
     if (addError) { addError.textContent = ''; addError.hidden = true; }
 
-    /* Mark unavailable variants in other option groups */
+    markUnavailable(form, variants, selectedOptions, btn.dataset.optionIndex);
+  });
+
+  /* Grey out option values that can't be reached from the current selection.
+     Extracted from the click handler because it also has to run on load —
+     before this, a page opened with every combination looking available and
+     only revealed the impossible ones after you'd already clicked something. */
+  function markUnavailable(form, variants, selectedOptions, skipIndex) {
     form.querySelectorAll('.variant-btn').forEach(b => {
-      if (b === btn || b.dataset.optionIndex === btn.dataset.optionIndex) return;
+      if (b.dataset.optionIndex === skipIndex) return;
       const testOptions = [...selectedOptions];
       const idx = parseInt(b.dataset.optionIndex, 10);
       testOptions[idx] = b.dataset.value;
@@ -451,6 +483,27 @@
       );
       b.classList.toggle('is-unavailable', !exists);
     });
+  }
+
+  document.querySelectorAll('[data-product-form]').forEach(form => {
+    const sectionId = form.dataset.sectionId;
+    const variantsEl = document.getElementById(`ProductVariants-${sectionId}`);
+    if (!variantsEl) return;
+
+    let variants;
+    try { variants = JSON.parse(variantsEl.textContent); }
+    catch { return; }
+
+    const selectedOptions = [];
+    form.querySelectorAll('.variant-buttons').forEach(group => {
+      const sel = group.querySelector('.variant-btn.is-selected');
+      if (sel) selectedOptions.push(sel.dataset.value);
+    });
+    if (selectedOptions.length === 0) return;
+
+    /* No skipIndex on load: nothing was just clicked, so every group is fair
+       game for marking. */
+    markUnavailable(form, variants, selectedOptions, null);
   });
 
   /* ========================
@@ -612,6 +665,8 @@
   /* ========================
      Escape key closes everything
   ======================== */
+  document.addEventListener('keydown', e => cartDrawer.trapFocus(e));
+
   document.addEventListener('keydown', e => {
     if (e.key !== 'Escape') return;
     /* Escape inside an open dropdown closes just that one, and puts focus

@@ -1,0 +1,145 @@
+{%- comment -%}
+  A single post. Measure is capped near 68 characters through the .rte body so
+  long-form actually reads — the page template's 760px cap is the precedent.
+
+  JSON-LD rather than microdata, matching the decision made on the product
+  page: one complete block beats attributes scattered across the markup, and
+  it can carry the author and dates without wrapping anything.
+{%- endcomment -%}
+
+<article class="article-page">
+  <div class="container">
+
+    <nav class="breadcrumbs" aria-label="Breadcrumb">
+      <a href="{{ routes.root_url }}">Home</a>
+      <span class="breadcrumbs__sep" aria-hidden="true">/</span>
+      <a href="{{ blog.url }}">{{ blog.title }}</a>
+      <span class="breadcrumbs__sep" aria-hidden="true">/</span>
+      <span aria-current="page">{{ article.title }}</span>
+    </nav>
+
+    <header class="article-page__header">
+      <p class="article-page__meta">
+        <time datetime="{{ article.published_at | date: '%Y-%m-%d' }}">
+          {{ article.published_at | date: '%B %-d, %Y' }}
+        </time>
+        {%- if section.settings.show_author and article.author != blank -%}
+          <span class="article-card__sep" aria-hidden="true">·</span>
+          {{ article.author }}
+        {%- endif -%}
+      </p>
+      <h1 class="article-page__title">{{ article.title }}</h1>
+    </header>
+
+    {%- if article.image -%}
+      <div class="article-page__hero">
+        {{ article.image | image_url: width: 1400 | image_tag:
+           loading: 'eager',
+           widths: '600,900,1200,1400',
+           sizes: '(min-width: 900px) 900px, 100vw',
+           alt: article.image.alt | default: article.title }}
+      </div>
+    {%- endif -%}
+
+    <div class="article-page__body rte">
+      {{ article.content }}
+    </div>
+
+    {%- if article.tags.size > 0 -%}
+      <ul class="article-page__tags" role="list">
+        {%- for tag in article.tags -%}
+          <li><a href="{{ blog.url }}/tagged/{{ tag | handle }}">{{ tag }}</a></li>
+        {%- endfor -%}
+      </ul>
+    {%- endif -%}
+
+    <div class="article-page__foot">
+      <a href="{{ blog.url }}" class="btn btn--outline btn--sm">&larr; All posts</a>
+    </div>
+
+    {%- comment -%}
+      Shopify only renders this block when comments are switched on for the
+      blog in the admin, so it stays out of the way until it's wanted.
+    {%- endcomment -%}
+    {%- if blog.comments_enabled? -%}
+      <section class="article-comments">
+        <h2>{{ article.comments_count }} comment{% unless article.comments_count == 1 %}s{% endunless %}</h2>
+
+        {%- if article.comments_count > 0 -%}
+          <ul class="article-comments__list" role="list">
+            {%- for comment in article.comments -%}
+              <li class="article-comments__item">
+                <p class="article-comments__author">{{ comment.author }}</p>
+                <p class="article-comments__date">{{ comment.created_at | date: '%B %-d, %Y' }}</p>
+                <div class="article-comments__body">{{ comment.content }}</div>
+              </li>
+            {%- endfor -%}
+          </ul>
+        {%- endif -%}
+
+        {%- form 'new_comment', article, class: 'article-comments__form' -%}
+          {%- if form.errors -%}
+            <p class="article-comments__error" role="alert">
+              Please check the highlighted fields and try again.
+            </p>
+          {%- elsif form.posted_successfully? -%}
+            <p class="article-comments__success" role="status">
+              Thanks — your comment is posted{% unless blog.moderated? %}.{% else %} and waiting to be approved.{% endunless %}
+            </p>
+          {%- endif -%}
+
+          <div class="article-comments__row">
+            <label for="comment-author">Name</label>
+            <input type="text" id="comment-author" name="comment[author]" value="{{ form.author }}" required>
+          </div>
+          <div class="article-comments__row">
+            <label for="comment-email">Email</label>
+            <input type="email" id="comment-email" name="comment[email]" value="{{ form.email }}" required autocorrect="off" autocapitalize="off">
+          </div>
+          <div class="article-comments__row">
+            <label for="comment-body">Comment</label>
+            <textarea id="comment-body" name="comment[body]" rows="4" required>{{ form.body }}</textarea>
+          </div>
+          <button type="submit" class="btn btn--primary">Post comment</button>
+        {%- endform -%}
+      </section>
+    {%- endif -%}
+
+  </div>
+</article>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org/",
+  "@type": "BlogPosting",
+  "headline": {{ article.title | json }},
+  "url": {{ shop.url | append: article.url | json }},
+  "datePublished": {{ article.published_at | date: '%Y-%m-%dT%H:%M:%SZ' | json }},
+  {%- if article.updated_at %}
+  "dateModified": {{ article.updated_at | date: '%Y-%m-%dT%H:%M:%SZ' | json }},
+  {%- endif %}
+  {%- if article.image %}
+  "image": [{{ article.image | image_url: width: 1200 | prepend: 'https:' | json }}],
+  {%- endif %}
+  {%- if article.author != blank %}
+  "author": { "@type": "Person", "name": {{ article.author | json }} },
+  {%- endif %}
+  "publisher": { "@type": "Organization", "name": {{ shop.name | json }} },
+  "description": {{ article.excerpt_or_content | strip_html | truncate: 300 | json }}
+}
+</script>
+
+{% schema %}
+{
+  "name": "Blog Post",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "show_author",
+      "label": "Show the author's name",
+      "default": false,
+      "info": "Off by default — a one-person shop signing every post by name reads oddly."
+    }
+  ]
+}
+{% endschema %}
