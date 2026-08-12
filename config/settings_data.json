@@ -46,10 +46,10 @@
           "tagline": "Hand-drawn Auburn buttons, made one at a time.",
           "menu_heading_1": "Shop",
           "menu_1": "footer",
-          "menu_heading_2": "Help",
-          "menu_2": "footer-menu-help",
-          "menu_heading_3": "About",
-          "menu_3": "footer-menu-about",
+          "menu_heading_2": "About",
+          "menu_2": "footer-menu-about",
+          "menu_heading_3": "Help",
+          "menu_3": "footer-menu-help",
           "copyright_extra": ""
         }
       }
