@@ -14,8 +14,8 @@
       "settings": {
         "layout": "split",
         "eyebrow": "Hand-drawn, one at a time",
-        "heading": "Every Saturday deserves a <em>button</em>.",
-        "subheading": "Hand-drawn pin-back buttons for game day, bid day, and every tailgate in between.",
+        "heading": "Take a little <em>Auburn</em> with you.",
+        "subheading": "Hand-drawn pin-back buttons, made to order — for game days, bid days, and every Saturday you're watching from somewhere else.",
         "btn_primary_label": "Shop the buttons",
         "btn_primary_link": "/collections/all",
         "btn_secondary_label": "Our story",
@@ -29,8 +29,8 @@
       "type": "featured-collection",
       "settings": {
         "eyebrow": "The collection",
-        "heading": "This season's best",
-        "subheading": "Imagined for you, drawn by hand.",
+        "heading": "This season's designs",
+        "subheading": "Drawn by hand, made when you order.",
         "collection": "frontpage",
         "product_limit": 8,
         "show_view_all": true,
@@ -52,8 +52,8 @@
           "type": "feature",
           "settings": {
             "icon": "pin",
-            "title": "Made to be worn",
-            "text": "Sturdy pin backs and a scratch-resistant finish, so they live on your bag and not in a drawer."
+            "title": "Made when you order",
+            "text": "Nothing sits in a bin waiting. Yours gets made once you've asked for it."
           }
         },
         "feature-3": {
@@ -61,7 +61,7 @@
           "settings": {
             "icon": "gift",
             "title": "Chapter orders welcome",
-            "text": "Planning bid day or big-little gifts? Get in touch about bulk pricing."
+            "text": "Bid day, big-little, or a whole pledge class — get in touch and she'll sort it out with you directly."
           }
         },
         "feature-4": {
@@ -69,7 +69,7 @@
           "settings": {
             "icon": "truck",
             "title": "Packed by hand",
-            "text": "Every order is padded and packed by hand before it leaves the studio."
+            "text": "Every order is padded and packed by hand before it leaves the house."
           }
         }
       },
@@ -90,8 +90,8 @@
       "settings": {
         "image_position": "left",
         "eyebrow": "Our story",
-        "heading": "It started with one button and one football game.",
-        "text": "It began with a single design drawn for one Saturday, and a friend who wanted one too. Every button in the shop still starts the same way: a pen, a blank circle, and something worth wearing on your bag.",
+        "heading": "She has been an Auburn fan her whole life.",
+        "text": "She made her first buttons as a student — a few for herself, a few for friends, and she still has the ones she loves. Years later and a long way from the Plains, her Tri-Delta alumni group started asking where to get buttons like the old days. So she started drawing again.\n\nAuburn is where she met her husband, where they got married at the Red Barn, and where their first son was born. It is still the place they are always trying to get back to.",
         "btn_label": "Read our story",
         "btn_link": "/pages/about"
       }
@@ -109,11 +109,11 @@
       "type": "newsletter",
       "settings": {
         "eyebrow": "Stay in the loop",
-        "heading": "New designs drop before every home game.",
-        "subheading": "First look at new buttons, restocks, and game-day bundles.",
+        "heading": "Know when new designs go up.",
+        "subheading": "She draws them as inspiration strikes, so there's no schedule to follow — this is how you hear first.",
         "placeholder": "your@email.com",
         "btn_label": "Join the list",
-        "success_message": "You're on the list. See you Saturday."
+        "success_message": "You're on the list. War Eagle."
       }
     }
   },

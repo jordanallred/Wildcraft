@@ -14,9 +14,9 @@
       "settings": {
         "show_quantity": true,
         "show_related": true,
-        "trust_details": "<p>A [2.25]-inch pin-back button, drawn by hand and printed with a scratch-resistant finish. It comes on a proper metal pin back — the kind that holds through a whole game day on a tote, a jean jacket, or a lanyard without working its way loose.</p>",
-        "trust_shipping": "<p>Orders are packed by hand and go in the post within [2 business days]. From there it's usually [3–5 days] to your door. Shipping is free on orders over $50.<br/><br/>Ordering for a chapter? Email [your@email.com] before you check out — give us [two weeks] and we'll take care of you.</p>",
-        "trust_returns": "<p>If a button turns up bent, scratched, or simply isn't what you ordered, email [your@email.com] within [14 days] with a photo. We'll replace it or refund you, whichever you'd rather — and you don't need to post the old one back.<br/><br/>Changed your mind? Get in touch and we'll sort something out.</p>"
+        "trust_details": "<p>A 2.25-inch pin-back button, drawn by hand and printed with a scratch-resistant finish. It comes on a proper metal pin back — the kind that holds through a whole game day on a tote, a jean jacket, or a lanyard without working its way loose.</p>",
+        "trust_shipping": "<p>Every button is made after you order it, so allow 3–5 business days before yours goes in the post. Delivery time is on top of that. The full details are in our <a href=\"/policies/shipping-policy\">shipping policy</a>.</p><p>Ordering for a chapter? <a href=\"/pages/contact\">Get in touch</a> before you check out — she handles those directly so she can work out timing with you.</p>",
+        "trust_returns": "<p>If a button turns up bent, scratched, or simply isn't what you ordered, <a href=\"/pages/contact\">get in touch</a> and she'll make it right — replaced or refunded, whichever you'd rather.</p><p>Our <a href=\"/policies/refund-policy\">return and refund policy</a> has the specifics.</p>"
       }
     }
   },

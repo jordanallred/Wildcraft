@@ -20,35 +20,35 @@
           "type": "question",
           "settings": {
             "question": "How big are the buttons?",
-            "answer": "<p>Add the diameter and the pin-back style here so people know exactly what they're getting.</p>"
+            "answer": "<p>2.25 inches across — big enough to read from the other side of a tailgate, small enough to live on a backpack strap or a lanyard without getting in the way.</p>"
           }
         },
         "q2": {
           "type": "question",
           "settings": {
-            "question": "How long does shipping take?",
-            "answer": "<p>Tell customers how long you take to pack an order and roughly how long delivery runs. Free shipping applies to orders over $50.</p>"
+            "question": "How long does it take to arrive?",
+            "answer": "<p>Every button is drawn and made after you order it, so nothing ships the same day. Allow 3–5 business days before yours goes in the post, plus delivery time on top.</p><p>Our <a href=\"/policies/shipping-policy\">shipping policy</a> has the full details.</p>"
           }
         },
         "q3": {
           "type": "question",
           "settings": {
             "question": "Can I order for my whole chapter?",
-            "answer": "<p>Yes. Explain your bulk pricing and how much lead time you need for a large order.</p>"
+            "answer": "<p>Yes, and she would love to. Chapter and bulk orders are handled with her directly so she can work out timing and pricing around what you need and when you need it.</p><p><a href=\"/pages/contact\">Get in touch</a> before you order and she'll take it from there.</p>"
           }
         },
         "q4": {
           "type": "question",
           "settings": {
             "question": "What if something arrives damaged?",
-            "answer": "<p>Say what you'll do and how long customers have to get in touch.</p>"
+            "answer": "<p>Get in touch and she'll make it right. Our <a href=\"/policies/refund-policy\">return and refund policy</a> has the specifics.</p>"
           }
         },
         "q5": {
           "type": "question",
           "settings": {
-            "question": "Do you take custom designs?",
-            "answer": "<p>Say whether you take commissions, what you charge, and how far ahead to ask.</p>"
+            "question": "Can I ask for a design that isn't here?",
+            "answer": "<p>Not yet — but she's keeping a list. If there's something you want to see drawn, an Auburn moment or a chapter thing or just an idea, <a href=\"/pages/contact\">send it over</a>. What people ask for is a large part of what gets drawn next.</p>"
           }
         }
       },
