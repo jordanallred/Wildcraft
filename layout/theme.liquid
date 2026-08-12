@@ -87,13 +87,20 @@
   <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@400..700&family=Fraunces:ital,opsz,wght,SOFT,WONK@0,9..144,400..700,0..100,0..1;1,9..144,400..700,0..100,0..1&display=swap" rel="stylesheet">
 
   {%- comment -%}
-    logo.png is 1.2 MB. Serving it raw as the favicon made every page load
-    download a full-resolution logo just to paint a 16px tab icon. The SVG is
-    a few hundred bytes and scales; asset_img_url resizes the PNG for the
-    touch icon, which is the one place a raster is still wanted.
+    The tab icon comes from artwork the shop actually owns, or it doesn't
+    render at all. There was a hand-authored SVG here — a mark invented to
+    fill the slot, not drawn by the person whose shop this is — and inventing
+    a brand mark is not the theme's job. Upload one under Theme settings and
+    it appears; leave it empty and the browser shows its own default, which is
+    honest in a way a made-up logo isn't.
+
+    Still not logo.png: that file is 1.2 MB, and serving it raw made every
+    page load fetch a full-resolution logo to paint a 16px icon.
   {%- endcomment -%}
-  <link rel="icon" type="image/svg+xml" href="{{ 'favicon.svg' | asset_url }}">
-  <link rel="apple-touch-icon" href="{{ 'logo.png' | asset_img_url: '180x180' }}">
+  {%- if settings.favicon != blank -%}
+    <link rel="icon" href="{{ settings.favicon | image_url: width: 96 }}">
+    <link rel="apple-touch-icon" href="{{ settings.favicon | image_url: width: 180 }}">
+  {%- endif -%}
 
   {{ 'theme.css' | asset_url | stylesheet_tag }}
 

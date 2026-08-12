@@ -8,6 +8,17 @@
     "theme_support_url": "https://help.shopify.com/"
   },
   {
+    "name": "Brand",
+    "settings": [
+      {
+        "type": "image_picker",
+        "id": "favicon",
+        "label": "Tab icon",
+        "info": "The small icon in the browser tab and on a phone's home screen. Square artwork works best — a single button, or the mark from your logo. Leave it empty and the browser shows its own default."
+      }
+    ]
+  },
+  {
     "name": "Colors",
     "settings": [
       {
