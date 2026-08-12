@@ -686,6 +686,31 @@
 
   mobileToggle?.addEventListener('click', openMobileNav);
 
+  /* Without this, Tab walks out of the open drawer and into the page behind
+     the scrim — links the user cannot see and cannot click. Links inside a
+     collapsed submenu are display:none, so offsetParent filters them out and
+     the cycle only covers what is actually on screen. */
+  const DRAWER_FOCUSABLE = 'a[href], button:not([disabled]), input, select, textarea, [tabindex]:not([tabindex="-1"])';
+
+  mobileNav?.addEventListener('keydown', e => {
+    if (e.key !== 'Tab' || !mobileNav.classList.contains('is-open')) return;
+
+    const items = Array.from(mobileNav.querySelectorAll(DRAWER_FOCUSABLE))
+      .filter(el => el.offsetParent !== null);
+    if (!items.length) return;
+
+    const first = items[0];
+    const last = items[items.length - 1];
+
+    if (e.shiftKey && document.activeElement === first) {
+      e.preventDefault();
+      last.focus();
+    } else if (!e.shiftKey && document.activeElement === last) {
+      e.preventDefault();
+      first.focus();
+    }
+  });
+
   document.addEventListener('click', e => {
     if (e.target.closest('.mobile-nav__overlay') || e.target.closest('.mobile-nav__close')) {
       closeMobileNav();

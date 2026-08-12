@@ -1,0 +1,36 @@
+{%- comment -%}
+  The shop's mark, rendered identically in the site header and in the mobile
+  drawer.
+
+  It lives in a snippet for the same reason nav-tree does. The drawer used to
+  print {{ shop.name }} as plain text while the header showed the image, so
+  opening the menu swapped the brand for a string — two identities on screen in
+  the same moment. One source, no drift.
+
+  Sizing is left to the stylesheet via extra_class rather than baked in here,
+  so the drawer can match the mobile header's cap without this snippet needing
+  to know where it is.
+
+  Accepts:
+    logo        — an image_picker setting (optional; falls back to logo.png)
+    logo_width  — px, for the rendition request (optional, default 180)
+    extra_class — extra class on the <a>, for per-context sizing (optional)
+    loading     — 'eager' in the header, 'lazy' in the drawer (optional)
+{%- endcomment -%}
+
+{%- liquid
+  assign width = logo_width | default: 180
+  assign load = loading | default: 'eager'
+-%}
+
+<a
+  href="{{ routes.root_url }}"
+  class="site-header__logo{% if extra_class %} {{ extra_class }}{% endif %}"
+  aria-label="{{ shop.name }} — home"
+>
+  {%- if logo != blank -%}
+    {{ logo | image_url: width: width | image_tag: loading: load, widths: '160,240,320', alt: shop.name, class: 'site-header__logo-img' }}
+  {%- else -%}
+    <img src="{{ 'logo.png' | asset_url }}" alt="{{ shop.name }}" class="site-header__logo-img" width="180" height="180" loading="{{ load }}">
+  {%- endif -%}
+</a>

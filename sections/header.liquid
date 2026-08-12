@@ -9,14 +9,11 @@
       </svg>
     </button>
 
-    <a href="{{ routes.root_url }}" class="site-header__logo" aria-label="{{ shop.name }} — home">
-      {%- if section.settings.logo != blank -%}
-        {%- assign logo_width = section.settings.logo_width | default: 180 -%}
-        {{ section.settings.logo | image_url: width: logo_width | image_tag: loading: 'eager', widths: '160,240,320', alt: shop.name, class: 'site-header__logo-img' }}
-      {%- else -%}
-        <img src="{{ 'logo.png' | asset_url }}" alt="{{ shop.name }}" class="site-header__logo-img" width="180" height="180" loading="eager">
-      {%- endif -%}
-    </a>
+    {%- render 'site-logo',
+      logo: section.settings.logo,
+      logo_width: section.settings.logo_width,
+      loading: 'eager'
+    -%}
 
     <nav class="site-header__nav" aria-label="Main navigation">
       {%- render 'nav-tree', linklist: section.settings.menu, id_prefix: 'header' -%}
@@ -63,7 +60,12 @@
   <div class="mobile-nav__overlay"></div>
   <div class="mobile-nav__panel">
     <div class="mobile-nav__header">
-      <span class="site-header__logo">{{ shop.name }}</span>
+      {%- render 'site-logo',
+        logo: section.settings.logo,
+        logo_width: section.settings.logo_width,
+        extra_class: 'mobile-nav__logo',
+        loading: 'lazy'
+      -%}
       <button class="mobile-nav__close btn-icon" aria-label="Close menu">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
           <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
@@ -73,9 +75,20 @@
     <div class="mobile-nav__links">
       {%- render 'nav-tree', linklist: section.settings.menu, id_prefix: 'mobile' -%}
     </div>
-    {%- if shop.customer_accounts_enabled -%}
-      <a href="{{ routes.account_url }}" class="btn btn--outline btn--sm">My Account</a>
-    {%- endif -%}
+    {%- comment -%}
+      Search and account repeat what the header shows, but they are not
+      redundant: while the drawer is open those header icons sit behind the
+      scrim and cannot be tapped. Text links rather than a button, because a
+      lone outline button in a column of type is the thing that looked wrong.
+    {%- endcomment -%}
+    <div class="mobile-nav__footer">
+      {%- if section.settings.show_search -%}
+        <a href="{{ routes.search_url }}" class="mobile-nav__footer-link">Search</a>
+      {%- endif -%}
+      {%- if shop.customer_accounts_enabled -%}
+        <a href="{{ routes.account_url }}" class="mobile-nav__footer-link">My Account</a>
+      {%- endif -%}
+    </div>
   </div>
 </nav>
 

@@ -6,9 +6,14 @@
   it sits in a layout the stylesheet controls. Only templates that set one get
   one — the Contact page keeps using this same section and shows nothing.
 
-  On wide screens the portrait takes a column beside the writing; below that it
-  stacks above the text, because a narrow column of prose squeezed next to a
-  photo is worse than either on its own.
+  On wide screens the photo is set into the writing and the prose wraps around
+  and closes back over beneath it. On a phone there is no room to wrap, so it
+  stops floating and leads the page instead.
+
+  The `sizes` value below has to agree with the float width in the stylesheet.
+  Shopify picks which rendition to serve from `sizes`, so if the CSS grows the
+  photo and this does not, the page gets a larger blurry image rather than a
+  larger sharp one.
 {%- endcomment -%}
 
 {%- assign has_portrait = false -%}
@@ -27,7 +32,7 @@
            | image_tag:
              loading: 'eager',
              widths: '300,450,600,800',
-             sizes: '(min-width: 900px) 300px, 100vw',
+             sizes: '(min-width: 768px) 360px, 100vw',
              alt: section.settings.image_alt | default: page.title }}
         {%- if section.settings.caption != blank -%}
           <figcaption>{{ section.settings.caption }}</figcaption>

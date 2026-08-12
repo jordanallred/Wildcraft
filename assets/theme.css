@@ -603,12 +603,16 @@ h1,
 }
 .mobile-nav.is-open { visibility: visible; transition: visibility 0s; }
 .mobile-nav.is-open .mobile-nav__overlay { opacity: 1; }
+/* Paper, not surface. Every other ground on this site is the cream paper; a
+   pure-white panel slid over it read as though it came from another theme.
+   The shadow matches the cart drawer, which had one where this did not. */
 .mobile-nav__panel {
   position: absolute;
   top: 0; left: 0;
-  width: min(300px, 88vw);
+  width: min(340px, 88vw);
   height: 100%;
-  background: var(--color-surface);
+  background: var(--color-bg);
+  box-shadow: var(--shadow-lg);
   padding: 1.75rem 1.5rem;
   transform: translateX(-100%);
   transition: transform 0.32s cubic-bezier(0.4, 0, 0.2, 1);
@@ -619,6 +623,9 @@ h1,
 }
 .mobile-nav.is-open .mobile-nav__panel { transform: translateX(0); }
 .mobile-nav__header { display: flex; justify-content: space-between; align-items: center; }
+/* The mobile header centres its mark with `margin: 0 auto`; in the drawer's
+   flex header that would shove the close button off the edge. */
+.mobile-nav__logo .site-header__logo-img { max-height: 38px; margin: 0; }
 .mobile-nav__links { display: flex; flex-direction: column; }
 .mobile-nav__links .nav-tree { display: flex; flex-direction: column; }
 .mobile-nav__links .nav-tree__row {
@@ -637,9 +644,32 @@ h1,
   font-weight: 400;
   color: var(--color-text);
 }
+/* The last row's rule had nothing under it, so the list ended on a hanging
+   line. */
+.mobile-nav__links .nav-tree__item:last-child > .nav-tree__row { border-bottom: none; }
+
 .mobile-nav__links .nav-tree__link:hover { text-decoration: none; color: var(--color-accent-ink); }
 .mobile-nav__links .nav-tree__link[aria-current="page"],
 .mobile-nav__links .nav-tree__link[data-child-active] { color: var(--color-accent-ink); }
+
+/* The pin: the one spot of true orange in the drawer. It can be the full
+   --color-primary because it is a fill, not text — orange as text fails
+   contrast on paper and must use --color-accent-ink instead. See the note by
+   the palette at the top of this file before changing either. */
+.mobile-nav__links .nav-tree__link[aria-current="page"] {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+.mobile-nav__links .nav-tree__link[aria-current="page"]::after {
+  content: '';
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--color-primary);
+  flex-shrink: 0;
+}
 
 /* 44px touch target for the chevron, so a thumb aiming at the label
    doesn't open the submenu and vice versa */
@@ -664,6 +694,18 @@ h1,
 .mobile-nav__links .nav-tree__sublink[aria-current="page"] { color: var(--color-accent-ink); }
 .mobile-nav__links .nav-tree__group { padding-left: 0.875rem; }
 .mobile-nav__links .nav-tree__sublink--deep { font-size: 0.9375rem; }
+
+/* margin-top: auto against the panel's column, so the row sits on the floor of
+   the drawer however short the menu is. */
+.mobile-nav__footer {
+  margin-top: auto;
+  display: flex;
+  gap: 1.25rem;
+  padding-top: 1.125rem;
+  border-top: 1px solid var(--color-border);
+}
+.mobile-nav__footer-link { font-size: 0.875rem; color: var(--color-text-muted); }
+.mobile-nav__footer-link:hover { text-decoration: none; color: var(--color-accent-ink); }
 
 /* =========================================
    Hero Section
@@ -1976,19 +2018,26 @@ h1,
 }
 .page-content__back a { color: var(--color-accent-ink); }
 
-/* With a portrait, the page becomes two columns on a wide screen — photo in
-   its own track so the prose keeps a readable measure instead of stretching
-   to fill whatever the image leaves over. */
-.page-content--portrait {
-  max-width: 1040px;
-  display: grid;
-  grid-template-columns: 300px minmax(0, 1fr);
-  gap: 0 3rem;
-  align-items: start;
-}
-.page-content--portrait .page-content__title { grid-column: 1 / -1; }
+/* The photo is set into the writing and the prose wraps around it, rather than
+   sitting in a column of its own. The two-track grid this replaces pinned the
+   photo to a 300px track at the top; on a page of any length that left most of
+   its column empty and the photo stranded off to one side.
 
-.page-portrait { margin: 0; }
+   A float rather than a grid cell because the text has to close back over the
+   bottom of the picture — that reflow is the whole effect, and it also means
+   the layout does not care what shape the photo is. */
+.page-content--portrait { max-width: 860px; }
+.page-content--portrait::after {
+  content: '';
+  display: block;
+  clear: both;
+}
+
+.page-portrait {
+  float: left;
+  width: 360px;
+  margin: 0.25rem 2rem 1.25rem 0;
+}
 .page-portrait img {
   width: 100%;
   height: auto;
@@ -2003,9 +2052,15 @@ h1,
   margin-top: 0.75rem;
 }
 
-@media (max-width: 899px) {
-  .page-content--portrait { grid-template-columns: minmax(0, 1fr); gap: 1.75rem; }
-  .page-portrait { max-width: 320px; }
+/* Too narrow to wrap text beside a picture, so the photo stops floating and
+   simply leads the page. */
+@media (max-width: 767px) {
+  .page-portrait {
+    float: none;
+    width: 100%;
+    max-width: 420px;
+    margin: 0 0 1.5rem;
+  }
 }
 
 /* =========================================
