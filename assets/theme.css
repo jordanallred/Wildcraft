@@ -1905,12 +1905,57 @@ h1,
 /* =========================================
    Page Template
    ========================================= */
+/* Body typography comes from .rte now. These used to be element selectors
+   under .page-content doing the same job, and the two sets fought over
+   margins wherever both applied — .rte's `> * + *` spacing on top of a
+   per-element margin-bottom gave paragraphs two gaps. One owner instead. */
 .page-content { padding: var(--space-xl) 0; max-width: 760px; margin: 0 auto; }
-.page-content h1 { font-size: clamp(1.875rem, 3.5vw, 2.75rem); font-weight: 500; margin-bottom: 2rem; text-wrap: balance; }
-.page-content p { color: var(--color-text-muted); line-height: 1.8; margin-bottom: 1rem; }
-.page-content h2, .page-content h3 { margin: 2.25rem 0 0.875rem; }
-.page-content a { color: var(--color-accent-ink); }
-.page-content ul, .page-content ol { padding-left: 1.5rem; list-style: revert; color: var(--color-text-muted); margin-bottom: 1rem; line-height: 1.8; }
+.page-content__title,
+.page-content h1 {
+  font-size: clamp(1.875rem, 3.5vw, 2.75rem);
+  font-weight: 500;
+  margin-bottom: 2rem;
+  text-wrap: balance;
+}
+.page-content__back {
+  margin-top: var(--space-lg);
+  padding-top: var(--space-md);
+  border-top: 1px solid var(--color-border);
+  font-size: 0.9375rem;
+}
+.page-content__back a { color: var(--color-accent-ink); }
+
+/* With a portrait, the page becomes two columns on a wide screen — photo in
+   its own track so the prose keeps a readable measure instead of stretching
+   to fill whatever the image leaves over. */
+.page-content--portrait {
+  max-width: 1040px;
+  display: grid;
+  grid-template-columns: 300px minmax(0, 1fr);
+  gap: 0 3rem;
+  align-items: start;
+}
+.page-content--portrait .page-content__title { grid-column: 1 / -1; }
+
+.page-portrait { margin: 0; }
+.page-portrait img {
+  width: 100%;
+  height: auto;
+  display: block;
+  border-radius: var(--radius-lg);
+  border: 1.5px solid var(--color-border);
+}
+.page-portrait figcaption {
+  font-size: 0.8125rem;
+  color: var(--color-text-muted);
+  line-height: 1.5;
+  margin-top: 0.75rem;
+}
+
+@media (max-width: 899px) {
+  .page-content--portrait { grid-template-columns: minmax(0, 1fr); gap: 1.75rem; }
+  .page-portrait { max-width: 320px; }
+}
 
 /* =========================================
    404

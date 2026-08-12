@@ -1,0 +1,24 @@
+{%- comment -%}
+  Shipping, refund, privacy, terms. The theme had no policy template at all, so
+  Shopify dropped the raw policy HTML straight into the layout with nothing
+  around it — full window width, no measure, no type scale, headings and lists
+  falling back to browser defaults. On a site where everything else is set in
+  Fraunces and Assistant it looked like a different website.
+
+  Same treatment as a page: reading measure, .rte typography, and a link back
+  so the policy isn't a dead end.
+{%- endcomment -%}
+
+<div class="container">
+  <div class="page-content">
+    <h1 class="page-content__title">{{ policy.title }}</h1>
+
+    <div class="rte page-content__body">
+      {{ policy.body }}
+    </div>
+
+    <p class="page-content__back">
+      <a href="{{ routes.all_products_collection_url }}">&larr; Back to the buttons</a>
+    </p>
+  </div>
+</div>

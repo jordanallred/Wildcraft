@@ -1,0 +1,12 @@
+{
+  "sections": {
+    "main": {
+      "type": "main-page",
+      "settings": {
+        "image_alt": "Sarah-Beth",
+        "caption": ""
+      }
+    }
+  },
+  "order": ["main"]
+}

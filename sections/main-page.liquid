@@ -1,7 +1,41 @@
+{%- comment -%}
+  Page content, with an optional portrait beside it.
+
+  The image is a section setting rather than something pasted into the page
+  body, so it can be swapped in the theme editor without editing HTML, and so
+  it sits in a layout the stylesheet controls. Only templates that set one get
+  one — the Contact page keeps using this same section and shows nothing.
+
+  On wide screens the portrait takes a column beside the writing; below that it
+  stacks above the text, because a narrow column of prose squeezed next to a
+  photo is worse than either on its own.
+{%- endcomment -%}
+
+{%- assign has_portrait = false -%}
+{%- if section.settings.image != blank -%}
+  {%- assign has_portrait = true -%}
+{%- endif -%}
+
 <div class="container">
-  <div class="page-content">
-    <h1>{{ page.title }}</h1>
-    <div class="rte">
+  <div class="page-content{% if has_portrait %} page-content--portrait{% endif %}">
+    <h1 class="page-content__title">{{ page.title }}</h1>
+
+    {%- if has_portrait -%}
+      <figure class="page-portrait">
+        {{ section.settings.image
+           | image_url: width: 800
+           | image_tag:
+             loading: 'eager',
+             widths: '300,450,600,800',
+             sizes: '(min-width: 900px) 300px, 100vw',
+             alt: section.settings.image_alt | default: page.title }}
+        {%- if section.settings.caption != blank -%}
+          <figcaption>{{ section.settings.caption }}</figcaption>
+        {%- endif -%}
+      </figure>
+    {%- endif -%}
+
+    <div class="rte page-content__body">
       {{ page.content }}
     </div>
   </div>
@@ -10,6 +44,25 @@
 {% schema %}
 {
   "name": "Page Content",
-  "settings": []
+  "settings": [
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Photo",
+      "info": "Optional. Sits beside the writing on wide screens and above it on a phone. A portrait or square crop works best."
+    },
+    {
+      "type": "text",
+      "id": "image_alt",
+      "label": "Photo description",
+      "info": "Read aloud by screen readers and shown if the image fails to load. Say who or what is in the picture."
+    },
+    {
+      "type": "text",
+      "id": "caption",
+      "label": "Caption",
+      "info": "Optional line under the photo."
+    }
+  ]
 }
 {% endschema %}
