@@ -533,6 +533,11 @@
   }
 
   document.querySelectorAll('[data-product-form]').forEach(form => {
+    /* Say "only one left" on arrival, not just after someone pushes the
+       button and finds it won't move. */
+    const qtyInput = form.querySelector('.product-form__qty-input');
+    if (qtyInput) showQtyLimit(qtyInput);
+
     const sectionId = form.dataset.sectionId;
     const variantsEl = document.getElementById(`ProductVariants-${sectionId}`);
     if (!variantsEl) return;
@@ -565,7 +570,11 @@
   }
 
   function showQtyLimit(input) {
-    const note = input.closest('div')?.querySelector('[data-qty-limit]');
+    /* Scoped to the form, not `input.closest('div')` — that resolved to
+       .product-form__quantity, which wraps the stepper but not the note
+       sitting beside it, so the lookup always came back null and the message
+       never appeared however hard you pushed the button. */
+    const note = input.form?.querySelector('[data-qty-limit]');
     if (!note) return;
     const max = qtyCeiling(input);
     const atLimit = (parseInt(input.value, 10) || 1) >= max && max < 99;
