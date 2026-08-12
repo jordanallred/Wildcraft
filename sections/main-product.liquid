@@ -15,6 +15,30 @@
     {{ product.variants | json }}
   </script>
 
+  {%- comment -%}
+    How many of each variant can actually be ordered. Shopify strips
+    inventory_quantity out of `product.variants | json` on the storefront, so
+    the script has no way to know the cap — which is why the quantity box was
+    hardcoded to max="99" and would happily let you ask for six of a
+    one-off. Liquid can see the real number, so it gets emitted separately.
+
+    null means uncapped: either the variant isn't tracked, or its policy is to
+    keep selling past zero, in which case any quantity is legitimate.
+  {%- endcomment -%}
+  <script type="application/json" id="ProductInventory-{{ section.id }}">
+    {
+      {%- for variant in product.variants -%}
+        "{{ variant.id }}":
+        {%- if variant.inventory_management == 'shopify' and variant.inventory_policy == 'deny' -%}
+          {{ variant.inventory_quantity | at_least: 0 }}
+        {%- else -%}
+          null
+        {%- endif -%}
+        {%- unless forloop.last %},{% endunless -%}
+      {%- endfor -%}
+    }
+  </script>
+
   <div class="container">
     <nav class="breadcrumbs" aria-label="Breadcrumb">
       <a href="{{ routes.root_url }}">Home</a>
@@ -127,13 +151,40 @@
           {%- endunless -%}
 
           {%- if section.settings.show_quantity -%}
+            {%- comment -%}
+              max is the real stock when it's tracked and set to stop at zero,
+              not a flat 99. Shopify would refuse the excess at add-to-cart
+              anyway, so the old ceiling only bought the customer a rejection
+              after the fact.
+            {%- endcomment -%}
+            {%- if current_variant.inventory_management == 'shopify' and current_variant.inventory_policy == 'deny' -%}
+              {%- assign qty_max = current_variant.inventory_quantity | at_least: 1 -%}
+            {%- else -%}
+              {%- assign qty_max = 99 -%}
+            {%- endif -%}
             <div>
               <label class="product-form__label" for="product-qty-{{ section.id }}">Quantity</label>
               <div class="product-form__quantity">
                 <button type="button" class="product-form__qty-btn" data-action="decrease" aria-label="Decrease">−</button>
-                <input id="product-qty-{{ section.id }}" class="product-form__qty-input" type="number" name="quantity" value="1" min="1" max="99" aria-label="Quantity">
+                <input
+                  id="product-qty-{{ section.id }}"
+                  class="product-form__qty-input"
+                  type="number"
+                  name="quantity"
+                  value="1"
+                  min="1"
+                  max="{{ qty_max }}"
+                  inputmode="numeric"
+                  aria-label="Quantity"
+                >
                 <button type="button" class="product-form__qty-btn" data-action="increase" aria-label="Increase">+</button>
               </div>
+              {%- comment -%}
+                Says why the stepper stops. Hidden by default and revealed by
+                the script when you reach the ceiling, so it reads as an
+                explanation rather than a warning nobody asked for.
+              {%- endcomment -%}
+              <p class="product-form__stock" data-qty-limit hidden></p>
             </div>
           {%- else -%}
             <input type="hidden" name="quantity" value="1">

@@ -496,6 +496,22 @@
     const addError = form.querySelector('[data-add-to-cart-error]');
     if (addError) { addError.textContent = ''; addError.hidden = true; }
 
+    /* Stock differs per variant, so the quantity ceiling has to move with the
+       selection — otherwise picking a variant with one left keeps whatever
+       ceiling the previously selected one had. */
+    const invEl = document.getElementById(`ProductInventory-${sectionId}`);
+    const qtyInput = form.querySelector('.product-form__qty-input');
+    if (invEl && qtyInput) {
+      let caps;
+      try { caps = JSON.parse(invEl.textContent); } catch { caps = null; }
+      const cap = caps ? caps[matched.id] : null;
+      qtyInput.max = (cap === null || cap === undefined) ? 99 : Math.max(cap, 1);
+      if ((parseInt(qtyInput.value, 10) || 1) > qtyCeiling(qtyInput)) {
+        qtyInput.value = qtyCeiling(qtyInput);
+      }
+      showQtyLimit(qtyInput);
+    }
+
     markUnavailable(form, variants, selectedOptions, btn.dataset.optionIndex);
   });
 
@@ -540,15 +556,44 @@
   /* ========================
      Quantity Stepper (product page)
   ======================== */
+  /* The ceiling comes from the input's own max, which Liquid sets to real
+     stock — it was a hardcoded 99 here, so the stepper climbed past whatever
+     the markup said and left Shopify to reject the order later. */
+  function qtyCeiling(input) {
+    const max = parseInt(input.max, 10);
+    return Number.isFinite(max) && max > 0 ? max : 99;
+  }
+
+  function showQtyLimit(input) {
+    const note = input.closest('div')?.querySelector('[data-qty-limit]');
+    if (!note) return;
+    const max = qtyCeiling(input);
+    const atLimit = (parseInt(input.value, 10) || 1) >= max && max < 99;
+    note.textContent = atLimit
+      ? (max === 1 ? 'Only one of these left.' : `Only ${max} of these left.`)
+      : '';
+    note.hidden = !atLimit;
+  }
+
   document.addEventListener('click', e => {
     const btn = e.target.closest('.product-form__qty-btn');
     if (!btn) return;
     const input = btn.closest('.product-form__quantity')?.querySelector('.product-form__qty-input');
     if (!input) return;
     let val = parseInt(input.value, 10) || 1;
-    if (btn.dataset.action === 'increase') val = Math.min(val + 1, 99);
+    if (btn.dataset.action === 'increase') val = Math.min(val + 1, qtyCeiling(input));
     if (btn.dataset.action === 'decrease') val = Math.max(val - 1, 1);
     input.value = val;
+    showQtyLimit(input);
+  });
+
+  /* Typing straight into the box has to respect the same ceiling. */
+  document.addEventListener('change', e => {
+    const input = e.target.closest('.product-form__qty-input');
+    if (!input) return;
+    const val = parseInt(input.value, 10) || 1;
+    input.value = Math.min(Math.max(val, 1), qtyCeiling(input));
+    showQtyLimit(input);
   });
 
   /* ========================

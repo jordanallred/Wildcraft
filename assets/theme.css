@@ -2071,6 +2071,15 @@ h1,
 }
 .product-form__note[hidden] { display: none; }
 
+/* Why the stepper stopped. Stated plainly, not styled as an error — running
+   low is a fact about a hand-made thing, not the customer's mistake. */
+.product-form__stock {
+  font-size: 0.8125rem;
+  color: var(--color-text-muted);
+  margin-top: 0.5rem;
+}
+.product-form__stock[hidden] { display: none; }
+
 /* A rejected add — out of stock between load and click, or more than is left.
    Reads as a warning without borrowing the accent, which on this page already
    means "price" and "buy". */

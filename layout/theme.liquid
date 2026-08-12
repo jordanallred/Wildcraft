@@ -97,9 +97,25 @@
     Still not logo.png: that file is 1.2 MB, and serving it raw made every
     page load fetch a full-resolution logo to paint a 16px icon.
   {%- endcomment -%}
-  {%- if settings.favicon != blank -%}
-    <link rel="icon" href="{{ settings.favicon | image_url: width: 96 }}">
-    <link rel="apple-touch-icon" href="{{ settings.favicon | image_url: width: 180 }}">
+  {%- comment -%}
+    Falls back to the brand assets set in Shopify admin, so the logo she has
+    already uploaded becomes the tab icon without her picking it twice. The
+    header's logo can't be reached from here — that one is a section setting,
+    and a layout can't read another section's settings — which is why the
+    theme-level picker exists as the first choice.
+  {%- endcomment -%}
+  {%- liquid
+    assign favicon_image = settings.favicon
+    if favicon_image == blank
+      assign favicon_image = shop.brand.square_logo
+    endif
+    if favicon_image == blank
+      assign favicon_image = shop.brand.logo
+    endif
+  -%}
+  {%- if favicon_image != blank -%}
+    <link rel="icon" href="{{ favicon_image | image_url: width: 96 }}">
+    <link rel="apple-touch-icon" href="{{ favicon_image | image_url: width: 180 }}">
   {%- endif -%}
 
   {{ 'theme.css' | asset_url | stylesheet_tag }}

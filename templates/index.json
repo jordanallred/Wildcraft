@@ -15,10 +15,10 @@
         "layout": "split",
         "eyebrow": "Hand-drawn, one at a time",
         "heading": "Take a little <em>Auburn</em> with you.",
-        "subheading": "Hand-drawn pin-back buttons, made to order — for game days, bid days, and every Saturday you're watching from somewhere else.",
+        "subheading": "I draw every button by hand and make it once you order — for game days, bid days, and every Saturday you're watching from somewhere else.",
         "btn_primary_label": "Shop the buttons",
         "btn_primary_link": "/collections/all",
-        "btn_secondary_label": "Our story",
+        "btn_secondary_label": "My story",
         "btn_secondary_link": "/pages/about",
         "bg_color": "#f0ede6",
         "text_color": "light",
@@ -45,7 +45,7 @@
           "settings": {
             "icon": "heart",
             "title": "Drawn by hand",
-            "text": "Every design starts as an original drawing. No clip art, no templates."
+            "text": "Every design starts as an original drawing of mine. No clip art, no templates."
           }
         },
         "feature-2": {
@@ -53,7 +53,7 @@
           "settings": {
             "icon": "pin",
             "title": "Made when you order",
-            "text": "Nothing sits in a bin waiting. Yours gets made once you've asked for it."
+            "text": "Nothing sits in a bin waiting. I make yours after you've asked for it."
           }
         },
         "feature-3": {
@@ -61,7 +61,7 @@
           "settings": {
             "icon": "gift",
             "title": "Chapter orders welcome",
-            "text": "Bid day, big-little, or a whole pledge class — get in touch and she'll sort it out with you directly."
+            "text": "Bid day, big-little, or a whole pledge class — get in touch and we'll sort it out together."
           }
         },
         "feature-4": {
@@ -69,7 +69,7 @@
           "settings": {
             "icon": "truck",
             "title": "Packed by hand",
-            "text": "Every order is padded and packed by hand before it leaves the house."
+            "text": "I pad and pack every order by hand before it leaves the house."
           }
         }
       },
@@ -81,7 +81,7 @@
       ],
       "settings": {
         "eyebrow": "The promise",
-        "heading": "Small shop, real hands",
+        "heading": "Small shop, my own two hands",
         "subheading": ""
       }
     },
@@ -89,10 +89,10 @@
       "type": "about-banner",
       "settings": {
         "image_position": "left",
-        "eyebrow": "Our story",
-        "heading": "She has been an Auburn fan her whole life.",
-        "text": "She made her first buttons as a student — a few for herself, a few for friends, and she still has the ones she loves. Years later and a long way from the Plains, her Tri-Delta alumni group started asking where to get buttons like the old days. So she started drawing again.\n\nAuburn is where she met her husband, where they got married at the Red Barn, and where their first son was born. It is still the place they are always trying to get back to.",
-        "btn_label": "Read our story",
+        "eyebrow": "My story",
+        "heading": "War Eagle y'all — my name is Sarah-Beth.",
+        "text": "I made my first buttons as a student at Auburn. A few for me, a few for my friends, and I still have the ones I love most. Years later, a long way from the Plains, my Tri-Delta sisters started asking where to get buttons like the old days. So I started drawing again.\n\nAuburn is where I met my husband, where we got married at the Red Barn, and where our first son was born. It's still the place we're always trying to get back to.",
+        "btn_label": "Read my story",
         "btn_link": "/pages/about"
       }
     },
@@ -100,8 +100,8 @@
       "type": "social-follow",
       "settings": {
         "eyebrow": "Out in the wild",
-        "heading": "Tag us on your game-day fit",
-        "subheading": "We repost our favourites every week.",
+        "heading": "Tag me on your game-day fit",
+        "subheading": "I repost my favourites.",
         "btn_label": "Follow along"
       }
     },
@@ -110,7 +110,7 @@
       "settings": {
         "eyebrow": "Stay in the loop",
         "heading": "Know when new designs go up.",
-        "subheading": "She draws them as inspiration strikes, so there's no schedule to follow — this is how you hear first.",
+        "subheading": "I draw them as inspiration strikes, so there's no schedule to follow. This is how you hear first.",
         "placeholder": "your@email.com",
         "btn_label": "Join the list",
         "success_message": "You're on the list. War Eagle."

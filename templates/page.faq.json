@@ -27,39 +27,48 @@
           "type": "question",
           "settings": {
             "question": "How long does it take to arrive?",
-            "answer": "<p>Every button is drawn and made after you order it, so nothing ships the same day. Allow 3–5 business days before yours goes in the post, plus delivery time on top.</p><p>Our <a href=\"/policies/shipping-policy\">shipping policy</a> has the full details.</p>"
+            "answer": "<p>I draw and make every button after you order it, so nothing ships the same day. Allow 3–5 business days before yours goes in the post, plus delivery time on top.</p><p>My <a href=\"/policies/shipping-policy\">shipping policy</a> has the full details.</p>"
           }
         },
         "q3": {
           "type": "question",
           "settings": {
             "question": "Can I order for my whole chapter?",
-            "answer": "<p>Yes, and she would love to. Chapter and bulk orders are handled with her directly so she can work out timing and pricing around what you need and when you need it.</p><p><a href=\"/pages/contact\">Get in touch</a> before you order and she'll take it from there.</p>"
+            "answer": "<p>Yes, and I'd love to. I handle chapter and bulk orders directly so we can work out timing and pricing around what you need and when you need it.</p><p><a href=\"/pages/contact\">Get in touch</a> before you order and we'll go from there.</p>"
           }
         },
         "q4": {
           "type": "question",
           "settings": {
             "question": "What if something arrives damaged?",
-            "answer": "<p>Get in touch and she'll make it right. Our <a href=\"/policies/refund-policy\">return and refund policy</a> has the specifics.</p>"
+            "answer": "<p>Tell me and I'll make it right. My <a href=\"/policies/refund-policy\">return and refund policy</a> has the specifics.</p>"
           }
         },
         "q5": {
           "type": "question",
           "settings": {
             "question": "Can I ask for a design that isn't here?",
-            "answer": "<p>Not yet — but she's keeping a list. If there's something you want to see drawn, an Auburn moment or a chapter thing or just an idea, <a href=\"/pages/contact\">send it over</a>. What people ask for is a large part of what gets drawn next.</p>"
+            "answer": "<p>Not yet — but I'm keeping a list. If there's something you want to see drawn, an Auburn moment or a chapter thing or just an idea, <a href=\"/pages/contact\">send it over</a>. What people ask for is a big part of what I draw next.</p>"
           }
         }
       },
-      "block_order": ["q1", "q2", "q3", "q4", "q5"],
+      "block_order": [
+        "q1",
+        "q2",
+        "q3",
+        "q4",
+        "q5"
+      ],
       "settings": {
         "eyebrow": "Good to know",
         "heading": "Questions, answered",
         "subheading": "",
-        "footer_text": "<p>Still stuck? <a href=\"/pages/contact\">Send us a note</a> and we'll get back to you.</p>"
+        "footer_text": "<p>Still stuck? <a href=\"/pages/contact\">Send me a note</a> and I'll get back to you.</p>"
       }
     }
   },
-  "order": ["main", "faq"]
+  "order": [
+    "main",
+    "faq"
+  ]
 }
