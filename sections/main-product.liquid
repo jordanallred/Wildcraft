@@ -123,6 +123,18 @@
           {%- endif -%}
         </div>
 
+        {%- comment -%}
+          The description sits above the buy button, not below three panels of
+          boilerplate. It's the only thing on the page about *this* button, so
+          burying it under content identical on every product had the page
+          saying a great deal and telling you nothing.
+        {%- endcomment -%}
+        {%- if product.description != blank -%}
+          <div class="product-info__description rte">
+            {{ product.description }}
+          </div>
+        {%- endif -%}
+
         {%- form 'product', product, data-product-form: '', data-section-id: section.id -%}
           <!-- Updated by JS when a variant is selected -->
           <input type="hidden" name="id" id="product-variant-id-{{ section.id }}" value="{{ current_variant.id }}">
@@ -204,8 +216,13 @@
                 Sold out
               {%- endif -%}
             </button>
+            {%- comment -%}
+              This promised "New buttons land before every home game" — a
+              release schedule nobody agreed to. She draws when inspiration or
+              a request strikes, so it says nothing about timing now.
+            {%- endcomment -%}
             <p class="product-form__note" id="product-note-{{ section.id }}"{% if current_variant.available %} hidden{% endif %}>
-              Sold out for now. New buttons land before every home game.
+              Sold out for now.
             </p>
             {%- comment -%}
               Where a rejected add lands. Shopify turns one down more often
@@ -217,21 +234,49 @@
           </div>
         {%- endform -%}
 
-        {%- render 'product-trust',
-              details: section.settings.trust_details,
-              shipping: section.settings.trust_shipping,
-              returns: section.settings.trust_returns -%}
-
-        {%- if product.description != blank -%}
-          <div class="product-info__description">
-            {{ product.description }}
-          </div>
+        {%- comment -%}
+          Specs come from the product's own `custom.details` metafield, not
+          from a theme setting. Three accordions used to sit here restating
+          the same "2.25-inch pin-back button" on every page — which is both
+          repetition and a trap, because it stops being true the moment the
+          catalogue grows past buttons. A sticker or a print carries its own
+          list; anything with nothing to say shows nothing.
+        {%- endcomment -%}
+        {%- assign spec_list = product.metafields.custom.details.value -%}
+        {%- if spec_list != blank -%}
+          <ul class="product-specs" role="list">
+            {%- for spec in spec_list -%}
+              <li>{{ spec }}</li>
+            {%- endfor -%}
+          </ul>
         {%- endif -%}
 
-        <div class="product-meta">
-          {%- if product.type != blank -%}<p>Type: <span>{{ product.type }}</span></p>{%- endif -%}
-          {%- if current_variant.sku != blank -%}<p id="product-sku-{{ section.id }}">SKU: <span>{{ current_variant.sku }}</span></p>{%- endif -%}
+        {%- comment -%}
+          One line and three links, rather than paragraphs paraphrasing the
+          policies. The policy pages are the real thing and stay correct on
+          their own; restating them here just created a second copy to keep in
+          step, and the two drift.
+        {%- endcomment -%}
+        <div class="product-policies">
+          {%- if section.settings.fulfillment_note != blank -%}
+            <p class="product-policies__note">{{ section.settings.fulfillment_note }}</p>
+          {%- endif -%}
+          <p class="product-policies__links">
+            {%- if shop.shipping_policy.url != blank -%}
+              <a href="{{ shop.shipping_policy.url }}">{{ shop.shipping_policy.title }}</a>
+            {%- endif -%}
+            {%- if shop.refund_policy.url != blank -%}
+              <a href="{{ shop.refund_policy.url }}">{{ shop.refund_policy.title }}</a>
+            {%- endif -%}
+            {%- if pages['contact'].handle != blank -%}
+              <a href="{{ pages['contact'].url }}">Questions?</a>
+            {%- endif -%}
+          </p>
         </div>
+
+        {%- if current_variant.sku != blank -%}
+          <p class="product-meta" id="product-sku-{{ section.id }}">SKU: <span>{{ current_variant.sku }}</span></p>
+        {%- endif -%}
       </div>
     </div>
 
@@ -344,25 +389,14 @@
     },
     {
       "type": "paragraph",
-      "content": "These three panels appear on every product. Leave one empty to hide it."
+      "content": "Specs live on each product, under Product details → Details, so a sticker or a print can describe itself differently from a button. Shipping and returns link to your policy pages rather than repeating them here."
     },
     {
-      "type": "richtext",
-      "id": "trust_details",
-      "label": "What you're getting",
-      "default": "<p>A pin-back button, drawn by hand and printed on a scratch-resistant finish. Add the size and pin style here.</p>"
-    },
-    {
-      "type": "richtext",
-      "id": "trust_shipping",
-      "label": "Shipping",
-      "default": "<p>Add how long you take to pack an order and roughly how long delivery runs. Free shipping applies over $50.</p>"
-    },
-    {
-      "type": "richtext",
-      "id": "trust_returns",
-      "label": "Returns",
-      "default": "<p>Say what happens if something arrives damaged, and how long customers have to tell you.</p>"
+      "type": "text",
+      "id": "fulfillment_note",
+      "label": "One-line note",
+      "default": "Made to order — allow 3–5 business days before it ships.",
+      "info": "Appears on every product, above the policy links. Leave empty to hide it."
     }
   ]
 }

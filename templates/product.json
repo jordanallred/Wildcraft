@@ -14,9 +14,7 @@
       "settings": {
         "show_quantity": true,
         "show_related": true,
-        "trust_details": "<p>A 2.25-inch pin-back button, drawn by hand and printed with a scratch-resistant finish. It comes on a proper metal pin back — the kind that holds through a whole game day on a tote, a jean jacket, or a lanyard without working its way loose.</p>",
-        "trust_shipping": "<p>I make every button after you order it, so allow 3–5 business days before yours goes in the post. Delivery time is on top of that. The full details are in my <a href=\"/policies/shipping-policy\">shipping policy</a>.</p><p>Ordering for a chapter? <a href=\"/pages/contact\">Get in touch</a> before you check out and we'll work out the timing together.</p>",
-        "trust_returns": "<p>If a button turns up bent, scratched, or simply isn't what you ordered, <a href=\"/pages/contact\">tell me</a> and I'll make it right — replaced or refunded, whichever you'd rather.</p><p>My <a href=\"/policies/refund-policy\">return and refund policy</a> has the specifics.</p>"
+        "fulfillment_note": "Made to order — allow 3–5 business days before it ships."
       }
     }
   },
