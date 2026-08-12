@@ -576,6 +576,18 @@
        never appeared however hard you pushed the button. */
     const note = input.form?.querySelector('[data-qty-limit]');
     if (!note) return;
+
+    /* Nothing to say about scarcity when there is nothing to buy. A sold-out
+       variant has inventory 0, and the Liquid floors the input's max at 1 so
+       the stepper stays usable — which read as "Only one of these left" on a
+       page whose button says Sold out. */
+    const submit = input.form?.querySelector('[data-add-to-cart]');
+    if (submit && submit.disabled) {
+      note.textContent = '';
+      note.hidden = true;
+      return;
+    }
+
     const max = qtyCeiling(input);
     const atLimit = (parseInt(input.value, 10) || 1) >= max && max < 99;
     note.textContent = atLimit
