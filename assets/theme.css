@@ -1905,6 +1905,57 @@ h1,
 /* =========================================
    Page Template
    ========================================= */
+/* =========================================
+   Shopify policy pages (/policies/*)
+   These are rendered by Shopify, not by the theme — a templates/policy.liquid
+   is simply ignored, which is why adding one changed nothing. Shopify emits
+   its own .shopify-policy__* markup inside the layout and leaves it entirely
+   unstyled, so the pages arrived at full window width with browser-default
+   headings and lists. The only way in is to style their classes.
+   ========================================= */
+.shopify-policy__container {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: var(--space-xl) 1.5rem var(--space-2xl);
+}
+.shopify-policy__title h1 {
+  font-size: clamp(1.875rem, 3.5vw, 2.75rem);
+  font-weight: 500;
+  margin-bottom: 2rem;
+  text-wrap: balance;
+}
+.shopify-policy__body {
+  color: var(--color-text-muted);
+  line-height: 1.8;
+}
+.shopify-policy__body > * + * { margin-top: 1rem; }
+.shopify-policy__body h2,
+.shopify-policy__body h3,
+.shopify-policy__body h4 {
+  color: var(--color-text);
+  margin-top: 2.25rem;
+  margin-bottom: 0.875rem;
+  text-wrap: balance;
+}
+.shopify-policy__body h2 { font-size: 1.5rem; font-weight: 500; }
+.shopify-policy__body h3 { font-size: 1.25rem; font-weight: 500; }
+.shopify-policy__body a {
+  color: var(--color-accent-ink);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.shopify-policy__body ul,
+.shopify-policy__body ol { padding-left: 1.5rem; list-style: revert; }
+.shopify-policy__body li + li { margin-top: 0.375rem; }
+.shopify-policy__body strong { color: var(--color-text); }
+.shopify-policy__body table { width: 100%; border-collapse: collapse; }
+.shopify-policy__body th,
+.shopify-policy__body td {
+  text-align: left;
+  padding: 0.5rem 0.75rem;
+  border-bottom: 1px solid var(--color-border);
+}
+
 /* Body typography comes from .rte now. These used to be element selectors
    under .page-content doing the same job, and the two sets fought over
    margins wherever both applied — .rte's `> * + *` spacing on top of a
