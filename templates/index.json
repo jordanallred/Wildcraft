@@ -22,7 +22,8 @@
         "btn_secondary_link": "/pages/about",
         "bg_color": "#f0ede6",
         "text_color": "light",
-        "overlay_opacity": 35
+        "overlay_opacity": 35,
+        "heading_accent": "Auburn"
       }
     },
     "featured-collection": {
