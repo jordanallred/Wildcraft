@@ -104,6 +104,21 @@
       return this.el?.getAttribute('aria-hidden') === 'false';
     },
 
+    /* Stock limits are the common rejection here, so the message goes at the
+       top of the drawer body where the affected line is, not in a toast that
+       drifts away from what it refers to. */
+    showError(message) {
+      if (!this.body) return;
+      let el = this.body.querySelector('.cart-drawer__error');
+      if (!el) {
+        el = document.createElement('p');
+        el.className = 'cart-drawer__error';
+        el.setAttribute('role', 'alert');
+        this.body.prepend(el);
+      }
+      el.textContent = message;
+    },
+
     /* A dialog has to cycle. inert keeps the panel out of the tab order while
        it's closed, but once open, Tab from the last control walked straight
        out into the page behind — which is still open behind an overlay the
@@ -212,8 +227,24 @@
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ id: key, quantity: qty })
       });
-      const cart = await res.json();
-      cartDrawer.render(cart);
+      const data = await res.json();
+
+      /* Asking for more than is in stock comes back 422 with an error body,
+         not a cart. Without this check that body went straight into render(),
+         where `data.items` is undefined and the map throws — so pressing "+"
+         past the stock limit silently emptied the drawer's markup instead of
+         saying why. Shopify's message is specific ("You can only add 1 of
+         this to your cart"), so it's worth showing rather than swallowing. */
+      if (!res.ok) {
+        const message = data?.description || data?.message || 'That change could not be applied.';
+        /* Re-read the cart first — render() rewrites the drawer body, so
+           showing the message before that would wipe it immediately. */
+        await cartDrawer.refresh();
+        cartDrawer.showError(message);
+        return;
+      }
+
+      cartDrawer.render(data);
     } catch (e) {
       console.error('[Wildcraft] Cart update failed', e);
     }

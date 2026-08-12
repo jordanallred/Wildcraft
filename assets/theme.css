@@ -1298,6 +1298,18 @@ h1,
 .cart-item__remove { margin-left: 0.5rem; }
 .cart-table__remove:hover,
 .cart-item__remove:hover { color: var(--color-accent-ink); }
+/* Shopify's reason for refusing a quantity change — usually a stock limit.
+   Sits at the top of the drawer body, next to the line it refers to. */
+.cart-drawer__error {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--color-accent-ink);
+  background: var(--color-bg-alt);
+  border: 1.5px solid var(--color-border-warm);
+  border-radius: var(--radius-md);
+  padding: 0.75rem 1rem;
+}
+
 .cart-item__title a { color: inherit; text-decoration: none; }
 .cart-item__title a:hover { text-decoration: underline; text-underline-offset: 2px; }
 
