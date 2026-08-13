@@ -15,15 +15,16 @@
         "layout": "split",
         "eyebrow": "Hand-drawn, one at a time",
         "heading": "Take a little Auburn with you.",
+        "heading_accent": "Auburn",
         "subheading": "I design everything by hand and make it to order — for game days, bid days, and wherever you find yourself on  a Saturday.",
         "btn_primary_label": "Shop the buttons",
         "btn_primary_link": "/collections/all",
         "btn_secondary_label": "My story",
         "btn_secondary_link": "/pages/about",
+        "image": "shopify://shop_images/8F03C683-D330-4F0F-A46C-1689532DAFFF.png",
         "bg_color": "#f0ede6",
         "text_color": "light",
-        "overlay_opacity": 35,
-        "heading_accent": "Auburn"
+        "overlay_opacity": 35
       }
     },
     "featured-collection": {
