@@ -24,7 +24,7 @@
         "image": "shopify://shop_images/bannerflatlay.png",
         "bg_color": "#f0ede6",
         "text_color": "light",
-        "overlay_opacity": 30
+        "overlay_opacity": 70
       }
     },
     "featured-collection": {
