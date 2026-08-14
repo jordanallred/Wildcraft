@@ -20,21 +20,21 @@
           "type": "question",
           "settings": {
             "question": "How big are the buttons?",
-            "answer": "<p>2.25 inches across — big enough to read from the other side of a tailgate, small enough to live on a backpack strap or a lanyard without getting in the way.</p>"
+            "answer": "<p>3 inches across — big enough to read from the other side of a tailgate, small enough to live on a backpack strap or a lanyard without getting in the way.</p>"
           }
         },
         "q2": {
           "type": "question",
           "settings": {
             "question": "How long does it take to arrive?",
-            "answer": "<p>I draw and make every button after you order it, so nothing ships the same day. Allow 3–5 business days before yours goes in the post, plus delivery time on top.</p><p>My <a href=\"/policies/shipping-policy\">shipping policy</a> has the full details.</p>"
+            "answer": "<p>I draw and make every button after you order it, so nothing ships the same day. Allow 2–3 business days before yours goes in the post, plus delivery time on top.</p><p>My <a href=\"/policies/shipping-policy\">shipping policy</a> has the full details.</p>"
           }
         },
         "q3": {
           "type": "question",
           "settings": {
-            "question": "Can I order for my whole chapter?",
-            "answer": "<p>Yes, and I'd love to. I handle chapter and bulk orders directly so I can work out timing and pricing around what you need and when you need it.</p><p><a href=\"/pages/contact\">Get in touch</a> before you order and I'll take it from there.</p>"
+            "question": "Can I order more than one?",
+            "answer": "<p>Of course. Every button is made after you order it, so a larger order takes a little longer to put together — if you need several by a certain date, order early and tell me the date.</p>"
           }
         },
         "q4": {

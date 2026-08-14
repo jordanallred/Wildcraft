@@ -138,6 +138,19 @@
         </ul>
       {%- endif -%}
     </div>
+
+    {%- comment -%}
+      Deliberately hardcoded rather than a theme setting. This is the shop's
+      statement that it is independent of the universities and organizations
+      whose traditions the designs reference, and it needs to render on every
+      page whether or not anyone has opened the footer settings. A setting
+      could be blanked from the theme editor without anyone noticing.
+    {%- endcomment -%}
+    <p class="site-footer__disclaimer">
+      {{ shop.name }} is an independent shop and is not affiliated with,
+      sponsored by, or endorsed by Auburn University or any other trademark
+      holder. All product designs are original hand-drawn artwork.
+    </p>
   </div>
 </footer>
 
@@ -155,7 +168,7 @@
       "type": "textarea",
       "id": "tagline",
       "label": "Tagline",
-      "default": "Hand-drawn game-day buttons, made for Auburn Saturdays."
+      "default": "Hand-drawn game-day buttons, made one at a time."
     },
     {
       "type": "paragraph",
