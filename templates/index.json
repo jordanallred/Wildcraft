@@ -21,10 +21,10 @@
         "btn_primary_link": "/collections/all",
         "btn_secondary_label": "My story",
         "btn_secondary_link": "/pages/about",
-        "image": "shopify://shop_images/bannerflatlay.png",
+        "image": "shopify://shop_images/bannerpic.png",
         "bg_color": "#f0ede6",
         "text_color": "light",
-        "overlay_opacity": 70
+        "overlay_opacity": 30
       }
     },
     "featured-collection": {
