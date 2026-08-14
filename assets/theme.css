@@ -840,6 +840,11 @@ h1,
   text-shadow: 0 1px 3px rgba(0,0,0,0.85), 0 3px 14px rgba(0,0,0,0.7);
 }
 .hero--text-light .hero__title em {
+  /* --color-accent-ink is a burnt, near-brown orange, chosen so orange
+     text stays readable on cream paper. That rationale doesn't apply on
+     a photo, and paired with the shadow it read muddy. --color-accent-warm
+     is the same family, lighter, and already used for the eyebrow here. */
+  color: var(--color-accent-warm);
   text-shadow: 0 2px 4px rgba(0,0,0,0.85), 0 6px 28px rgba(0,0,0,0.7);
 }
 /* The secondary button is .btn--outline, styled dark-on-light for use on
