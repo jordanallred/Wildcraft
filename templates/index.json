@@ -15,7 +15,7 @@
         "layout": "split",
         "eyebrow": "Hand-drawn, one at a time",
         "heading": "Take a little Auburn with you.",
-        "subheading": "I design everything by hand and make it to order — for game days, bid days, and wherever you find yourself on  a Saturday.",
+        "subheading": "I design everything by hand and make it to order — for game days, bid days, and wherever you find yourself on a Saturday.",
         "btn_primary_label": "Shop the buttons",
         "btn_primary_link": "/collections/all",
         "btn_secondary_label": "My story",
@@ -61,8 +61,8 @@
           "type": "feature",
           "settings": {
             "icon": "gift",
-            "title": "Chapter orders welcome",
-            "text": "Bid day, big-little, or a whole pledge class — get in touch and I'll sort it out with you."
+            "title": "Tell me what to draw",
+            "text": "What people ask for is a big part of what I draw next. Send an idea any time."
           }
         },
         "feature-4": {

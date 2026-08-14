@@ -15,7 +15,7 @@
     "color_paper": "#FBF7EF",
     "color_gingham": "#A8C4E0",
     "color_surface": "#FFFFFF",
-    "product_image_shape": "pin",
+    "product_image_shape": "card",
     "show_vendor": false,
     "page_width": 1280,
     "enable_animations": true,
@@ -43,7 +43,7 @@
       "footer": {
         "type": "footer",
         "settings": {
-          "tagline": "Hand-drawn Auburn buttons, made one at a time.",
+          "tagline": "Hand-drawn game-day buttons, made one at a time.",
           "menu_heading_1": "Shop",
           "menu_1": "footer",
           "menu_heading_2": "About",

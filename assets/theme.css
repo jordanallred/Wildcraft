@@ -1228,6 +1228,16 @@ h1,
 }
 .site-footer__copyright { font-size: 0.8125rem; color: var(--color-text-muted); }
 
+/* Sits below the copyright row, quieter than it but still legible — this has
+   to be readable to do its job, so it stays above the muted-text floor. */
+.site-footer__disclaimer {
+  margin-top: 1rem;
+  max-width: 60ch;
+  font-size: 0.75rem;
+  line-height: 1.5;
+  color: var(--color-text-muted);
+}
+
 .footer-payments {
   display: flex;
   flex-wrap: wrap;
@@ -2418,6 +2428,8 @@ h1,
 
   .site-footer__top { grid-template-columns: 1fr; gap: 2rem; }
   .site-footer__bottom { flex-direction: column; text-align: center; }
+  /* Match the centred bottom bar above it; 60ch needs auto margins to centre. */
+  .site-footer__disclaimer { text-align: center; margin-left: auto; margin-right: auto; }
 
   .newsletter__form { flex-direction: column; }
   .newsletter__form input { border-radius: var(--radius-sm); }
