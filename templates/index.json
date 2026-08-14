@@ -12,7 +12,7 @@
     "hero": {
       "type": "hero",
       "settings": {
-        "layout": "split",
+        "layout": "centered",
         "eyebrow": "Hand-drawn, one at a time",
         "heading": "Take a little Auburn with you.",
         "heading_accent": "Auburn",
@@ -24,7 +24,7 @@
         "image": "shopify://shop_images/8F03C683-D330-4F0F-A46C-1689532DAFFF.png",
         "bg_color": "#f0ede6",
         "text_color": "light",
-        "overlay_opacity": 35
+        "overlay_opacity": 30
       }
     },
     "featured-collection": {
