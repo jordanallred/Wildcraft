@@ -766,7 +766,10 @@ h1,
 .hero__image img { width: 100%; height: 100%; object-fit: cover; }
 .hero__overlay {
   position: absolute; inset: 0; z-index: 1;
-  background: var(--color-scrim-soft);
+  /* A flat tint at low opacity barely dims a busy photo. A vignette
+     concentrates the scrim behind the centered text and leaves the
+     image's edges vivid, so legibility doesn't cost the photo its color. */
+  background: radial-gradient(ellipse 70% 65% at 50% 50%, rgba(12,35,64,0.7) 0%, rgba(12,35,64,0.4) 55%, rgba(12,35,64,0) 85%);
 }
 .hero--centered .hero__content {
   position: relative;
@@ -824,9 +827,25 @@ h1,
 /* Keyed to the Text Color setting, not to the layout. These were
    .hero--centered, which meant the light treatment applied whether or not
    there was a dark image behind it to justify it. */
-.hero--text-light .hero__subtitle { color: var(--on-dark); }
-.hero--text-light .hero__title { color: var(--color-surface); }
-.hero--text-light .label { color: var(--color-accent-warm); }
+.hero--text-light .hero__subtitle { color: var(--on-dark); text-shadow: 0 1px 12px rgba(0,0,0,0.55); }
+.hero--text-light .hero__title { color: var(--color-surface); text-shadow: 0 2px 16px rgba(0,0,0,0.5); }
+.hero--text-light .label { color: var(--color-accent-warm); text-shadow: 0 1px 10px rgba(0,0,0,0.6); }
+/* The em accent keeps its ink color even in light mode, and a warm accent
+   on a warm-toned photo (game-day oranges, wood tones) can vanish exactly
+   like the surrounding text does — it needs its own, stronger separation. */
+.hero--text-light .hero__title em { text-shadow: 0 0 2px rgba(0,0,0,0.5), 0 2px 18px rgba(0,0,0,0.65); }
+/* The secondary button is .btn--outline, styled dark-on-light for use on
+   plain backgrounds. Nothing swapped it to a light treatment here, so on a
+   photo it rendered as near-invisible navy text on a barely-there border. */
+.hero--text-light .btn--outline {
+  color: var(--color-surface);
+  border-color: var(--on-dark-line);
+  text-shadow: 0 1px 8px rgba(0,0,0,0.55);
+}
+.hero--text-light .btn--outline:hover {
+  border-color: var(--color-surface);
+  background: var(--on-dark-hover);
+}
 
 .hero__actions {
   display: flex;
