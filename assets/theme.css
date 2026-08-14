@@ -827,18 +827,27 @@ h1,
 /* Keyed to the Text Color setting, not to the layout. These were
    .hero--centered, which meant the light treatment applied whether or not
    there was a dark image behind it to justify it. */
-.hero--text-light .hero__subtitle { color: var(--on-dark); text-shadow: 0 1px 12px rgba(0,0,0,0.55); }
-.hero--text-light .hero__title { color: var(--color-surface); text-shadow: 0 2px 16px rgba(0,0,0,0.5); }
-.hero--text-light .label { color: var(--color-accent-warm); text-shadow: 0 1px 10px rgba(0,0,0,0.6); }
+.hero--text-light .hero__subtitle {
+  color: var(--on-dark);
+  text-shadow: 0 1px 3px rgba(0,0,0,0.8), 0 3px 18px rgba(0,0,0,0.65);
+}
+.hero--text-light .hero__title {
+  color: var(--color-surface);
+  text-shadow: 0 2px 4px rgba(0,0,0,0.85), 0 6px 28px rgba(0,0,0,0.7);
+}
+.hero--text-light .label {
+  color: var(--color-accent-warm);
+  text-shadow: 0 1px 3px rgba(0,0,0,0.85), 0 3px 14px rgba(0,0,0,0.7);
+}
 /* The em accent keeps its dark ink color even in light mode. A dark glow
    doesn't separate dark script from a photo that's ALSO dark in patches
    (the navy illustration linework), so it needs a light stroke instead —
    the same trick as sticker lettering, which suits a button shop anyway. */
 .hero--text-light .hero__title em {
   text-shadow:
-    -1px -1px 0 rgba(251,247,239,0.85), 1px -1px 0 rgba(251,247,239,0.85),
-    -1px 1px 0 rgba(251,247,239,0.85), 1px 1px 0 rgba(251,247,239,0.85),
-    0 2px 18px rgba(0,0,0,0.55);
+    -1px -1px 0 rgba(251,247,239,0.9), 1px -1px 0 rgba(251,247,239,0.9),
+    -1px 1px 0 rgba(251,247,239,0.9), 1px 1px 0 rgba(251,247,239,0.9),
+    0 4px 26px rgba(0,0,0,0.75);
 }
 /* The secondary button is .btn--outline, styled dark-on-light for use on
    plain backgrounds. Nothing swapped it to a light treatment here, so on a
@@ -846,7 +855,7 @@ h1,
 .hero--text-light .btn--outline {
   color: var(--color-surface);
   border-color: var(--on-dark-line);
-  text-shadow: 0 1px 8px rgba(0,0,0,0.55);
+  text-shadow: 0 1px 3px rgba(0,0,0,0.8), 0 3px 12px rgba(0,0,0,0.65);
 }
 .hero--text-light .btn--outline:hover {
   border-color: var(--color-surface);
