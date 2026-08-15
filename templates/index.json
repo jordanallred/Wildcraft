@@ -11,17 +11,25 @@
   "sections": {
     "hero": {
       "type": "hero",
+      "blocks": {
+        "slide-1": {
+          "type": "slide",
+          "settings": {
+            "eyebrow": "Hand-drawn, one at a time",
+            "heading": "Take a little Auburn with you.",
+            "heading_accent": "Auburn",
+            "subheading": "I design everything by hand and make it to order — for game days, bid days, and wherever you find yourself on a Saturday.",
+            "btn_primary_label": "Shop the buttons",
+            "btn_primary_link": "/collections/all",
+            "btn_secondary_label": "My story",
+            "btn_secondary_link": "/pages/about",
+            "image": "shopify://shop_images/ChatGPT_Image_Aug_14_2026_07_13_03_PM.png"
+          }
+        }
+      },
+      "block_order": ["slide-1"],
       "settings": {
         "layout": "centered",
-        "eyebrow": "Hand-drawn, one at a time",
-        "heading": "Take a little Auburn with you.",
-        "heading_accent": "Auburn",
-        "subheading": "I design everything by hand and make it to order — for game days, bid days, and wherever you find yourself on a Saturday.",
-        "btn_primary_label": "Shop the buttons",
-        "btn_primary_link": "/collections/all",
-        "btn_secondary_label": "My story",
-        "btn_secondary_link": "/pages/about",
-        "image": "shopify://shop_images/ChatGPT_Image_Aug_14_2026_07_13_03_PM.png",
         "bg_color": "#f0ede6",
         "text_color": "light",
         "overlay_opacity": 30

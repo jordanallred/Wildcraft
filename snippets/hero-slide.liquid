@@ -1,0 +1,135 @@
+{% doc %}
+  Renders one hero slide's content, for either hero layout (split or
+  centered). Pulled out of sections/hero.liquid so a multi-slide carousel
+  doesn't duplicate the layout logic once per slide — it's the exact same
+  markup the section used to render once, called here once per block.
+
+  @param {string} layout - 'split' or 'centered'; shared by every slide in
+    the carousel so the look stays consistent as slides change
+  @param {object} block - the slide's block, carrying image/eyebrow/heading/
+    heading_accent/subheading/button settings
+  @param {string} [text_color] - 'light' or 'dark'; centered layout only
+  @param {number} [overlay_opacity] - 0-70; centered layout only
+  @param {string} heading_tag - 'h1' or 'h2'. Every slide's markup exists in
+    the DOM at once (inactive ones are just [hidden]), so only the first
+    slide should render an <h1> — the rest use <h2> to avoid stacking more
+    than one <h1> on the page.
+
+  @example
+  {% render 'hero-slide', layout: 'split', block: block, heading_tag: 'h1' %}
+{% enddoc %}
+
+{%- comment -%}
+  strip_html on the alt: the heading can carry markup (the accent below adds
+  it, and anyone is free to type <em> by hand) and without this the alt read
+  "Every Saturday deserves a <em>button</em>." It has to be stripped into its
+  own variable first, because a filter chained inside an image_tag argument
+  list applies to the tag's output rather than to the argument.
+{%- endcomment -%}
+{%- assign hero_alt = block.settings.heading | strip_html -%}
+
+{%- comment -%}
+  The accent word is a setting of its own rather than typed as <em> in the
+  heading field, because the theme editor shows that field as plain text —
+  rewriting the headline there would otherwise quietly delete the markup and
+  the orange word with it.
+{%- endcomment -%}
+{%- assign hero_heading = block.settings.heading -%}
+{%- if block.settings.heading_accent != blank -%}
+  {%- capture accent_markup -%}<em>{{ block.settings.heading_accent }}</em>{%- endcapture -%}
+  {%- assign hero_heading = hero_heading | replace_first: block.settings.heading_accent, accent_markup -%}
+{%- endif -%}
+
+{%- if layout == 'split' -%}
+
+  <div class="hero__inner">
+    <div class="hero__text">
+      {%- if block.settings.eyebrow != blank -%}
+        <p class="hero__eyebrow label">{{ block.settings.eyebrow }}</p>
+      {%- endif -%}
+      {%- if heading_tag == 'h1' -%}
+        <h1 class="hero__title">{{ hero_heading }}</h1>
+      {%- else -%}
+        <h2 class="hero__title">{{ hero_heading }}</h2>
+      {%- endif -%}
+      {%- if block.settings.subheading != blank -%}
+        <p class="hero__subtitle">{{ block.settings.subheading }}</p>
+      {%- endif -%}
+      <div class="hero__actions">
+        {%- if block.settings.btn_primary_label != blank -%}
+          <a href="{{ block.settings.btn_primary_link }}" class="btn btn--primary btn--lg">
+            {{ block.settings.btn_primary_label }}
+          </a>
+        {%- endif -%}
+        {%- if block.settings.btn_secondary_label != blank -%}
+          <a href="{{ block.settings.btn_secondary_link }}" class="btn btn--outline btn--lg">
+            {{ block.settings.btn_secondary_label }}
+          </a>
+        {%- endif -%}
+      </div>
+    </div>
+    {%- if block.settings.image != blank -%}
+      <div class="hero__media">
+        {{ block.settings.image | image_url: width: 1000 | image_tag: loading: 'eager', widths: '600,800,1000', sizes: '50vw', alt: hero_alt }}
+      </div>
+    {%- endif -%}
+  </div>
+  {%- if block.settings.image == blank -%}
+    <div class="hero__scroll-indicator" aria-hidden="true">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 5v14"/><path d="M5 12l7 7 7-7"/>
+      </svg>
+    </div>
+  {%- endif -%}
+
+{%- else -%}
+
+  {%- comment -%}
+    Keyed to whether this slide has an image, not to the layout: with no
+    image there is no dark ground to justify light text, so it falls back to
+    dark regardless of the Text Color setting.
+  {%- endcomment -%}
+  {%- if block.settings.image != blank -%}
+    {%- assign hero_text = text_color | default: 'light' -%}
+  {%- else -%}
+    {%- assign hero_text = 'dark' -%}
+  {%- endif -%}
+
+  <div class="hero__centered-inner hero--text-{{ hero_text }}{% if block.settings.image != blank %} hero--with-image{% endif %}">
+    {%- if block.settings.image != blank -%}
+      <div class="hero__image">
+        {{ block.settings.image | image_url: width: 2000 | image_tag: loading: 'eager', widths: '800,1200,1600,2000', sizes: '100vw', alt: hero_alt, fetchpriority: 'high' }}
+      </div>
+      {%- if overlay_opacity > 0 -%}
+        <div class="hero__overlay" style="opacity:{{ overlay_opacity | divided_by: 100.0 }};"></div>
+      {%- endif -%}
+    {%- endif -%}
+
+    <div class="hero__content container">
+      {%- if block.settings.eyebrow != blank -%}
+        <p class="hero__eyebrow label">{{ block.settings.eyebrow }}</p>
+      {%- endif -%}
+      {%- if heading_tag == 'h1' -%}
+        <h1 class="hero__title">{{ hero_heading }}</h1>
+      {%- else -%}
+        <h2 class="hero__title">{{ hero_heading }}</h2>
+      {%- endif -%}
+      {%- if block.settings.subheading != blank -%}
+        <p class="hero__subtitle">{{ block.settings.subheading }}</p>
+      {%- endif -%}
+      <div class="hero__actions">
+        {%- if block.settings.btn_primary_label != blank -%}
+          <a href="{{ block.settings.btn_primary_link }}" class="btn btn--primary btn--lg">
+            {{ block.settings.btn_primary_label }}
+          </a>
+        {%- endif -%}
+        {%- if block.settings.btn_secondary_label != blank -%}
+          <a href="{{ block.settings.btn_secondary_link }}" class="btn btn--outline btn--lg">
+            {{ block.settings.btn_secondary_label }}
+          </a>
+        {%- endif -%}
+      </div>
+    </div>
+  </div>
+
+{%- endif -%}

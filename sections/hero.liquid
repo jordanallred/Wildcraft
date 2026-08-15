@@ -1,122 +1,76 @@
+{%- comment -%}
+  With one Slide block this renders and behaves exactly like the old fixed
+  hero — controls (arrows, dots) and autoplay only show up once there's a
+  second slide to move to, so the common one-slide case stays exactly as
+  simple as before.
+
+  Layout, background color, text color, and overlay opacity are section-level
+  settings shared by every slide on purpose: the point is one consistent look
+  across a rotating set of images/messages, not a different layout per slide.
+  Each slide only supplies its own image, heading, subheading, and buttons —
+  see snippets/hero-slide.liquid for that rendering.
+
+  Every slide's markup exists in the DOM at once; inactive ones are just
+  [hidden], which drops them from layout, the accessibility tree, and tab
+  order for free. That's also why only the first slide's heading is an <h1>
+  (see hero-slide.liquid) — otherwise a 3-slide carousel would carry three
+  <h1>s on one page even with two of them hidden.
+{%- endcomment -%}
+
 {%- assign layout = section.settings.layout -%}
-{%- comment -%}
-  strip_html on the alt: the heading can carry markup — the accent below adds
-  it, and anyone is free to type <em> by hand — and without this the alt read
-  "Every Saturday deserves a <em>button</em>." It has to be stripped into its
-  own variable first, because a filter chained inside an image_tag argument
-  list applies to the tag's output rather than to the argument.
-{%- endcomment -%}
-{%- assign hero_alt = section.settings.heading | strip_html -%}
+{%- assign slide_count = section.blocks.size -%}
 
-{%- comment -%}
-  The accent word used to be marked up by typing <em> into the heading field.
-  The theme editor shows that field as plain text, tags and all, so rewriting
-  the headline in the editor quietly deleted the markup and the orange word
-  with it — which is exactly what happened.
-
-  It's a setting of its own now. Type the word, and the first time it appears
-  in the heading it gets the italic accent. Typing <em> by hand still works
-  for anyone who wants it, since the heading is rendered as HTML either way.
-{%- endcomment -%}
-{%- assign hero_heading = section.settings.heading -%}
-{%- if section.settings.heading_accent != blank -%}
-  {%- capture accent_markup -%}<em>{{ section.settings.heading_accent }}</em>{%- endcapture -%}
-  {%- assign hero_heading = hero_heading | replace_first: section.settings.heading_accent, accent_markup -%}
-{%- endif -%}
-
-{%- if layout == 'split' -%}
-
-<section class="hero hero--split{% if section.settings.image == blank %} hero--text-only{% endif %}" style="background:{{ section.settings.bg_color }};">
-  <div class="hero__inner">
-    <div class="hero__text">
-      {%- if section.settings.eyebrow != blank -%}
-        <p class="hero__eyebrow label">{{ section.settings.eyebrow }}</p>
-      {%- endif -%}
-      <h1 class="hero__title">{{ hero_heading }}</h1>
-      {%- if section.settings.subheading != blank -%}
-        <p class="hero__subtitle">{{ section.settings.subheading }}</p>
-      {%- endif -%}
-      <div class="hero__actions">
-        {%- if section.settings.btn_primary_label != blank -%}
-          <a href="{{ section.settings.btn_primary_link }}" class="btn btn--primary btn--lg">
-            {{ section.settings.btn_primary_label }}
-          </a>
-        {%- endif -%}
-        {%- if section.settings.btn_secondary_label != blank -%}
-          <a href="{{ section.settings.btn_secondary_link }}" class="btn btn--outline btn--lg">
-            {{ section.settings.btn_secondary_label }}
-          </a>
-        {%- endif -%}
-      </div>
-    </div>
-    {%- if section.settings.image != blank -%}
-      <div class="hero__media">
-        {{ section.settings.image | image_url: width: 1000 | image_tag: loading: 'eager', widths: '600,800,1000', sizes: '50vw', alt: hero_alt }}
-      </div>
+<section
+  class="hero hero--{{ layout }} hero-carousel"
+  {%- if layout == 'split' %} style="background:{{ section.settings.bg_color }};"{% endif %}
+  data-carousel
+  {%- if slide_count > 1 %} data-autoplay{% endif %}
+>
+  {%- for block in section.blocks -%}
+    {%- assign heading_tag = 'h2' -%}
+    {%- if forloop.first -%}
+      {%- assign heading_tag = 'h1' -%}
     {%- endif -%}
-  </div>
-  {%- if section.settings.image == blank -%}
-    <div class="hero__scroll-indicator" aria-hidden="true">
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M12 5v14"/><path d="M5 12l7 7 7-7"/>
-      </svg>
+    <div
+      class="hero-carousel__slide{% if forloop.first %} is-active{% endif %}{% if block.settings.image == blank %} hero--text-only{% endif %}"
+      {%- unless forloop.first %} hidden{% endunless %}
+      data-carousel-slide
+      {{ block.shopify_attributes }}
+    >
+      {%- render 'hero-slide',
+        layout: layout,
+        block: block,
+        text_color: section.settings.text_color,
+        overlay_opacity: section.settings.overlay_opacity,
+        heading_tag: heading_tag
+      -%}
+    </div>
+  {%- endfor -%}
+
+  {%- if slide_count > 1 -%}
+    <div class="hero-carousel__controls">
+      <button type="button" class="hero-carousel__arrow hero-carousel__arrow--prev" data-carousel-prev aria-label="Previous slide">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><polyline points="15 18 9 12 15 6"/></svg>
+      </button>
+      <div class="hero-carousel__dots" role="tablist" aria-label="Slides">
+        {%- for block in section.blocks -%}
+          <button
+            type="button"
+            class="hero-carousel__dot{% if forloop.first %} is-active{% endif %}"
+            data-carousel-dot
+            data-index="{{ forloop.index0 }}"
+            role="tab"
+            aria-selected="{% if forloop.first %}true{% else %}false{% endif %}"
+            aria-label="Go to slide {{ forloop.index }}"
+          ></button>
+        {%- endfor -%}
+      </div>
+      <button type="button" class="hero-carousel__arrow hero-carousel__arrow--next" data-carousel-next aria-label="Next slide">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><polyline points="9 18 15 12 9 6"/></svg>
+      </button>
     </div>
   {%- endif -%}
 </section>
-
-{%- else -%}
-
-{%- comment -%}
-  The Text Color setting was never wired to anything: .hero--centered pinned
-  the title to white and the subtitle to paper-at-82% in the stylesheet, so
-  choosing "Dark (for light images)" in the editor changed nothing and the
-  words stayed white on a pale photo.
-
-  Worse, with no image chosen there is no dark ground at all — the section
-  falls back to --color-bg-alt, which is very nearly the page colour — so a
-  centred hero without a picture rendered a white headline on off-white. The
-  light treatment is now tied to actually having something dark behind it.
-{%- endcomment -%}
-{%- if section.settings.image != blank -%}
-  {%- assign hero_text = section.settings.text_color | default: 'light' -%}
-{%- else -%}
-  {%- assign hero_text = 'dark' -%}
-{%- endif -%}
-
-<section class="hero hero--centered hero--text-{{ hero_text }}{% if section.settings.image != blank %} hero--with-image{% endif %}">
-  {%- if section.settings.image != blank -%}
-    <div class="hero__image">
-      {{ section.settings.image | image_url: width: 2000 | image_tag: loading: 'eager', widths: '800,1200,1600,2000', sizes: '100vw', alt: hero_alt, fetchpriority: 'high' }}
-    </div>
-    {%- if section.settings.overlay_opacity > 0 -%}
-      <div class="hero__overlay" style="opacity:{{ section.settings.overlay_opacity | divided_by: 100.0 }};"></div>
-    {%- endif -%}
-  {%- endif -%}
-
-  <div class="hero__content container">
-    {%- if section.settings.eyebrow != blank -%}
-      <p class="hero__eyebrow label">{{ section.settings.eyebrow }}</p>
-    {%- endif -%}
-    <h1 class="hero__title">{{ hero_heading }}</h1>
-    {%- if section.settings.subheading != blank -%}
-      <p class="hero__subtitle">{{ section.settings.subheading }}</p>
-    {%- endif -%}
-    <div class="hero__actions">
-      {%- if section.settings.btn_primary_label != blank -%}
-        <a href="{{ section.settings.btn_primary_link }}" class="btn btn--primary btn--lg">
-          {{ section.settings.btn_primary_label }}
-        </a>
-      {%- endif -%}
-      {%- if section.settings.btn_secondary_label != blank -%}
-        <a href="{{ section.settings.btn_secondary_link }}" class="btn btn--outline btn--lg">
-          {{ section.settings.btn_secondary_label }}
-        </a>
-      {%- endif -%}
-    </div>
-  </div>
-</section>
-
-{%- endif -%}
 
 {% schema %}
 {
@@ -130,75 +84,8 @@
         { "value": "centered", "label": "Centered (full-width)" },
         { "value": "split", "label": "Split (text + image side by side)" }
       ],
-      "default": "split"
-    },
-    {
-      "type": "header",
-      "content": "Content"
-    },
-    {
-      "type": "text",
-      "id": "eyebrow",
-      "label": "Eyebrow Text",
-      "default": "Hand-drawn, one at a time"
-    },
-    {
-      "type": "text",
-      "id": "heading",
-      "label": "Heading",
-      "default": "Every Saturday deserves a button."
-    },
-    {
-      "type": "text",
-      "id": "heading_accent",
-      "label": "Word to accent",
-      "default": "button",
-      "info": "This word gets the orange italic where it appears in the heading. Leave empty for no accent."
-    },
-    {
-      "type": "textarea",
-      "id": "subheading",
-      "label": "Subheading",
-      "default": "Hand-drawn pin-back buttons for game day, bid day, and every tailgate in between."
-    },
-    {
-      "type": "header",
-      "content": "Primary Button"
-    },
-    {
-      "type": "text",
-      "id": "btn_primary_label",
-      "label": "Primary button label",
-      "default": "Shop the buttons"
-    },
-    {
-      "type": "url",
-      "id": "btn_primary_link",
-      "label": "Primary Button Link"
-    },
-    {
-      "type": "header",
-      "content": "Secondary Button"
-    },
-    {
-      "type": "text",
-      "id": "btn_secondary_label",
-      "label": "Secondary button label",
-      "default": "My story"
-    },
-    {
-      "type": "url",
-      "id": "btn_secondary_link",
-      "label": "Secondary Button Link"
-    },
-    {
-      "type": "header",
-      "content": "Image & Style"
-    },
-    {
-      "type": "image_picker",
-      "id": "image",
-      "label": "Hero Image"
+      "default": "split",
+      "info": "Applies to every slide, so the carousel keeps one consistent look."
     },
     {
       "type": "color",
@@ -209,7 +96,7 @@
     {
       "type": "select",
       "id": "text_color",
-      "label": "Text Color (centered layout with image)",
+      "label": "Text Color (centered layout, slides with an image)",
       "options": [
         { "value": "dark", "label": "Dark (for light images)" },
         { "value": "light", "label": "Light (for dark images)" }
@@ -219,7 +106,7 @@
     {
       "type": "range",
       "id": "overlay_opacity",
-      "label": "Image Overlay Opacity",
+      "label": "Image Overlay Opacity (centered layout)",
       "min": 0,
       "max": 70,
       "step": 5,
@@ -227,9 +114,87 @@
       "default": 35
     }
   ],
+  "blocks": [
+    {
+      "type": "slide",
+      "name": "Slide",
+      "settings": [
+        {
+          "type": "header",
+          "content": "Content"
+        },
+        {
+          "type": "text",
+          "id": "eyebrow",
+          "label": "Eyebrow Text",
+          "default": "Hand-drawn, one at a time"
+        },
+        {
+          "type": "text",
+          "id": "heading",
+          "label": "Heading",
+          "default": "Every Saturday deserves a button."
+        },
+        {
+          "type": "text",
+          "id": "heading_accent",
+          "label": "Word to accent",
+          "default": "button",
+          "info": "This word gets the orange italic where it appears in the heading. Leave empty for no accent."
+        },
+        {
+          "type": "textarea",
+          "id": "subheading",
+          "label": "Subheading",
+          "default": "Hand-drawn pin-back buttons for game day, bid day, and every tailgate in between."
+        },
+        {
+          "type": "header",
+          "content": "Primary Button"
+        },
+        {
+          "type": "text",
+          "id": "btn_primary_label",
+          "label": "Primary button label",
+          "default": "Shop the buttons"
+        },
+        {
+          "type": "url",
+          "id": "btn_primary_link",
+          "label": "Primary Button Link"
+        },
+        {
+          "type": "header",
+          "content": "Secondary Button"
+        },
+        {
+          "type": "text",
+          "id": "btn_secondary_label",
+          "label": "Secondary button label",
+          "default": "My story"
+        },
+        {
+          "type": "url",
+          "id": "btn_secondary_link",
+          "label": "Secondary Button Link"
+        },
+        {
+          "type": "header",
+          "content": "Image"
+        },
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Slide Image"
+        }
+      ]
+    }
+  ],
+  "max_blocks": 5,
   "presets": [
     {
-      "name": "Hero Banner"
+      "name": "Hero Banner",
+      "blocks": [{ "type": "slide" }]
     }
   ]
 }
