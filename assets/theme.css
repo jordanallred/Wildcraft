@@ -726,6 +726,12 @@ h1,
   overflow: hidden;
   background: var(--color-bg-alt);
 }
+/* The slide wrapper has no in-flow content of its own to size against — the
+   centered layout's photo is position:absolute and doesn't count toward a
+   flex item's content width, so without this the slide shrank to fit just
+   the text block and the outer .hero--centered flex container's default
+   justify-content: flex-start shoved that narrow box to the left edge. */
+.hero-carousel__slide { width: 100%; }
 
 /* Split layout (default — image right, text left) */
 .hero--split {
