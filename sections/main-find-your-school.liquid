@@ -13,18 +13,33 @@
       <div class="rte page-content__body">{{ page.content }}</div>
     {%- endif -%}
 
+    {%- comment -%}
+      An uploaded collection image is the primary visual — a real photo of
+      the school reads better as an invitation than a plain color dot. The
+      school's color still shows up (the count text, and the card's own
+      accent) so it isn't wasted; it just steps back from "the whole card"
+      to "an accent" once there's an image, and steps forward to fill the
+      media area itself as a fallback for a school that doesn't have one
+      uploaded yet — so the grid never has an empty/broken-looking slot.
+    {%- endcomment -%}
     {%- assign school_count = 0 -%}
     <div class="school-cards">
       {%- for cat in collections -%}
         {%- assign school_color = cat.metafields.custom.school_primary_color.value -%}
         {%- unless school_color == blank -%}
           {%- assign school_count = school_count | plus: 1 -%}
-          <a href="{{ cat.url }}" class="school-card">
-            <span class="school-card__swatch" style="background: {{ school_color }};" aria-hidden="true"></span>
-            <span class="school-card__name">{{ cat.title }}</span>
-            <span class="school-card__count">
-              {{ cat.products_count }} {%- if cat.products_count == 1 -%} design{%- else -%} designs{%- endif -%}
-            </span>
+          <a href="{{ cat.url }}" class="school-card" style="--school-color: {{ school_color }};">
+            <div class="school-card__media">
+              {%- if cat.image -%}
+                {{ cat.image | image_url: width: 400 | image_tag: loading: 'lazy', widths: '240,320,400', sizes: '(min-width: 768px) 240px, 45vw', alt: cat.title }}
+              {%- endif -%}
+            </div>
+            <div class="school-card__body">
+              <span class="school-card__name">{{ cat.title }}</span>
+              <span class="school-card__count">
+                {{ cat.products_count }} {%- if cat.products_count == 1 -%} design{%- else -%} designs{%- endif -%}
+              </span>
+            </div>
           </a>
         {%- endunless -%}
       {%- endfor -%}
