@@ -9,15 +9,13 @@
     </div>
 
     {%- comment -%}
-      Captured once, rendered twice (here and again inside the Filter
-      panel below) — one collections loop instead of two, and an empty
-      result skips the <nav> landmark entirely rather than rendering it
-      with nothing inside.
+      Lives inside the Filter panel only now (the "Shop by category" group
+      below) — a standalone row above the toolbar duplicated it for no
+      reason once the panel had its own copy. Still captured here rather
+      than rendered inline in the panel markup, so the "does the Filter
+      button need to render at all" check further down can test it.
     {%- endcomment -%}
     {%- capture category_pills -%}{%- render 'category-pills', current: collection -%}{%- endcapture -%}
-    {%- if category_pills != blank -%}
-      <nav class="category-pills" aria-label="Shop by category">{{ category_pills }}</nav>
-    {%- endif -%}
 
     {%- comment -%}
       Filters and sort share one GET form and one submit, so applying a

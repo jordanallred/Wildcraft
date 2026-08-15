@@ -971,6 +971,14 @@ h1,
   border-radius: var(--radius-lg);
   display: flex;
   flex-direction: column;
+  /* A flex item's default min-width is auto, not 0 — it won't shrink below
+     its content's intrinsic width no matter what flex-basis says. That's
+     what broke the mobile 2-up grid: a card holding "Choose options →"
+     (nowrap, see .product-card__quick-add-btn) refused to shrink to its
+     176px share of the row, came out wider than its neighbor, and threw
+     off every pairing after it — the "13 items" case wasn't really about
+     the count, it was whichever row happened to land on that button. */
+  min-width: 0;
   /* No shadow at rest — the border does the work */
   transition: transform 0.32s var(--spring),
               box-shadow 0.32s ease,
@@ -1107,6 +1115,13 @@ h1,
 .product-card__quick-add-btn {
   width: 100%;
   text-align: center;
+  /* .btn sets white-space: nowrap and 2rem of horizontal padding, sized for
+     a full-width CTA — fine at "Quick add," but "Choose options →" (shown
+     instead for any multi-variant product) doesn't fit that padding at a
+     176px mobile card width, and nowrap text can't shrink to make room. */
+  white-space: normal;
+  padding-left: 0.75rem;
+  padding-right: 0.75rem;
 }
 .product-card__quick-add-error {
   margin-top: 0.5rem;
