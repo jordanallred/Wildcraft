@@ -42,6 +42,24 @@
         </div>
       {%- endfor -%}
     </div>
+
+    {%- comment -%}
+      Only shows once at least one school collection actually exists —
+      same school_primary_color signal Find Your School uses — so this
+      doesn't point anywhere empty while Arkansas (or any future school)
+      is still being set up.
+    {%- endcomment -%}
+    {%- assign has_school = false -%}
+    {%- for cat in collections -%}
+      {%- unless cat.metafields.custom.school_primary_color.value == blank -%}
+        {%- assign has_school = true -%}
+      {%- endunless -%}
+    {%- endfor -%}
+    {%- if has_school -%}
+      <p class="shop-features__other-schools">
+        <a href="{{ pages['find-your-school'].url }}">Shop for another school →</a>
+      </p>
+    {%- endif -%}
   </div>
 </section>
 

@@ -1,0 +1,44 @@
+{%- comment -%}
+  Lists every collection set up as a school — signalled by having a
+  school_primary_color metafield set, not a hardcoded handle list, so a
+  second or third school shows up here automatically once its collection
+  and metafields exist. See
+  docs/superpowers/specs/2026-08-15-multi-school-expansion-design.md.
+{%- endcomment -%}
+
+<div class="container">
+  <div class="page-content">
+    <h1 class="page-content__title">{{ page.title }}</h1>
+    {%- if page.content != blank -%}
+      <div class="rte page-content__body">{{ page.content }}</div>
+    {%- endif -%}
+
+    {%- assign school_count = 0 -%}
+    <div class="school-cards">
+      {%- for cat in collections -%}
+        {%- assign school_color = cat.metafields.custom.school_primary_color.value -%}
+        {%- unless school_color == blank -%}
+          {%- assign school_count = school_count | plus: 1 -%}
+          <a href="{{ cat.url }}" class="school-card">
+            <span class="school-card__swatch" style="background: {{ school_color }};" aria-hidden="true"></span>
+            <span class="school-card__name">{{ cat.title }}</span>
+            <span class="school-card__count">
+              {{ cat.products_count }} {%- if cat.products_count == 1 -%} design{%- else -%} designs{%- endif -%}
+            </span>
+          </a>
+        {%- endunless -%}
+      {%- endfor -%}
+    </div>
+
+    {%- if school_count == 0 -%}
+      <p class="school-cards__empty">More schools are on the way — check back soon.</p>
+    {%- endif -%}
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Find Your School",
+  "settings": []
+}
+{% endschema %}

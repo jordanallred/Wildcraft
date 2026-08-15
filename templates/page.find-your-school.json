@@ -1,0 +1,9 @@
+{
+  "sections": {
+    "main": {
+      "type": "main-find-your-school",
+      "settings": {}
+    }
+  },
+  "order": ["main"]
+}
