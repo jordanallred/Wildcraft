@@ -9,34 +9,14 @@
     </div>
 
     {%- comment -%}
-      Category pills: a plain link to every other real collection, not a
-      storefront filter. Shopify's filter system (collection.filters below)
-      can only filter by tag/type/price/availability/variant/metafield — it
-      has no "which collection" facet, because you're already inside one.
-      "Filter by collection" from outside the filter system means "let me
-      jump to a different collection," so this is ordinary navigation
-      between collection.url values, not a query param.
-
-      frontpage is left out on purpose: it's the homepage's curated
-      collection, not a customer-facing category, so it'd confuse this list
-      rather than extend it. Every other published, non-empty collection
-      shows automatically — nothing to configure when a new one is added.
+      Captured once, rendered twice (here and again inside the Filter
+      panel below) — one collections loop instead of two, and an empty
+      result skips the <nav> landmark entirely rather than rendering it
+      with nothing inside.
     {%- endcomment -%}
-    {%- assign other_collections_count = 0 -%}
-    {%- for cat in collections -%}
-      {%- unless cat.handle == 'frontpage' or cat.products_count == 0 -%}
-        {%- assign other_collections_count = other_collections_count | plus: 1 -%}
-      {%- endunless -%}
-    {%- endfor -%}
-    {%- if other_collections_count > 0 -%}
-      <nav class="category-pills" aria-label="Shop by category">
-        <a href="{{ routes.all_products_collection_url }}" class="category-pills__link{% if collection.handle == 'all' %} is-active{% endif %}">All</a>
-        {%- for cat in collections -%}
-          {%- unless cat.handle == 'frontpage' or cat.products_count == 0 -%}
-            <a href="{{ cat.url }}" class="category-pills__link{% if cat.handle == collection.handle %} is-active{% endif %}">{{ cat.title }}</a>
-          {%- endunless -%}
-        {%- endfor -%}
-      </nav>
+    {%- capture category_pills -%}{%- render 'category-pills', current: collection -%}{%- endcapture -%}
+    {%- if category_pills != blank -%}
+      <nav class="category-pills" aria-label="Shop by category">{{ category_pills }}</nav>
     {%- endif -%}
 
     {%- comment -%}
@@ -70,6 +50,21 @@
       {%- endif -%}
     {%- endfor -%}
 
+    {%- comment -%}
+      The Filter button shows whenever there's something to put in it —
+      real storefront filters, category links, or both — rather than only
+      when collection.filters happens to be configured. Otherwise the
+      category group would silently disappear if Search & Discovery
+      filters were ever turned off.
+    {%- endcomment -%}
+    {%- assign show_filter_button = false -%}
+    {%- if section.settings.show_filters and collection.filters.size > 0 -%}
+      {%- assign show_filter_button = true -%}
+    {%- endif -%}
+    {%- if category_pills != blank -%}
+      {%- assign show_filter_button = true -%}
+    {%- endif -%}
+
     <form method="get" action="{{ collection.url }}" class="collection-toolbar">
       <div class="collection-toolbar__row">
         <p class="collection-toolbar__count">
@@ -78,7 +73,7 @@
         </p>
 
         <div class="collection-toolbar__controls">
-          {%- if section.settings.show_filters and collection.filters.size > 0 -%}
+          {%- if show_filter_button -%}
             <details class="filter-panel" data-filter-panel>
               <summary class="filter-panel__toggle">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><line x1="4" y1="6" x2="20" y2="6"/><line x1="7" y1="12" x2="17" y2="12"/><line x1="10" y1="18" x2="14" y2="18"/></svg>
@@ -87,9 +82,16 @@
               </summary>
 
               <div class="filter-panel__body">
+                {%- if category_pills != blank -%}
+                  <div class="filter-panel__group">
+                    <p class="label filter-panel__group-title">Shop by category</p>
+                    <div class="category-pills category-pills--compact">{{ category_pills }}</div>
+                  </div>
+                {%- endif -%}
+
                 {%- for filter in collection.filters -%}
                   <div class="filter-panel__group">
-                    <h3 class="filter-panel__group-title">{{ filter.label }}</h3>
+                    <p class="label filter-panel__group-title">{{ filter.label }}</p>
 
                     {%- case filter.type -%}
                       {%- when 'list' or 'boolean' -%}
@@ -104,7 +106,7 @@
                                     value="{{ filter_value.value }}"
                                     {% if filter_value.active %}checked{% endif %}
                                   >
-                                  {{ filter_value.label }} ({{ filter_value.count }})
+                                  <span>{{ filter_value.label }} <span class="filter-panel__option-count">({{ filter_value.count }})</span></span>
                                 </label>
                               </li>
                             {%- endif -%}
@@ -114,7 +116,7 @@
                         <div class="filter-panel__price">
                           <label class="filter-panel__price-field">
                             <span class="visually-hidden">Minimum price</span>
-                            {{ cart.currency.symbol }}
+                            <span aria-hidden="true">{{ cart.currency.symbol }}</span>
                             <input
                               type="number"
                               name="{{ filter.min_value.param_name }}"
@@ -123,10 +125,10 @@
                               min="0"
                             >
                           </label>
-                          <span aria-hidden="true">–</span>
+                          <span class="filter-panel__price-sep" aria-hidden="true">–</span>
                           <label class="filter-panel__price-field">
                             <span class="visually-hidden">Maximum price</span>
-                            {{ cart.currency.symbol }}
+                            <span aria-hidden="true">{{ cart.currency.symbol }}</span>
                             <input
                               type="number"
                               name="{{ filter.max_value.param_name }}"
@@ -140,14 +142,16 @@
                   </div>
                 {%- endfor -%}
 
-                <div class="filter-panel__actions">
-                  <button type="submit" class="btn btn--primary btn--sm">Apply</button>
-                  {%- if active_filter_count > 0 -%}
-                    <a href="{{ collection.url }}{% if sort_current != collection.default_sort_by %}?sort_by={{ sort_current }}{% endif %}" class="filter-panel__clear">
-                      Clear all
-                    </a>
-                  {%- endif -%}
-                </div>
+                {%- if section.settings.show_filters and collection.filters.size > 0 -%}
+                  <div class="filter-panel__actions">
+                    <button type="submit" class="btn btn--primary btn--sm">Apply</button>
+                    {%- if active_filter_count > 0 -%}
+                      <a href="{{ collection.url }}{% if sort_current != collection.default_sort_by %}?sort_by={{ sort_current }}{% endif %}" class="filter-panel__clear">
+                        Clear all
+                      </a>
+                    {%- endif -%}
+                  </div>
+                {%- endif -%}
               </div>
             </details>
           {%- endif -%}

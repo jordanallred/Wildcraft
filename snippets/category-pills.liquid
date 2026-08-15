@@ -1,0 +1,36 @@
+{% doc %}
+  Links to every real, non-empty, non-frontpage collection, plus "All" —
+  the actual mechanism behind "filter by collection." Shopify's storefront
+  filters (collection.filters) can only filter by tag, type, price,
+  availability, variant option, or metafield — there's no "which
+  collection" facet, because you're already inside one when using it.
+  Jumping to a different collection is ordinary navigation between
+  collection.url values, not a query param, so this renders plain links.
+
+  frontpage is excluded on purpose: it's the homepage's curated collection,
+  not a customer-facing category. Every other published, non-empty
+  collection shows automatically — nothing to configure when a new one is
+  added.
+
+  Rendered twice: as the standalone row above the collection toolbar, and
+  again inside the Filter panel, so both stay in sync from one place.
+
+  @param {collection} current - the collection currently being viewed
+  @example
+  {% render 'category-pills', current: collection %}
+{% enddoc %}
+
+{%- assign other_collections_count = 0 -%}
+{%- for cat in collections -%}
+  {%- unless cat.handle == 'frontpage' or cat.products_count == 0 -%}
+    {%- assign other_collections_count = other_collections_count | plus: 1 -%}
+  {%- endunless -%}
+{%- endfor -%}
+{%- if other_collections_count > 0 -%}
+  <a href="{{ routes.all_products_collection_url }}" class="category-pills__link{% if current.handle == 'all' %} is-active{% endif %}">All</a>
+  {%- for cat in collections -%}
+    {%- unless cat.handle == 'frontpage' or cat.products_count == 0 -%}
+      <a href="{{ cat.url }}" class="category-pills__link{% if cat.handle == current.handle %} is-active{% endif %}">{{ cat.title }}</a>
+    {%- endunless -%}
+  {%- endfor -%}
+{%- endif -%}
