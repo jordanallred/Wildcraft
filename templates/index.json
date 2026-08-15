@@ -16,8 +16,8 @@
           "type": "slide",
           "settings": {
             "eyebrow": "Hand-drawn, one at a time",
-            "heading": "Take a little Auburn with you.",
-            "heading_accent": "Auburn",
+            "heading": "Take a little gameday with you.",
+            "heading_accent": "gameday",
             "subheading": "I design everything by hand and make it to order — for game days, bid days, and wherever you find yourself on a Saturday.",
             "btn_primary_label": "Shop the buttons",
             "btn_primary_link": "/collections/all",
@@ -27,7 +27,9 @@
           }
         }
       },
-      "block_order": ["slide-1"],
+      "block_order": [
+        "slide-1"
+      ],
       "settings": {
         "layout": "centered",
         "bg_color": "#f0ede6",
