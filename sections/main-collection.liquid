@@ -1,4 +1,20 @@
-<div class="collection-page">
+{%- comment -%}
+  Color override: if this collection has school_primary_color/
+  school_accent_color metafields set (Auburn, Arkansas, and their type
+  sub-collections all do), everything below — buttons, the filter panel,
+  active pills — inherits it automatically, since those already reference
+  var(--color-primary) etc. rather than a hardcoded hex value. No special
+  per-school template or section needed; every collection page is
+  identical structurally, only the metafield values differ. See
+  docs/superpowers/specs/2026-08-15-multi-school-expansion-design.md.
+{%- endcomment -%}
+{%- assign primary_color = collection.metafields.custom.school_primary_color.value -%}
+{%- assign accent_color = collection.metafields.custom.school_accent_color.value -%}
+
+<div
+  class="collection-page"
+  {%- if primary_color or accent_color %} style="{% if primary_color %}--color-primary: {{ primary_color }}; --color-primary-hover: {{ primary_color }};{% endif %}{% if accent_color %} --color-accent-ink: {{ accent_color }}; --color-accent: {{ accent_color }};{% endif %}"{% endif %}
+>
   <div class="container">
 
     <div class="collection-page__header">
