@@ -158,10 +158,16 @@ Theatre" and "Maple Street" are real, specific place-names a Panhellenic
 audience will recognize immediately — much stronger than generic "Bid Day"
 copy.
 
-**Panhellenic chapters** (11 confirmed, verify the 12th before finalizing
-chapter-specific designs): Alpha Chi Omega, Alpha Delta Pi, Alpha Omicron
-Pi, Chi Omega, Delta Delta Delta, Delta Gamma, Kappa Delta, Kappa Kappa
-Gamma, Phi Mu, Pi Beta Phi, Zeta Tau Alpha.
+**Panhellenic chapters** — confirmed complete via the official Panhellenic
+Council page, all 12: Alpha Chi Omega, Alpha Delta Pi, Alpha Omicron Pi,
+Alpha Phi, Chi Omega, Delta Delta Delta, Delta Gamma, Kappa Delta, Kappa
+Kappa Gamma, Phi Mu, Pi Beta Phi, Zeta Tau Alpha.
+
+**Bid Day, confirmed further** — the official name is the **Chi Omega
+Greek Theatre**. Maple Street is fully shut down for the run, not just
+crowded — new members run from the Greek Theatre to their chapter house
+while it's closed to traffic, described in coverage as new sisters
+getting to "run home."
 
 **Rivalries** — the "Battle Line Rivalry" against Missouri (late
 November, a real circled-calendar date) and the historic "Battle for the
@@ -172,13 +178,56 @@ by longtime fans even though it's not played every year now).
 Razorback Stadium; "tailgates rolling along Stadium Drive" is how it's
 actually described by people who go.
 
+## Arkansas welcome copy (draft)
+
+Split into two metafields rather than one — `custom.school_heading`
+(plain text, for the large display heading, matching the homepage hero's
+"Take a little Auburn with you" treatment) and `custom.school_welcome`
+(rich text, the body below it). One field couldn't carry both a big
+display heading and flowing body copy at the right visual weights.
+
+**`school_heading`:**
+
+> Take a Little Arkansas With You
+
+**`school_welcome`:**
+
+> Woo Pig Sooie!
+>
+> Everything in this shop is drawn by hand and made to order — one
+> design at a time, whichever school it's for. Nothing here comes
+> pre-made off a shelf.
+>
+> For Arkansas, that means buttons made for the Hog Call — arms up,
+> fists ready by "Sooie." For running down Maple Street on Bid Day with
+> your letters pulled on for the first time. For the walk down to the
+> stadium before kickoff, high-fiving the team as they head in. I didn't
+> go to school on The Hill, so I won't pretend I have my own Old Main
+> story — but I'll draw the one you're living now.
+>
+> New designs go up all season. If there's a chapter, a chant, or a
+> Saturday tradition you want to see, tell me, and it goes on the list.
+>
+> Woo Pig Sooie!
+> — Sarah-Beth
+
+This is a full draft, ready to use as-is or edit — not raw material
+requiring a rewrite. It deliberately doesn't invent a personal
+connection to Arkansas (the honesty about that is the point, not a
+hedge), leans on the specific researched details rather than generic
+"go Hogs" copy, and closes the way the Auburn pages close on "War
+Eagle" — with the real, complete call, not a shortened version that
+might not land right with someone who actually knows it.
+
 ## Implementation sketch
 
 On the `arkansas` branch:
 
 1. New section `sections/school-collection-hero.liquid` — reads the
-   collection's metafields, renders the intro (rich-text welcome, colors
-   applied via the CSS custom-property wrapper described above).
+   collection's metafields (`school_heading`, `school_welcome`,
+   `school_primary_color`, `school_accent_color`), renders the heading +
+   rich-text welcome, colors applied via the CSS custom-property wrapper
+   described above.
 2. New template `templates/collection.arkansas.json` — `school-collection-hero`
    section on top, existing `main-collection` section below (unchanged,
    already has filtering/sort/category pills).
@@ -192,19 +241,13 @@ On the `arkansas` branch:
 5. Homepage: add a "Shop for another school" link to the existing
    `shop-features` section (`sections/shop-features.liquid`), not a new
    section.
-6. Arkansas collection created via Admin API, metafields set using the
-   colors above (welcome copy left for Sarah-Beth to write from this
-   research — not filled in by me).
-7. Terms of Service: generalized disclaimer language above, for review
-   before publishing.
+6. Arkansas collection created via Admin API: metafields set with the
+   Cardinal `#9D2235` / white palette and the heading/welcome copy above.
+7. Terms of Service: generalized disclaimer language (drafted earlier in
+   this doc) replaces the current Auburn/Tri-Delta-specific paragraph.
 
-## Open items for Sarah-Beth
+## Status
 
-- Write the actual Arkansas welcome copy from the research above, in your
-  own voice — this doc is raw material, not the final text.
-- Confirm the 12th Panhellenic chapter (11 confirmed via Panhellenic
-  Council page; couldn't verify the last one).
-- Confirm the Cardinal `#9D2235` / White pairing is what you want to build
-  with, or if you'd rather a different accent.
-- Read and approve (or edit) the generalized Terms of Service language
-  before it replaces the current Auburn/Tri-Delta-specific text.
+Fully drafted — colors, all 12 chapters, welcome copy, and the ToS
+language are resolved, not open questions. Ready to move to an
+implementation plan and build.
