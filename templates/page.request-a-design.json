@@ -1,0 +1,9 @@
+{
+  "sections": {
+    "main": {
+      "type": "main-design-request",
+      "settings": {}
+    }
+  },
+  "order": ["main"]
+}

@@ -62,5 +62,35 @@
         <span class="product-card__price-compare" aria-hidden="true">{{ product.compare_at_price | money }}</span>
       {%- endif -%}
     </div>
+
+    {%- comment -%}
+      Quick add only for single-variant products. A product with real
+      variants (color, size, etc.) has no safe default to add — guessing one
+      would either be wrong or need its own option picker here, which is a
+      bigger feature than "skip the product page." Those get a plain link to
+      the page instead, same as the card already offered.
+
+      The add-to-cart JS is the exact same [data-product-form] handler the
+      product page form uses (see theme.js) — this is a second instance of
+      that same contract, not a new code path.
+    {%- endcomment -%}
+    {%- if product.has_only_default_variant -%}
+      {%- assign quick_add_variant = product.selected_or_first_available_variant -%}
+      <form data-product-form class="product-card__quick-add">
+        <input type="hidden" name="id" value="{{ quick_add_variant.id }}">
+        <input type="hidden" name="quantity" value="1">
+        <button
+          type="submit"
+          class="btn btn--outline btn--sm product-card__quick-add-btn"
+          data-add-to-cart
+          {% unless quick_add_variant.available %}disabled{% endunless %}
+        >
+          {%- if quick_add_variant.available -%}Quick add{%- else -%}Sold out{%- endif -%}
+        </button>
+        <p class="product-card__quick-add-error" data-add-to-cart-error hidden></p>
+      </form>
+    {%- else -%}
+      <a href="{{ product.url }}" class="btn btn--outline btn--sm product-card__quick-add-btn">Choose options →</a>
+    {%- endif -%}
   </div>
 </article>

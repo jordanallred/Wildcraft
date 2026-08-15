@@ -1,0 +1,71 @@
+{%- comment -%}
+  This is a suggestion box, not a custom-order form. The FAQ is explicit that
+  bespoke one-off designs aren't offered yet ("Do you take custom designs? —
+  Not just yet"), and this page has to agree with that rather than quietly
+  promise something else. What it collects is the same thing the homepage's
+  "Tell me what to draw" feature already describes: ideas that go into what
+  gets drawn next, not a request tied to one customer's order or deadline.
+
+  page.title and page.content are editable from Admin → Pages without a
+  redeploy, same as the About and FAQ pages already work.
+{%- endcomment -%}
+
+<div class="container">
+  <div class="page-content">
+    <h1 class="page-content__title">{{ page.title }}</h1>
+
+    {%- if page.content != blank -%}
+      <div class="rte page-content__body">
+        {{ page.content }}
+      </div>
+    {%- endif -%}
+
+    {%- form 'contact', id: 'DesignRequestForm', class: 'design-request-form' -%}
+      {%- if form.posted_successfully? -%}
+        <p class="design-request-form__success" tabindex="-1">
+          Got it — thank you! I read every one of these myself.
+        </p>
+      {%- else -%}
+        {%- if form.errors -%}
+          <div class="design-request-form__errors">
+            {{ form.errors | default_errors }}
+          </div>
+        {%- endif -%}
+
+        <input type="hidden" name="contact[Subject]" value="Design request">
+
+        <div class="design-request-form__field">
+          <label for="DesignRequestEmail">Your email</label>
+          <input
+            type="email"
+            id="DesignRequestEmail"
+            name="contact[email]"
+            value="{{ form.email }}"
+            autocomplete="email"
+            required
+          >
+        </div>
+
+        <div class="design-request-form__field">
+          <label for="DesignRequestBody">What should I draw?</label>
+          <textarea
+            id="DesignRequestBody"
+            name="contact[body]"
+            rows="5"
+            placeholder="A design, a chapter, a phrase you keep hearing on game day — whatever it is."
+            required
+          ></textarea>
+        </div>
+
+        <button type="submit" class="btn btn--primary btn--lg">Send it my way</button>
+      {%- endif -%}
+    {%- endform -%}
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Design Request Form",
+  "settings": []
+}
+{% endschema %}

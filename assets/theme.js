@@ -648,13 +648,19 @@
   });
 
   /* ========================
-     Auto-submitting selects (collection sort)
+     Auto-submitting selects and filter inputs (collection sort + filters)
      The form works on its own with the noscript submit button; this just
-     removes the extra click for everyone else.
+     removes the extra click for everyone else. Filter checkboxes and price
+     inputs opt in with data-auto-submit-input rather than matching every
+     input in the form, since a filter group's <details> shouldn't submit
+     just because it was opened.
   ======================== */
   document.addEventListener('change', e => {
     const select = e.target.closest('[data-auto-submit] select');
-    if (select) select.form?.submit();
+    if (select) { select.form?.submit(); return; }
+
+    const filterInput = e.target.closest('[data-auto-submit] [data-auto-submit-input]');
+    if (filterInput) filterInput.form?.submit();
   });
 
   /* ========================
@@ -845,6 +851,80 @@
     window.addEventListener('scroll', onScroll, { passive: true });
     onScroll();
   }
+
+  /* ========================
+     Hero Carousel
+     Autoplay pauses on hover/focus/touch and never starts at all under
+     prefers-reduced-motion — manual arrows, dots, and keyboard arrows still
+     work either way. The section only renders controls once there's a
+     second slide, so a one-slide hero never reaches this loop's slides.length
+     check in a way that matters.
+  ======================== */
+  document.querySelectorAll('[data-carousel]').forEach(root => {
+    const slides = [...root.querySelectorAll('[data-carousel-slide]')];
+    if (slides.length < 2) return;
+
+    const dots = [...root.querySelectorAll('[data-carousel-dot]')];
+    const prevBtn = root.querySelector('[data-carousel-prev]');
+    const nextBtn = root.querySelector('[data-carousel-next]');
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    let current = 0;
+    let timer = null;
+
+    function show(index) {
+      current = (index + slides.length) % slides.length;
+      slides.forEach((slide, i) => {
+        slide.hidden = i !== current;
+        slide.classList.toggle('is-active', i === current);
+      });
+      dots.forEach((dot, i) => {
+        dot.classList.toggle('is-active', i === current);
+        dot.setAttribute('aria-selected', i === current ? 'true' : 'false');
+      });
+    }
+
+    function stop() {
+      if (timer) { clearInterval(timer); timer = null; }
+    }
+
+    function play() {
+      if (reducedMotion || !root.hasAttribute('data-autoplay')) return;
+      stop();
+      timer = setInterval(() => show(current + 1), 6000);
+    }
+
+    prevBtn?.addEventListener('click', () => { show(current - 1); play(); });
+    nextBtn?.addEventListener('click', () => { show(current + 1); play(); });
+    dots.forEach((dot, i) => dot.addEventListener('click', () => { show(i); play(); }));
+
+    root.addEventListener('mouseenter', stop);
+    root.addEventListener('mouseleave', play);
+    root.addEventListener('focusin', stop);
+    root.addEventListener('focusout', play);
+
+    /* A plain deltaX check on touchend, not a full drag-follow — this is a
+       hero banner, not a photo gallery, so the slide doesn't need to track
+       the finger mid-swipe. */
+    let touchStartX = null;
+    root.addEventListener('touchstart', e => {
+      touchStartX = e.changedTouches[0].clientX;
+      stop();
+    }, { passive: true });
+    root.addEventListener('touchend', e => {
+      if (touchStartX === null) return;
+      const deltaX = e.changedTouches[0].clientX - touchStartX;
+      if (Math.abs(deltaX) > 50) show(deltaX < 0 ? current + 1 : current - 1);
+      touchStartX = null;
+      play();
+    }, { passive: true });
+
+    root.addEventListener('keydown', e => {
+      if (e.key === 'ArrowLeft') { show(current - 1); play(); }
+      else if (e.key === 'ArrowRight') { show(current + 1); play(); }
+    });
+
+    play();
+  });
 
   /* ========================
      Scroll Reveal
