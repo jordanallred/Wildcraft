@@ -648,19 +648,35 @@
   });
 
   /* ========================
-     Auto-submitting selects and filter inputs (collection sort + filters)
+     Auto-submitting sort select (collection sort)
      The form works on its own with the noscript submit button; this just
-     removes the extra click for everyone else. Filter checkboxes and price
-     inputs opt in with data-auto-submit-input rather than matching every
-     input in the form, since a filter group's <details> shouldn't submit
-     just because it was opened.
+     removes the extra click for everyone else. Filter checkboxes and the
+     price range deliberately don't auto-submit — see the Filter Panel
+     block below for why.
   ======================== */
   document.addEventListener('change', e => {
     const select = e.target.closest('[data-auto-submit] select');
-    if (select) { select.form?.submit(); return; }
+    if (select) select.form?.submit();
+  });
 
-    const filterInput = e.target.closest('[data-auto-submit] [data-auto-submit-input]');
-    if (filterInput) filterInput.form?.submit();
+  /* ========================
+     Filter Panel (collection filters)
+     <details>/<summary> gives the "Filter" button its open/closed state and
+     keyboard toggle for free, but a native <details> doesn't close itself
+     on an outside click or Escape the way a dropdown is expected to — this
+     adds just that, and only for a panel currently open.
+  ======================== */
+  document.addEventListener('click', e => {
+    document.querySelectorAll('[data-filter-panel][open]').forEach(panel => {
+      if (!panel.contains(e.target)) panel.removeAttribute('open');
+    });
+  });
+  document.addEventListener('keydown', e => {
+    if (e.key !== 'Escape') return;
+    const openPanel = document.querySelector('[data-filter-panel][open]');
+    if (!openPanel) return;
+    openPanel.removeAttribute('open');
+    openPanel.querySelector('summary')?.focus();
   });
 
   /* ========================

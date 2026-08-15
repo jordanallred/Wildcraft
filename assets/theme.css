@@ -1705,10 +1705,34 @@ h1,
   max-width: 560px;
   line-height: 1.75;
 }
+/* Category pills: plain navigation between real collections, not a form
+   control — see the comment above this markup in main-collection.liquid
+   for why "filter by collection" is a set of links, not a filter. */
+.category-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 1.25rem;
+}
+.category-pills__link {
+  padding: 0.375rem 0.875rem;
+  border-radius: 999px;
+  border: 1px solid var(--color-border);
+  font-size: 0.875rem;
+  color: var(--color-text-muted);
+  white-space: nowrap;
+}
+.category-pills__link:hover { text-decoration: none; border-color: var(--color-text-muted); }
+.category-pills__link.is-active {
+  background: var(--color-ink);
+  border-color: var(--color-ink);
+  color: var(--color-surface);
+}
+
 /* The <form> itself — filters and sort share it so applying one doesn't
    drop the other from the query string. */
 .collection-toolbar {
-  margin: 2rem 0 1.75rem;
+  margin: 1.5rem 0 1.75rem;
   padding-bottom: 1.5rem;
   border-bottom: 1px solid var(--color-border);
 }
@@ -1720,6 +1744,11 @@ h1,
   flex-wrap: wrap;
 }
 .collection-toolbar__count { font-size: 0.875rem; color: var(--color-text-muted); }
+.collection-toolbar__controls {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
 /* A real <form> wrapping a visible label and the select, rather than the
    class sitting on both a wrapper and the select inside it. */
 .collection-toolbar__sort {
@@ -1734,41 +1763,68 @@ h1,
 }
 .collection-toolbar__sort select { max-width: 210px; }
 
-/* Filters: a row of <details> accordions on desktop and mobile alike — no
-   separate "off-canvas on mobile" panel to keep in sync, since the browser's
-   own disclosure behavior already collapses each group down to its summary
-   on a narrow screen. */
-.collection-filters {
+/* One "Filter" button opening one panel with every group inside — not a
+   row of separate accordions, which read as clutter rather than a single
+   control. <details>/<summary> keeps it working with no JS: the panel just
+   won't auto-close on an outside click without theme.js's assist below. */
+.filter-panel { position: relative; }
+.filter-panel__toggle {
   display: flex;
-  flex-wrap: wrap;
-  align-items: flex-start;
-  gap: 0.75rem;
-  margin-top: 1.25rem;
-}
-.collection-filters__group {
-  border: 1px solid var(--color-border);
-  border-radius: 8px;
-  padding: 0.5rem 0.875rem;
-  background: var(--color-surface);
-}
-.collection-filters__summary {
+  align-items: center;
+  gap: 0.4375rem;
   cursor: pointer;
+  list-style: none;
+  padding: 0.5rem 0.875rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
   font-size: 0.875rem;
   color: var(--color-text);
-  list-style: none;
 }
-.collection-filters__summary::-webkit-details-marker { display: none; }
-.collection-filters__group[open] .collection-filters__summary { margin-bottom: 0.625rem; }
-.collection-filters__options {
+.filter-panel__toggle::-webkit-details-marker { display: none; }
+.filter-panel[open] .filter-panel__toggle {
+  border-color: var(--color-text);
+}
+.filter-panel__count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.125rem;
+  height: 1.125rem;
+  padding: 0 0.3125rem;
+  border-radius: 999px;
+  background: var(--color-accent-ink);
+  color: var(--color-surface);
+  font-size: 0.6875rem;
+  font-weight: 600;
+}
+.filter-panel__body {
+  position: absolute;
+  top: calc(100% + 0.5rem);
+  left: 0;
+  z-index: 10;
+  width: min(340px, 90vw);
+  max-height: 70vh;
+  overflow-y: auto;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  box-shadow: var(--shadow-header);
+  padding: 1.125rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.125rem;
+}
+.filter-panel__group-title {
+  font-size: 0.875rem;
+  font-weight: 600;
+  margin-bottom: 0.625rem;
+}
+.filter-panel__options {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
-  padding-top: 0.25rem;
-  min-width: 180px;
-  max-height: 240px;
-  overflow-y: auto;
 }
-.collection-filters__option label {
+.filter-panel__option label {
   display: flex;
   align-items: center;
   gap: 0.5rem;
@@ -1776,31 +1832,39 @@ h1,
   color: var(--color-text-muted);
   cursor: pointer;
 }
-.collection-filters__price {
+.filter-panel__price {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  padding-top: 0.25rem;
   font-size: 0.875rem;
   color: var(--color-text-muted);
 }
-.collection-filters__price-field {
+.filter-panel__price-field {
   display: flex;
   align-items: center;
   gap: 0.25rem;
 }
-.collection-filters__price-field input {
+.filter-panel__price-field input {
   width: 4.5rem;
   border: 1px solid var(--color-border);
   border-radius: 6px;
   padding: 0.25rem 0.375rem;
   font-size: 0.875rem;
 }
-.collection-filters__clear {
-  align-self: center;
+.filter-panel__actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding-top: 0.25rem;
+  border-top: 1px solid var(--color-border);
+}
+.filter-panel__clear {
   font-size: 0.875rem;
   color: var(--color-accent-ink);
   white-space: nowrap;
+}
+@media (max-width: 480px) {
+  .filter-panel__body { width: 90vw; }
 }
 .collection-page__empty {
   text-align: center;

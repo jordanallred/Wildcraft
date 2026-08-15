@@ -9,110 +9,161 @@
     </div>
 
     {%- comment -%}
+      Category pills: a plain link to every other real collection, not a
+      storefront filter. Shopify's filter system (collection.filters below)
+      can only filter by tag/type/price/availability/variant/metafield — it
+      has no "which collection" facet, because you're already inside one.
+      "Filter by collection" from outside the filter system means "let me
+      jump to a different collection," so this is ordinary navigation
+      between collection.url values, not a query param.
+
+      frontpage is left out on purpose: it's the homepage's curated
+      collection, not a customer-facing category, so it'd confuse this list
+      rather than extend it. Every other published, non-empty collection
+      shows automatically — nothing to configure when a new one is added.
+    {%- endcomment -%}
+    {%- assign other_collections_count = 0 -%}
+    {%- for cat in collections -%}
+      {%- unless cat.handle == 'frontpage' or cat.products_count == 0 -%}
+        {%- assign other_collections_count = other_collections_count | plus: 1 -%}
+      {%- endunless -%}
+    {%- endfor -%}
+    {%- if other_collections_count > 0 -%}
+      <nav class="category-pills" aria-label="Shop by category">
+        <a href="{{ routes.all_products_collection_url }}" class="category-pills__link{% if collection.handle == 'all' %} is-active{% endif %}">All</a>
+        {%- for cat in collections -%}
+          {%- unless cat.handle == 'frontpage' or cat.products_count == 0 -%}
+            <a href="{{ cat.url }}" class="category-pills__link{% if cat.handle == collection.handle %} is-active{% endif %}">{{ cat.title }}</a>
+          {%- endunless -%}
+        {%- endfor -%}
+      </nav>
+    {%- endif -%}
+
+    {%- comment -%}
       Filters and sort share one GET form and one submit, so applying a
       filter doesn't reset the sort order (or vice versa) the way two
       separate forms fighting over the same query string would.
 
       collection.filters comes from whatever's configured as a storefront
       filter in Admin → Search & Discovery — it's empty until that's set up,
-      in which case this renders no filter groups and behaves exactly like
-      the old sort-only toolbar. Nothing here needs an app or a hardcoded
+      in which case the Filter button doesn't render at all and this is
+      just the sort-only toolbar. Nothing here needs an app or a hardcoded
       list of tags to keep working as that configuration changes.
+
+      The filter panel is one <details> (a single "Filter" button, like a
+      normal storefront) rather than one per filter group — group headings
+      inside stay as plain <h3>s, not their own toggles, so opening the
+      panel shows everything at once instead of a row of separate
+      accordions. Checkboxes and the price range don't auto-submit here:
+      inside a multi-select panel, submitting on every click would reload
+      the page — and close the panel — before a second box could be
+      checked. Sort is still its own auto-submitting control outside the
+      panel, where an immediate reload is exactly what a single dropdown
+      should do.
     {%- endcomment -%}
     {%- assign sort_current = collection.sort_by | default: collection.default_sort_by -%}
-    <form method="get" action="{{ collection.url }}" class="collection-toolbar" data-auto-submit>
+    {%- assign active_filter_count = 0 -%}
+    {%- for filter in collection.filters -%}
+      {%- assign active_filter_count = active_filter_count | plus: filter.active_values.size -%}
+      {%- if filter.min_value.value != nil or filter.max_value.value != nil -%}
+        {%- assign active_filter_count = active_filter_count | plus: 1 -%}
+      {%- endif -%}
+    {%- endfor -%}
+
+    <form method="get" action="{{ collection.url }}" class="collection-toolbar">
       <div class="collection-toolbar__row">
         <p class="collection-toolbar__count">
           {{ collection.products_count }}
           {%- if collection.products_count == 1 -%} product{%- else -%} products{%- endif -%}
         </p>
-        {%- if section.settings.show_sort and collection.sort_options.size > 0 -%}
-          <div class="collection-toolbar__sort">
-            <label for="sort-by">Sort by</label>
-            <select name="sort_by" id="sort-by">
-              {%- for option in collection.sort_options -%}
-                <option value="{{ option.value }}"{% if option.value == sort_current %} selected{% endif %}>{{ option.name }}</option>
-              {%- endfor -%}
-            </select>
-          </div>
-        {%- endif -%}
-      </div>
 
-      {%- if section.settings.show_filters and collection.filters.size > 0 -%}
-        {%- assign has_active_filters = false -%}
-        {%- for filter in collection.filters -%}
-          {%- if filter.active_values.size > 0 or filter.min_value.value != nil or filter.max_value.value != nil -%}
-            {%- assign has_active_filters = true -%}
-          {%- endif -%}
-        {%- endfor -%}
-
-        <div class="collection-filters">
-          {%- for filter in collection.filters -%}
-            <details class="collection-filters__group"{% if filter.active_values.size > 0 or filter.min_value.value != nil or filter.max_value.value != nil %} open{% endif %}>
-              <summary class="collection-filters__summary">
-                {{ filter.label }}
-                {%- if filter.active_values.size > 0 %} ({{ filter.active_values.size }}){% endif -%}
+        <div class="collection-toolbar__controls">
+          {%- if section.settings.show_filters and collection.filters.size > 0 -%}
+            <details class="filter-panel" data-filter-panel>
+              <summary class="filter-panel__toggle">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><line x1="4" y1="6" x2="20" y2="6"/><line x1="7" y1="12" x2="17" y2="12"/><line x1="10" y1="18" x2="14" y2="18"/></svg>
+                Filter
+                {%- if active_filter_count > 0 %} <span class="filter-panel__count">{{ active_filter_count }}</span>{% endif -%}
               </summary>
 
-              {%- case filter.type -%}
-                {%- when 'list' or 'boolean' -%}
-                  <ul class="collection-filters__options" role="list">
-                    {%- for filter_value in filter.values -%}
-                      {%- if filter_value.count > 0 or filter_value.active -%}
-                        <li class="collection-filters__option">
-                          <label>
-                            <input
-                              type="checkbox"
-                              name="{{ filter_value.param_name }}"
-                              value="{{ filter_value.value }}"
-                              {% if filter_value.active %}checked{% endif %}
-                              data-auto-submit-input
-                            >
-                            {{ filter_value.label }} ({{ filter_value.count }})
-                          </label>
-                        </li>
-                      {%- endif -%}
-                    {%- endfor -%}
-                  </ul>
-                {%- when 'price_range' -%}
-                  <div class="collection-filters__price">
-                    <label class="collection-filters__price-field">
-                      <span class="visually-hidden">Minimum price</span>
-                      {{ cart.currency.symbol }}
-                      <input
-                        type="number"
-                        name="{{ filter.min_value.param_name }}"
-                        value="{{ filter.min_value.value }}"
-                        placeholder="{{ filter.range_min | money_without_currency }}"
-                        min="0"
-                        data-auto-submit-input
-                      >
-                    </label>
-                    <span aria-hidden="true">–</span>
-                    <label class="collection-filters__price-field">
-                      <span class="visually-hidden">Maximum price</span>
-                      {{ cart.currency.symbol }}
-                      <input
-                        type="number"
-                        name="{{ filter.max_value.param_name }}"
-                        value="{{ filter.max_value.value }}"
-                        placeholder="{{ filter.range_max | money_without_currency }}"
-                        min="0"
-                        data-auto-submit-input
-                      >
-                    </label>
-                  </div>
-              {%- endcase -%}
-            </details>
-          {%- endfor -%}
+              <div class="filter-panel__body">
+                {%- for filter in collection.filters -%}
+                  <div class="filter-panel__group">
+                    <h3 class="filter-panel__group-title">{{ filter.label }}</h3>
 
-          {%- if has_active_filters -%}
-            <a href="{{ collection.url }}{% if sort_current != collection.default_sort_by %}?sort_by={{ sort_current }}{% endif %}" class="collection-filters__clear">
-              Clear all
-            </a>
+                    {%- case filter.type -%}
+                      {%- when 'list' or 'boolean' -%}
+                        <ul class="filter-panel__options" role="list">
+                          {%- for filter_value in filter.values -%}
+                            {%- if filter_value.count > 0 or filter_value.active -%}
+                              <li class="filter-panel__option">
+                                <label>
+                                  <input
+                                    type="checkbox"
+                                    name="{{ filter_value.param_name }}"
+                                    value="{{ filter_value.value }}"
+                                    {% if filter_value.active %}checked{% endif %}
+                                  >
+                                  {{ filter_value.label }} ({{ filter_value.count }})
+                                </label>
+                              </li>
+                            {%- endif -%}
+                          {%- endfor -%}
+                        </ul>
+                      {%- when 'price_range' -%}
+                        <div class="filter-panel__price">
+                          <label class="filter-panel__price-field">
+                            <span class="visually-hidden">Minimum price</span>
+                            {{ cart.currency.symbol }}
+                            <input
+                              type="number"
+                              name="{{ filter.min_value.param_name }}"
+                              value="{{ filter.min_value.value }}"
+                              placeholder="{{ filter.range_min | money_without_currency }}"
+                              min="0"
+                            >
+                          </label>
+                          <span aria-hidden="true">–</span>
+                          <label class="filter-panel__price-field">
+                            <span class="visually-hidden">Maximum price</span>
+                            {{ cart.currency.symbol }}
+                            <input
+                              type="number"
+                              name="{{ filter.max_value.param_name }}"
+                              value="{{ filter.max_value.value }}"
+                              placeholder="{{ filter.range_max | money_without_currency }}"
+                              min="0"
+                            >
+                          </label>
+                        </div>
+                    {%- endcase -%}
+                  </div>
+                {%- endfor -%}
+
+                <div class="filter-panel__actions">
+                  <button type="submit" class="btn btn--primary btn--sm">Apply</button>
+                  {%- if active_filter_count > 0 -%}
+                    <a href="{{ collection.url }}{% if sort_current != collection.default_sort_by %}?sort_by={{ sort_current }}{% endif %}" class="filter-panel__clear">
+                      Clear all
+                    </a>
+                  {%- endif -%}
+                </div>
+              </div>
+            </details>
+          {%- endif -%}
+
+          {%- if section.settings.show_sort and collection.sort_options.size > 0 -%}
+            <div class="collection-toolbar__sort" data-auto-submit>
+              <label for="sort-by">Sort by</label>
+              <select name="sort_by" id="sort-by">
+                {%- for option in collection.sort_options -%}
+                  <option value="{{ option.value }}"{% if option.value == sort_current %} selected{% endif %}>{{ option.name }}</option>
+                {%- endfor -%}
+              </select>
+            </div>
           {%- endif -%}
         </div>
-      {%- endif -%}
+      </div>
 
       <noscript><button type="submit" class="btn btn--outline btn--sm">Apply</button></noscript>
     </form>
