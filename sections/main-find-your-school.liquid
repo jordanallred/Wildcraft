@@ -26,7 +26,15 @@
     <div class="school-cards">
       {%- for cat in collections -%}
         {%- assign school_color = cat.metafields.custom.school_primary_color.value -%}
-        {%- unless school_color == blank -%}
+        {%- assign cat_parent = cat.metafields.custom.school_parent.value -%}
+        {%- comment -%}
+          school_parent blank is what separates a top-level school (Auburn,
+          Arkansas) from its own Football/Sorority sub-collections — those
+          now carry school_primary_color too (needed so their own product
+          pages pick up the right color), which would otherwise list them
+          here as if they were separate schools.
+        {%- endcomment -%}
+        {%- unless school_color == blank or cat_parent != blank -%}
           {%- assign school_count = school_count | plus: 1 -%}
           <a href="{{ cat.url }}" class="school-card" style="--school-color: {{ school_color }};">
             <div class="school-card__media">
