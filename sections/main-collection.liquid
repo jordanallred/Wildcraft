@@ -98,18 +98,27 @@
 
                 {%- for filter in collection.filters -%}
                   {%- comment -%}
+                    Which values ever show, here and below: a plain,
+                    unhyphenated tag (auburn, football, sorority) is what
+                    the category pills' hierarchy is already built from —
+                    showing it again as a checkbox just duplicates the
+                    pill that does the same job better (a real page,
+                    shareable, with its own further filtering), so plain
+                    tags never render here. Only a "facet-value" tag
+                    (opponent-vanderbilt, chapter-kappa-delta, ...) is a
+                    genuine cross-cutting refinement that pills can't
+                    express, so those are the only checkboxes this filter
+                    ever shows — plus anything already active, so a filter
+                    somehow applied via URL is still visible and clearable
+                    rather than silently stuck on.
+
                     Group label: defaults to whatever's set in Search &
-                    Discovery, but when every value actually shown here
-                    follows a "facet-value" tag shape (opponent-vanderbilt,
-                    later chapter-kappa-delta for sorority, etc.) and they
-                    all share the same facet, that facet becomes the label
+                    Discovery, but when every value shown here shares the
+                    same facet prefix, that facet becomes the label
                     instead — titlecased, read straight off the tag. A new
                     facet gets a correct label the moment products are
                     tagged that way; nothing here needs to know the word
-                    "opponent" or "chapter" ahead of time. Falls back to
-                    the admin label whenever values don't share one (e.g.
-                    football + sorority together on a school hub page,
-                    neither of which is a facet-value pair).
+                    "opponent" or "chapter" ahead of time.
                   {%- endcomment -%}
                   {%- assign group_label = filter.label -%}
                   {%- assign shared_facet = '' -%}
@@ -119,7 +128,7 @@
                     {%- assign show_this_value = false -%}
                     {%- if filter_value.active -%}
                       {%- assign show_this_value = true -%}
-                    {%- elsif filter_value.count > 0 and filter_value.count < collection.products_count -%}
+                    {%- elsif filter_value.value contains '-' and filter_value.count > 0 and filter_value.count < collection.products_count -%}
                       {%- assign show_this_value = true -%}
                     {%- endif -%}
                     {%- if show_this_value -%}
@@ -152,7 +161,7 @@
                             {%- assign show_filter_value = false -%}
                             {%- if filter_value.active -%}
                               {%- assign show_filter_value = true -%}
-                            {%- elsif filter_value.count > 0 and filter_value.count < collection.products_count -%}
+                            {%- elsif filter_value.value contains '-' and filter_value.count > 0 and filter_value.count < collection.products_count -%}
                               {%- assign show_filter_value = true -%}
                             {%- endif -%}
                             {%- if show_filter_value -%}
