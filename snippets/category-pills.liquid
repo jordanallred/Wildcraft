@@ -1,36 +1,66 @@
 {% doc %}
-  Links to every real, non-empty, non-frontpage collection, plus "All" —
-  the actual mechanism behind "filter by collection." Shopify's storefront
-  filters (collection.filters) can only filter by tag, type, price,
-  availability, variant option, or metafield — there's no "which
-  collection" facet, because you're already inside one when using it.
-  Jumping to a different collection is ordinary navigation between
-  collection.url values, not a query param, so this renders plain links.
+  Hierarchy-aware "shop by category" pills. Context is read entirely from
+  the current collection's own metafields — no template/page branching
+  needed:
 
-  frontpage is excluded on purpose: it's the homepage's curated collection,
-  not a customer-facing category. Every other published, non-empty
-  collection shows automatically — nothing to configure when a new one is
-  added.
+  1. No school context (e.g. /collections/all) → top-level school list:
+     "All" + every collection with school_primary_color set and no
+     school_parent (Auburn, Arkansas, ...).
+  2. A school hub (school_primary_color set, no school_parent — e.g.
+     /collections/auburn) → that school's own type sub-collections: every
+     collection whose school_parent equals the current handle.
+  3. A type sub-collection (school_parent set — e.g.
+     /collections/auburn-football) → sibling type collections sharing the
+     same school_parent, plus a link back up to the parent school hub.
 
-  Rendered twice: as the standalone row above the collection toolbar, and
-  again inside the Filter panel, so both stay in sync from one place.
+  frontpage and empty (products_count == 0) collections are excluded in
+  every context — same rule as before, just now scoped per context instead
+  of applied to every collection in the store.
+
+  Shopify's storefront filters (collection.filters) can't do any of this:
+  there's no "which collection" facet, because you're already inside one
+  when using it. Jumping between collections is ordinary navigation
+  between collection.url values, not a query param, so this renders plain
+  links throughout.
 
   @param {collection} current - the collection currently being viewed
   @example
   {% render 'category-pills', current: collection %}
 {% enddoc %}
 
-{%- assign other_collections_count = 0 -%}
-{%- for cat in collections -%}
-  {%- unless cat.handle == 'frontpage' or cat.products_count == 0 -%}
-    {%- assign other_collections_count = other_collections_count | plus: 1 -%}
-  {%- endunless -%}
-{%- endfor -%}
-{%- if other_collections_count > 0 -%}
-  <a href="{{ routes.all_products_collection_url }}" class="category-pills__link{% if current.handle == 'all' %} is-active{% endif %}">All</a>
+{%- liquid
+  assign current_parent = current.metafields.custom.school_parent.value
+  assign current_is_hub = false
+  if current.metafields.custom.school_primary_color.value != blank and current_parent == blank
+    assign current_is_hub = true
+  endif
+-%}
+
+{%- capture pills -%}
+  {%- if current_parent != blank -%}
+    {%- assign parent_collection = collections[current_parent] -%}
+    {%- if parent_collection -%}
+      <a href="{{ parent_collection.url }}" class="category-pills__link category-pills__link--up">← All {{ parent_collection.title }}</a>
+    {%- endif -%}
+  {%- elsif current_is_hub == false -%}
+    <a href="{{ routes.all_products_collection_url }}" class="category-pills__link{% if current.handle == 'all' %} is-active{% endif %}">All</a>
+  {%- endif -%}
+
   {%- for cat in collections -%}
-    {%- unless cat.handle == 'frontpage' or cat.products_count == 0 -%}
+    {%- assign include = false -%}
+    {%- assign cat_parent = cat.metafields.custom.school_parent.value -%}
+    {%- if current_parent != blank -%}
+      {%- if cat_parent == current_parent -%}{%- assign include = true -%}{%- endif -%}
+    {%- elsif current_is_hub -%}
+      {%- if cat_parent == current.handle -%}{%- assign include = true -%}{%- endif -%}
+    {%- else -%}
+      {%- if cat.metafields.custom.school_primary_color.value != blank and cat_parent == blank -%}{%- assign include = true -%}{%- endif -%}
+    {%- endif -%}
+    {%- if cat.handle == 'frontpage' or cat.products_count == 0 -%}{%- assign include = false -%}{%- endif -%}
+    {%- if include -%}
       <a href="{{ cat.url }}" class="category-pills__link{% if cat.handle == current.handle %} is-active{% endif %}">{{ cat.title }}</a>
-    {%- endunless -%}
+    {%- endif -%}
   {%- endfor -%}
-{%- endif -%}
+{%- endcapture -%}
+
+{{ pills | strip }}
