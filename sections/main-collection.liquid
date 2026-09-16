@@ -38,6 +38,15 @@
       checked. Sort is still its own auto-submitting control outside the
       panel, where an immediate reload is exactly what a single dropdown
       should do.
+
+      A filter value that every product in the current collection already
+      carries (count == collection.products_count) narrows nothing if
+      checked — same result either way. Rather than curate that per school
+      in Search & Discovery (which only gets more tags to babysit as more
+      schools are added), values like that are skipped here unless already
+      active, so unchecking one that's somehow on still works. This is
+      driven entirely by live counts, so it needs no maintenance as new
+      schools/sports/opponents are added.
     {%- endcomment -%}
     {%- assign sort_current = collection.sort_by | default: collection.default_sort_by -%}
     {%- assign active_filter_count = 0 -%}
@@ -95,7 +104,13 @@
                       {%- when 'list' or 'boolean' -%}
                         <ul class="filter-panel__options" role="list">
                           {%- for filter_value in filter.values -%}
-                            {%- if filter_value.count > 0 or filter_value.active -%}
+                            {%- assign show_filter_value = false -%}
+                            {%- if filter_value.active -%}
+                              {%- assign show_filter_value = true -%}
+                            {%- elsif filter_value.count > 0 and filter_value.count < collection.products_count -%}
+                              {%- assign show_filter_value = true -%}
+                            {%- endif -%}
+                            {%- if show_filter_value -%}
                               <li class="filter-panel__option">
                                 <label>
                                   <input
