@@ -98,37 +98,43 @@
 
                 {%- for filter in collection.filters -%}
                   {%- comment -%}
-                    The hyphen rule below only applies to the tags filter
-                    (param_name "filter.v.tag") — Availability, Price, and
-                    any future Size/Color/Vendor filter keep the plain
-                    count-based show/hide rule untouched, since a bare
-                    "true" or "Small" isn't standing in for a pill and
-                    shouldn't be judged as if it were.
+                    Which filter this is: only the real tags filter
+                    (param_name "filter.p.tag" — confirmed against this
+                    store's actual rendered output, not assumed) gets the
+                    rules below. Availability, Price, and any future
+                    Size/Color/Vendor filter keep the plain count-based
+                    show/hide rule untouched.
 
-                    Within the tags filter specifically: a plain,
-                    unhyphenated tag (auburn, football, sorority) is what
-                    the category pills' hierarchy is already built from —
-                    showing it again as a checkbox just duplicates the
-                    pill that does the same job better (a real page,
-                    shareable, with its own further filtering), so plain
-                    tags never render here. Only a "facet-value" tag
-                    (opponent-vanderbilt, chapter-kappa-delta, ...) is a
-                    genuine cross-cutting refinement that pills can't
-                    express, so those are the only checkboxes this filter
-                    ever shows — plus anything already active, so a filter
-                    somehow applied via URL is still visible and clearable
-                    rather than silently stuck on.
+                    Within the tags filter: a plain tag whose value is
+                    still literally the tag text (auburn, football,
+                    sorority) is what the category pills' hierarchy is
+                    already built from — showing it again just duplicates
+                    the pill that does the same job better, so it never
+                    renders here. A value that's been grouped/renamed in
+                    Search & Discovery gets its `value` replaced by
+                    Shopify with an opaque gid:// reference instead of the
+                    original tag — there's no way to read the source tag
+                    back out of it, but that gid:// shape is itself a
+                    reliable signal that a human deliberately curated this
+                    as a real cross-cutting facet (opponent, chapter,
+                    whatever), not a hierarchy tag, so those are exactly
+                    the values this filter shows (plus anything already
+                    active, so a filter somehow applied via URL stays
+                    visible and clearable).
 
-                    Group label: defaults to whatever's set in Search &
-                    Discovery, but when every value shown here shares the
-                    same facet prefix, that facet becomes the label
-                    instead — titlecased, read straight off the tag. A new
-                    facet gets a correct label the moment products are
-                    tagged that way; nothing here needs to know the word
-                    "opponent" or "chapter" ahead of time.
+                    Group label: because grouping erases the source tag,
+                    the "what kind of facet is this" signal has to live
+                    in the group's own name instead. Name a group
+                    "Opponent: Florida" in Search & Discovery and the
+                    checkbox shows "Florida" while this section heading
+                    becomes "Opponent" — read straight from whatever's
+                    before the colon, so a new facet type (e.g.
+                    "Chapter: Kappa Delta") gets a correct heading the
+                    moment it's named that way. A group with no colon
+                    (or a mix of facets) falls back to the admin label.
                   {%- endcomment -%}
                   {%- assign is_tag_filter = false -%}
-                  {%- if filter.param_name == 'filter.v.tag' -%}
+                  {%- if filter.param_name == 'filter.p.tag' -%}
                     {%- assign is_tag_filter = true -%}
                   {%- endif -%}
                   {%- assign group_label = filter.label -%}
@@ -139,17 +145,17 @@
                     {%- assign show_this_value = false -%}
                     {%- if filter_value.active -%}
                       {%- assign show_this_value = true -%}
-                    {%- elsif is_tag_filter and filter_value.value contains '-' and filter_value.count > 0 and filter_value.count < collection.products_count -%}
+                    {%- elsif is_tag_filter and filter_value.value contains 'gid://' and filter_value.count > 0 and filter_value.count < collection.products_count -%}
                       {%- assign show_this_value = true -%}
                     {%- elsif is_tag_filter == false and filter_value.count > 0 and filter_value.count < collection.products_count -%}
                       {%- assign show_this_value = true -%}
                     {%- endif -%}
                     {%- if show_this_value -%}
                       {%- assign visible_value_count = visible_value_count | plus: 1 -%}
-                      {%- assign value_parts = filter_value.value | split: '-' -%}
+                      {%- assign label_parts = filter_value.label | split: ': ' -%}
                       {%- assign this_facet = '' -%}
-                      {%- if value_parts.size > 1 -%}
-                        {%- assign this_facet = value_parts | first -%}
+                      {%- if label_parts.size > 1 -%}
+                        {%- assign this_facet = label_parts | first -%}
                       {%- endif -%}
                       {%- if this_facet == blank -%}
                         {%- assign facet_mismatch = true -%}
@@ -161,13 +167,11 @@
                     {%- endif -%}
                   {%- endfor -%}
                   {%- if visible_value_count > 0 and facet_mismatch == false and shared_facet != blank -%}
-                    {%- assign group_label = shared_facet | capitalize -%}
+                    {%- assign group_label = shared_facet -%}
                   {%- endif -%}
 
                   <div class="filter-panel__group">
                     <p class="label filter-panel__group-title">{{ group_label }}</p>
-                    {%- comment -%} TEMP DEBUG — remove after diagnosing {%- endcomment -%}
-                    <!-- FILTER-DEBUG param={{ filter.param_name }} type={{ filter.type }} is_tag_filter={{ is_tag_filter }}{% for fv in filter.values %} || value=[{{ fv.value }}] label=[{{ fv.label }}] count={{ fv.count }} active={{ fv.active }}{% endfor %} -->
 
                     {%- case filter.type -%}
                       {%- when 'list' or 'boolean' -%}
@@ -176,12 +180,18 @@
                             {%- assign show_filter_value = false -%}
                             {%- if filter_value.active -%}
                               {%- assign show_filter_value = true -%}
-                            {%- elsif is_tag_filter and filter_value.value contains '-' and filter_value.count > 0 and filter_value.count < collection.products_count -%}
+                            {%- elsif is_tag_filter and filter_value.value contains 'gid://' and filter_value.count > 0 and filter_value.count < collection.products_count -%}
                               {%- assign show_filter_value = true -%}
                             {%- elsif is_tag_filter == false and filter_value.count > 0 and filter_value.count < collection.products_count -%}
                               {%- assign show_filter_value = true -%}
                             {%- endif -%}
                             {%- if show_filter_value -%}
+                              {%- assign display_label_parts = filter_value.label | split: ': ' -%}
+                              {%- if display_label_parts.size > 1 -%}
+                                {%- assign display_label = display_label_parts | last -%}
+                              {%- else -%}
+                                {%- assign display_label = filter_value.label -%}
+                              {%- endif -%}
                               <li class="filter-panel__option">
                                 <label>
                                   <input
@@ -190,7 +200,7 @@
                                     value="{{ filter_value.value }}"
                                     {% if filter_value.active %}checked{% endif %}
                                   >
-                                  <span>{{ filter_value.label }} <span class="filter-panel__option-count">({{ filter_value.count }})</span></span>
+                                  <span>{{ display_label }} <span class="filter-panel__option-count">({{ filter_value.count }})</span></span>
                                 </label>
                               </li>
                             {%- endif -%}
