@@ -97,8 +97,53 @@
                 {%- endif -%}
 
                 {%- for filter in collection.filters -%}
+                  {%- comment -%}
+                    Group label: defaults to whatever's set in Search &
+                    Discovery, but when every value actually shown here
+                    follows a "facet-value" tag shape (opponent-vanderbilt,
+                    later chapter-kappa-delta for sorority, etc.) and they
+                    all share the same facet, that facet becomes the label
+                    instead — titlecased, read straight off the tag. A new
+                    facet gets a correct label the moment products are
+                    tagged that way; nothing here needs to know the word
+                    "opponent" or "chapter" ahead of time. Falls back to
+                    the admin label whenever values don't share one (e.g.
+                    football + sorority together on a school hub page,
+                    neither of which is a facet-value pair).
+                  {%- endcomment -%}
+                  {%- assign group_label = filter.label -%}
+                  {%- assign shared_facet = '' -%}
+                  {%- assign facet_mismatch = false -%}
+                  {%- assign visible_value_count = 0 -%}
+                  {%- for filter_value in filter.values -%}
+                    {%- assign show_this_value = false -%}
+                    {%- if filter_value.active -%}
+                      {%- assign show_this_value = true -%}
+                    {%- elsif filter_value.count > 0 and filter_value.count < collection.products_count -%}
+                      {%- assign show_this_value = true -%}
+                    {%- endif -%}
+                    {%- if show_this_value -%}
+                      {%- assign visible_value_count = visible_value_count | plus: 1 -%}
+                      {%- assign value_parts = filter_value.value | split: '-' -%}
+                      {%- assign this_facet = '' -%}
+                      {%- if value_parts.size > 1 -%}
+                        {%- assign this_facet = value_parts | first -%}
+                      {%- endif -%}
+                      {%- if this_facet == blank -%}
+                        {%- assign facet_mismatch = true -%}
+                      {%- elsif shared_facet == blank -%}
+                        {%- assign shared_facet = this_facet -%}
+                      {%- elsif shared_facet != this_facet -%}
+                        {%- assign facet_mismatch = true -%}
+                      {%- endif -%}
+                    {%- endif -%}
+                  {%- endfor -%}
+                  {%- if visible_value_count > 0 and facet_mismatch == false and shared_facet != blank -%}
+                    {%- assign group_label = shared_facet | capitalize -%}
+                  {%- endif -%}
+
                   <div class="filter-panel__group">
-                    <p class="label filter-panel__group-title">{{ filter.label }}</p>
+                    <p class="label filter-panel__group-title">{{ group_label }}</p>
 
                     {%- case filter.type -%}
                       {%- when 'list' or 'boolean' -%}
