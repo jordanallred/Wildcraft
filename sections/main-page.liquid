@@ -40,9 +40,56 @@
       </figure>
     {%- endif -%}
 
-    <div class="rte page-content__body">
-      {{ page.content }}
-    </div>
+    {%- if page.handle == 'contact' -%}
+      <div class="rte page-content__body">
+        <p>Got a question, or a design you'd love to see? Send it below and I'll get back to you within 1-2 business days.</p>
+        <p>During football season things get busy, so if it's about a game day deadline, give me as much notice as you can.</p>
+      </div>
+
+      {%- form 'contact', id: 'ContactForm', class: 'design-request-form' -%}
+        {%- if form.posted_successfully? -%}
+          <p class="design-request-form__success" tabindex="-1">
+            Got it - thank you! I read every message myself.
+          </p>
+        {%- else -%}
+          {%- if form.errors -%}
+            <div class="design-request-form__errors">
+              {{ form.errors | default_errors }}
+            </div>
+          {%- endif -%}
+
+          <input type="hidden" name="contact[Subject]" value="Contact page">
+
+          <div class="design-request-form__field">
+            <label for="ContactFormEmail">Your email</label>
+            <input
+              type="email"
+              id="ContactFormEmail"
+              name="contact[email]"
+              value="{{ form.email }}"
+              autocomplete="email"
+              required
+            >
+          </div>
+
+          <div class="design-request-form__field">
+            <label for="ContactFormBody">Message</label>
+            <textarea
+              id="ContactFormBody"
+              name="contact[body]"
+              rows="6"
+              required
+            ></textarea>
+          </div>
+
+          <button type="submit" class="btn btn--primary btn--lg">Send message</button>
+        {%- endif -%}
+      {%- endform -%}
+    {%- else -%}
+      <div class="rte page-content__body">
+        {{ page.content }}
+      </div>
+    {%- endif -%}
   </div>
 </div>
 
